@@ -6,7 +6,6 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 import camera from '../assets/Camera.png';
 import logo from '../assets/logo.png'
 import signature from '../assets/assinatura-teste-1.png'
-
 import MenuDashboard from '../componets/menuDashboard'
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;

@@ -679,7 +679,7 @@ video {
   width: 100%;
   height: 50px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  background-color: #126B5E;
+  background-color: #105394;
   overflow-x: auto;
   display: flex;
   z-index: 6;
@@ -2262,7 +2262,7 @@ textarea {
 
 /* Footer */
 .footer{
-  background-color: #003f36;
+  background-color: #105394;
   color: #fff !important;
   font-size: 12px;
   padding: 10px;
@@ -2329,7 +2329,7 @@ footer > p {
   bottom: 0;
   height: 100vh;
   left: 0;
-  background: #126B5E;
+  background: #105394;
   width: 35px;
   overflow: hidden;
   transition: width 0.2 linear;

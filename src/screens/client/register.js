@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 //Imagens
-import logo from '../../assets/e-camara-16.png';
 
 // Libs
 import { cpf } from 'cpf-cnpj-validator';
@@ -129,7 +128,6 @@ class register extends Component {
     return (
       <div className='App-header loginPage' >
         <div className='Container' >
-          <img src={logo} alt="logo" className='logo' />
           <form className='formLogin'>
           <h1>Seja bem-vindo!</h1>
 

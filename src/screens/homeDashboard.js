@@ -6,9 +6,11 @@ import React, { Component } from 'react';
 
 // Icones
 import {
-
-
-} from 'react-icons/fa';
+    GoBook,
+    GoShield ,
+    GoCalendar,
+    GoStop 
+} from 'react-icons/go';
 
 // Components
 import SlideFeacures from '../componets/slideFeactures';
@@ -22,118 +24,30 @@ class homeDashboard extends Component {
 
             <div className='App-header' >
                 <div className='Home-Dach'>
+                    
+                    <div className='btnsHome'>
+                        <input type='button' value={'Consumidor'} className='btnHome'/> 
+                        <input type='button' value={'Empresas'} className='btnHome'/> 
+                    </div>
                     <dvi className='header-Dach-div'>
-                        <h1>Nossos Representantes</h1>
+                        <h1>Destaques</h1>
+                    </dvi>
+
+                    <div className='btnsHome'>
+                        <a className='btnLargeHome' href='https://www.consumidor.gov.br/'><GoBook className="iconHomeBtn" /><br/>Consumidor Gov</a>
+                        <a className='btnLargeHome' href='/login'><GoShield className="iconHomeBtn" /><br/>Realizar Denuncia</a>
+                        <a className='btnLargeHome' href='/login'><GoCalendar className="iconHomeBtn" /><br/>Agendar Atendimento</a>
+                        <a className='btnLargeHome' href='/'><GoStop className="iconHomeBtn" /><br/>Evite estes sites</a>
+                    </div>
+                   
+                    
+                    <dvi className='header-Dach-div'>
+                        <h1>Nossos Vereadores</h1>
                     </dvi>
 
                     <div className='HomeDesktopCarrosel'>
                         <SlideFeacures />
                     </div>
-                    <div className='header-Dach'>
-                        <dvi className='header-Dach-div'>
-                            <h1>Balanço Legislativo</h1>
-                            <select className='select-input-ano inputLogin'>
-                                <option>2023</option>
-                                <option>2022</option>
-                                <option>2021</option>
-                                <option>2020</option>
-                                <option>2019</option>
-                            </select>
-                        </dvi>
-
-
-
-
-                    </div>
-                    <div className='Conteiner-Home-Dach-list'>
-                        <div className='Conteiner-Home-Dach'>
-                            {/* Leis */}
-                            <div className='balanco-legislativo-painel-item'>
-                                <h1>Leis</h1>
-                                <div>
-                                    <div>
-                                        <p>Sancionadas</p>
-                                        <h2>234</h2>
-                                    </div>
-                                    <div>
-                                        <p>Promulgadas</p>
-                                        <h2>1739</h2>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            {/* Proposições */}
-                            <div className='balanco-legislativo-painel-item'>
-                                <h1>Proposições</h1>
-                                <div>
-                                    <div>
-                                        <p>Projeto de Decreto Legislativo</p>
-                                        <h2>458</h2>
-
-                                    </div>
-
-                                    <div>
-                                        <p>Projetos de emenda à Lei Orgânica</p>
-                                        <h2>458</h2>
-
-                                    </div>
-
-                                    <div>
-                                        <p>Projetos de lei</p>
-                                        <h2>458</h2>
-
-                                    </div>
-
-                                    <div>
-                                        <p>Projetos de Resolução</p>
-                                        <h2>458</h2>
-
-                                    </div>
-
-                                    <div>
-                                        <p>Lei complementar</p>
-                                        <h2>278</h2>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Envios ao Executivo */}
-                            <div className='balanco-legislativo-painel-item'>
-                                <h1>Envios ao Executivo</h1>
-                                <div>
-                                    <div>
-                                        <p>Requerimentos</p>
-                                        <h2>10</h2>
-
-                                    </div>
-                                    <div>
-                                        <p>Indicações</p>
-                                        <h2>2</h2>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Comissões */}
-                            <div className='balanco-legislativo-painel-item'>
-                                <h1>Comissões</h1>
-                                <div>
-                                    <div>
-                                        <p>Permanentes</p>
-                                        <h2>10</h2>
-                                    </div>
-                                    <div>
-                                        <p>Temporárias</p>
-                                        <h2>2</h2>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
-
-                    </div>
-
 
 
                 </div>

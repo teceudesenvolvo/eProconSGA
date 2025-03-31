@@ -15,6 +15,8 @@
   width: 60%;
 }
 
+
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 1s linear;
@@ -38,7 +40,7 @@
 }
 
 .loginPage{
-  background: #126B5E;
+  background: #0f5294;
 }
 
 .heroDiv{
@@ -103,7 +105,7 @@
   width: 100%;
   flex-direction: column;
   justify-content: left;
-  background-color: #126B5E;
+  background-color: #105394;
   border-radius: 0px 0px 10px 10px;
   padding-bottom: 16px; 
   z-index: 10;
@@ -744,8 +746,8 @@ video {
   display: flex !important;
   flex-direction: column;
   align-items: center;
-  width: 132px !important;
-  height: 220px !important;
+  width: 200px !important;
+  height: 250px !important;
   background-color: #d9d9d9;
   border-radius: 12px !important;
   margin-right: 10px !important;
@@ -772,7 +774,7 @@ video {
   padding: 0 0 0 10px;
   text-align: left;
   width: 93%;
-  height: 38%;
+  height: 18%;
   background-color: #d9d9d9 !important;
   font-weight: bold;
   border-radius: 0 0 10px 10px !important;
@@ -2194,6 +2196,59 @@ video {
   cursor: pointer;
 }
 
+.btnsHome{
+  width: 100%;
+  height: auto;
+  flex-direction: row;
+  align-items: center;
+  align-content: center;
+  margin-bottom: 10px;
+}
+
+.btnsHome:first-child{
+  height: 100px;
+}
+
+.btnHome{
+  width: 40%;
+  height: 50px;
+  margin: 10px;
+  border: none;
+  color: white;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+
+.btnHome:first-child{
+  background-color: #0d5193;
+}
+.btnHome:last-child{
+  background-color: #FF6B07;
+}
+
+.btnLargeHome{
+  display: inline-block;
+  flex: 1;
+  flex-direction: column;
+  background-color: #ECECEC;
+  color: #5A5A5A;
+  width: 19% !important;
+  height: 200px;
+  font-size: 15px;
+  border-radius: 10px;
+  margin: 10px;
+  text-decoration: none;
+  align-items: center;
+  text-align: center;
+}
+
+.iconHomeBtn{
+  font-size: 100px;
+  margin: 20px;
+}
+
+
 textarea {
   width: 70%;
   height: 40px;
@@ -2220,6 +2275,12 @@ footer > p {
 
 
 /* Menu for desktop */
+
+@media (min-width: 800px){
+  .menu {
+    display: none;
+  }
+}
 
 
 
@@ -2365,13 +2426,9 @@ footer > p {
 
 
 
-
-
-@media (min-width: 1000px) {
+@media (max-width: 600px) {
   
-  .menu {
-    display: none;
-  }
+  
   .heroDesc{
     margin-top: -85px;   
     height: auto !important; 
@@ -2447,6 +2504,10 @@ footer > p {
     margin-left: 25px;
     padding-left: 10px;
     width: 115%;
+  }
+
+  .btnLargeHome{
+    width: 150px !important;
   }
 
   .slidesFeacture {

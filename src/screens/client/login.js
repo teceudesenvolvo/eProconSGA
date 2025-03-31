@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 
 //Imagens
-import logo from '../../assets/e-camara-16.png';
+import logo from '../../assets/logo-SGA-procon.png';
 
 // Icones
 
@@ -28,8 +28,9 @@ class loginClient extends Component {
                             }
                         }
                         />
+                        
                     </form>
-                    {/* <p>Não tem uma conta? <a href='/register' className='linkLogin'>Crie uma</a></p> */}
+                    <p>Não tem uma conta? <a href='/register' className='linkLogin'>Crie uma</a></p>
                 </div>
             </div>
         );

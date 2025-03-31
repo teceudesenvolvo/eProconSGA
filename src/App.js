@@ -85,7 +85,7 @@ function App() {
 
         
         {/* Páginas de Formulários */}
-        <Route path="/protocolar-materia" component={addMateria} />
+        <Route path="/registrar-reclamação" component={addMateria} />
         <Route path="/registerDashboard" component={registerDashboard} />
         <Route path="/registerEndereco" component={registerEndereco} />
         <Route path="/juizo-materia" component={juizoMateria} />
@@ -105,10 +105,10 @@ function App() {
       <Menu />
       <MenuDesktop />
       <footer className='footer'>
-        <p> Copyright &copy; 2023 - eudesenvolvo</p>
+        <p> Copyright &copy; 2025 - Blu Tecnologias </p>
       </footer>
 
-
+ 
     </div>
   );
 }

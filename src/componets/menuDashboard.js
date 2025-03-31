@@ -8,9 +8,7 @@ import Logo from '../assets/logoLaranga.png';
 import {
     FaAddressBook ,
     FaPlusCircle ,
-    FaPencilAlt ,
     FaRegUser
-
 } from "react-icons/fa";
 
 
@@ -40,7 +38,7 @@ class menuDashboard extends Component {
                 return this.setState({ linkMenu: 'aDesktop link-desktop-active' })
             case `/favoritos`:
                 return this.setState({ linkMenu2: 'aDesktop link-desktop-active' })
-            case `/Compras`:
+            case `/materia`:
                 return this.setState({ linkMenu3: 'aDesktop link-desktop-active' })
             case `/protocolar-materia`:
                 return this.setState({ linkMenu4: 'aDesktop link-desktop-active' })
@@ -68,18 +66,13 @@ class menuDashboard extends Component {
 
                 <a href="/materias-dash" className={this.state.linkMenu}>
                     <FaAddressBook className='fas fa-home'></FaAddressBook>
-                    <span className='nav-item'>Minhas Materias</span>
+                    <span className='nav-item'>Meus Atendimentos</span>
                 </a>
 
              
                 <a href="/protocolar-materia" className={this.state.linkMenu4}>
                     <FaPlusCircle  className='fas fa-Notificacoes'></FaPlusCircle >
-                    <span className='nav-item'>Protocolar Matéria</span>
-                </a>
-            
-                <a href="/juizo-materia" className={this.state.linkMenu5}>
-                    <FaPencilAlt  className='fas fa-Ajuda'></FaPencilAlt >
-                    <span className='nav-item'>Parecer</span>
+                    <span className='nav-item'>Nova Reclamação</span>
                 </a>
                 
                 <a href="/perfil" className={this.state.linkMenu6}>

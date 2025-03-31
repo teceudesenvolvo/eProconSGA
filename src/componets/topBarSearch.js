@@ -3,7 +3,7 @@ import '../App.css'
 
 //Imagens
 
-import Logo from '../assets/e-camara-16.png'
+import Logo from '../assets/logo-SGA-procon.png'
 
 // Icones
 

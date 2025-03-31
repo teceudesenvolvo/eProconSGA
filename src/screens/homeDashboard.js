@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 // Icones
 import {
     GoBook,
-    GoShield ,
+    GoCircleSlash ,
     GoCalendar,
     GoStop 
 } from 'react-icons/go';
@@ -26,8 +26,8 @@ class homeDashboard extends Component {
                 <div className='Home-Dach'>
                     
                     <div className='btnsHome'>
-                        <input type='button' value={'Consumidor'} className='btnHome'/> 
-                        <input type='button' value={'Empresas'} className='btnHome'/> 
+                        <a type='button' href='/login' className='btnHome'>Login</a> 
+                        <a type='button' href='/register' className='btnHome'>Cadastrar</a> 
                     </div>
                     <dvi className='header-Dach-div'>
                         <h1>Destaques</h1>
@@ -35,7 +35,7 @@ class homeDashboard extends Component {
 
                     <div className='btnsHome'>
                         <a className='btnLargeHome' href='https://www.consumidor.gov.br/'><GoBook className="iconHomeBtn" /><br/>Consumidor Gov</a>
-                        <a className='btnLargeHome' href='/login'><GoShield className="iconHomeBtn" /><br/>Realizar Denuncia</a>
+                        <a className='btnLargeHome' href='/login'><GoCircleSlash className="iconHomeBtn" /><br/>Realizar Reclamação</a>
                         <a className='btnLargeHome' href='/login'><GoCalendar className="iconHomeBtn" /><br/>Agendar Atendimento</a>
                         <a className='btnLargeHome' href='/'><GoStop className="iconHomeBtn" /><br/>Evite estes sites</a>
                     </div>

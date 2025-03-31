@@ -81,11 +81,11 @@ function App() {
 
         
         <Route path="/pagamento" component={pagamento} />
-        <Route path="/materias-dash" component={materiasDash} />
+        <Route path="/meus-atendimentos" component={materiasDash} />
 
         
         {/* Páginas de Formulários */}
-        <Route path="/registrar-reclamação" component={addMateria} />
+        <Route path="/registrar-reclamacao" component={addMateria} />
         <Route path="/registerDashboard" component={registerDashboard} />
         <Route path="/registerEndereco" component={registerEndereco} />
         <Route path="/juizo-materia" component={juizoMateria} />

@@ -5,15 +5,11 @@ import React, { Component } from 'react';
 
 // Icones
 import {
-    GoNote,
-    GoGraph,
-    // GoBroadcast,
-    GoLaw,
-    GoBook,
-    GoRepo,
-    GoLightBulb   
-
-} from "react-icons/go";
+    GoHome,
+    GoCircleSlash  ,
+    GoCalendar,
+    GoStop 
+  } from 'react-icons/go';
 
 import { FaRegUser } from "react-icons/fa";
 
@@ -42,23 +38,19 @@ class menuDesktop extends Component {
 
     btnHome = () => {
         switch (this.state.window) {
-            case `/sessoes`:
+            case `/`:
                 return this.setState({ linkMenu: 'aDesktop link-desktop-active' })
-            case `/relatorios`:
+            case `/registrar-reclamacao`:
                 return this.setState({ linkMenu2: 'aDesktop link-desktop-active' })
-            case `/sessao-virtual`:
+            case `/agendar-atendimento`:
                 return this.setState({ linkMenu3: 'aDesktop link-desktop-active' })
-            case `/normas`:
+            case `/golpes`:
                 return this.setState({ linkMenu4: 'aDesktop link-desktop-active' })
-            case `/comissoes`:
-                return this.setState({ linkMenu5: 'aDesktop link-desktop-active' })
-            case `/materias`:
-                return this.setState({ linkMenu6: 'aDesktop link-desktop-active' })
             case `/perfil`:
-                return this.setState({ linkMenu7: 'aDesktop link-desktop-active' })
-            case `/ajuda`:
-                return this.setState({ linkMenu8: 'aDesktop link-desktop-active' })
+                return this.setState({ linkMenu5: 'aDesktop link-desktop-active' })
             case `/login`:
+                return this.setState({ menuDesktop: 'menuNone' })
+            case `/register`:
                 return this.setState({ menuDesktop: 'menuNone' })
             default:
                 return null
@@ -80,41 +72,30 @@ class menuDesktop extends Component {
 
                 
 
-                <a href="/sessoes" className={this.state.linkMenu}>
-                    <GoNote className='fas fa-home'></GoNote>
-                    <span className='nav-item'>Sessões</span> 
+                <a href="/" className={this.state.linkMenu}>
+                    <GoHome className='fas fa-home'></GoHome>
+                    <span className='nav-item'>Início</span> 
                 </a>
 
-                <a href="/relatorios" className={this.state.linkMenu2}>
-                    <GoGraph  className='fas fa-favoritos'></GoGraph >
-                    <span className='nav-item'>Relatórios</span>
+                <a href="/registrar-reclamacao" className={this.state.linkMenu2}>
+                    <GoCircleSlash  className='fas fa-favoritos'></GoCircleSlash >
+                    <span className='nav-item'>Reclamação</span>
                 </a>
 
-                 {/* <a href="/sessao-virtual" className={this.state.linkMenu3}>
-                     <GoBroadcast  className='fas fa-Compras'></GoBroadcast >
-                     <span className='nav-item'>Sessão Virtual</span>
-                </a> */}
-
-                <a href="/normas" className={this.state.linkMenu4}>
-                    <GoLaw className='fas fa-Notificacoes'></GoLaw>
-                    <span className='nav-item'>Normas Juridicas</span>
+                <a href="/agendar-atendimento" className={this.state.linkMenu3}>
+                    <GoCalendar className='fas fa-Notificacoes'></GoCalendar>
+                    <span className='nav-item'>Agendar</span>
                 </a>
-                <a href="/comissoes" className={this.state.linkMenu5}>
-                    <GoBook className='fas fa-Ajuda'></GoBook>
-                    <span className='nav-item'>Comissões</span>
+                <a href="/golpes" className={this.state.linkMenu4}>
+                    <GoStop className='fas fa-Ajuda'></GoStop>
+                    <span className='nav-item'>Sites/Golpes</span>
                 </a>
-                <a href="/materias" className={this.state.linkMenu6}>
-                    <GoRepo className='fas fa-Ajuda'></GoRepo>
-                    <span className='nav-item'>Matérias</span>
-                </a>
-                <a href="/perfil" className={this.state.linkMenu7}>
+                
+                <a href="/perfil" className={this.state.linkMenu5}>
                     <FaRegUser className='fas fa-Ajuda'></FaRegUser>
                     <span className='nav-item'>Minha Conta</span>
                 </a>
-                <a href="/ajuda" className={this.state.linkMenu8}>
-                    <GoLightBulb  className='fas fa-Ajuda'></GoLightBulb >
-                    <span className='nav-item'>Ajuda</span>
-                </a>
+                
                 
             </nav>
 

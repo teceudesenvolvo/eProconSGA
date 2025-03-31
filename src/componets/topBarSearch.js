@@ -34,6 +34,8 @@ class topBar extends Component {
         switch (this.state.window) {
             case `/login`:
                 return this.setState({ headerHome: 'menuNone' })
+            case `/register`:
+                return this.setState({ headerHome: 'menuNone' })
             default:
                 return null
         }

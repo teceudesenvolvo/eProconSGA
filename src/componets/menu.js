@@ -5,14 +5,13 @@ import React, { Component } from 'react';
 
 // Icones
 import {
-  GoNote,
-  GoBroadcast,
-  GoBook,
-  GoRepo,
+  GoHome,
+  GoCircleSlash  ,
+  GoCalendar,
+  GoStop,
+  GoPerson 
+} from 'react-icons/go';
 
-} from "react-icons/go";
-
-import { FaBars } from "react-icons/fa";
 
 // Components
 
@@ -24,10 +23,11 @@ class menu extends Component {
     super(props)
     this.state = {
       linkMenu: 'linkMenu',
+      linkMenu0: 'linkMenu',
+      linkMenu1: 'linkMenu',
       linkMenu2: 'linkMenu',
       linkMenu3: 'linkMenu',
       linkMenu4: 'linkMenu',
-      linkMenu5: 'linkMenu',
       menuClass: 'menu',
       window: window.location.pathname,
     }
@@ -36,14 +36,16 @@ class menu extends Component {
 
   btnHome = () => {
     switch (this.state.window) {
-      case `/sessoes`:
+      case `/`:
         return this.setState({ linkMenu: 'linkMenu link-active' })
-      case `/sessao-virtual`:
+      case `/meus-atendimentos`:
+        return this.setState({ linkMenu0: 'linkMenu link-active' })
+      case `/registrar-reclamacao`:
+        return this.setState({ linkMenu1: 'linkMenu link-active' })
+      case `/golpes`:
         return this.setState({ linkMenu2: 'linkMenu link-active' })
-      case `/comissoes`:
+      case `/perfil`:
         return this.setState({ linkMenu3: 'linkMenu link-active' })
-      case `/materias`:
-        return this.setState({ linkMenu4: 'linkMenu link-active' })
       case `/login`:
         return this.setState({ menuClass: 'menuNone' })
       case `/register`:
@@ -77,11 +79,11 @@ class menu extends Component {
     return (
       <nav className={this.state.menuClass}>
 
-        <a href='/sessoes' className={this.state.linkMenu}><GoNote /></a>
-        <a href='/sessao-virtual' className={this.state.linkMenu2}> < GoBroadcast /> </a>
-        <a href='/comissoes' className={this.state.linkMenu3}> <GoBook /> </a>
-        <a href='/materias' className={this.state.linkMenu4}> <GoRepo /> </a>
-        <a href='/mais' className={this.state.linkMenu5}> <FaBars /> </a>
+        <a href='/' className={this.state.linkMenu}> <GoHome /> </a>
+        <a href='/meus-atendimentos' className={this.state.linkMenu0}> <GoCalendar /> </a>
+        <a href='/registrar-reclamacao' className={this.state.linkMenu1}> < GoCircleSlash /> </a>
+        <a href='/golpes' className={this.state.linkMenu2}> <GoStop /> </a>
+        <a href='/perfil' className={this.state.linkMenu3}> <GoPerson  /> </a>
 
       </nav>
 

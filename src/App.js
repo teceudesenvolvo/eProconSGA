@@ -54,9 +54,7 @@ function App() {
       <Switch>
         {/* Página Principal */}
         <Route exact path="/" component={login} />
-        <Route exact path="/inicio" component={homeDashboard
-
-        } />
+        <Route exact path="/inicio" component={homeDashboard} />
         
         <Route path="/login" component={login} />
         <Route path="/register" component={register} />

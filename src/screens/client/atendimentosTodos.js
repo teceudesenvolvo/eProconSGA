@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Table from '@mui/material/Table';
@@ -9,6 +9,10 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+
+
+// Componentes
+import MenuAdmin from '../../componets/menuAdmin'
 
 class Notificacoes extends Component {
     constructor(props) {
@@ -34,7 +38,7 @@ class Notificacoes extends Component {
             filtroValorCompra: '',
             filtroDetalhesReclamacao: '',
             filtroPedidoConsumidor: '',
-            filtroSituacao: '',
+            filtroCPF: '',
         };
         this.navigate = this.props.navigate;
     }
@@ -64,12 +68,12 @@ class Notificacoes extends Component {
         if (!dataString) {
             return '';
         }
-    
+
         const data = new Date(dataString);
         const dia = String(data.getDate()).padStart(2, '0');
         const mes = String(data.getMonth() + 1).padStart(2, '0');
         const ano = data.getFullYear();
-    
+
         return `${dia}-${mes}-${ano}`;
     };
 
@@ -79,8 +83,40 @@ class Notificacoes extends Component {
         this.navigate('/atendimento-sga-ppi6g59');
     };
 
+    async fetchUserData() {
+            this.setState({ loading: true, error: null });
+    
+            try {
+                const userId = this.state.reclamacao.userId;
+                console.log('UserID da reclamação:', userId);
+    
+                if (userId) {
+                    const usersCollection = collection(db, 'users');
+                    const q = query(usersCollection, where('uid', '==', userId));
+                    const querySnapshot = await getDocs(q);
+    
+                    if (!querySnapshot.empty) {
+                        const userDoc = querySnapshot.docs[0];
+                        console.log('Dados do Firestore:', userDoc.data());
+                        this.setState({ userData: userDoc.data() });
+                    } else {
+                        this.setState({ error: 'Dados do usuário não encontrados.' });
+                    }
+                } else {
+                    this.setState({ error: 'userId não encontrado na reclamação.' });
+                }
+            } catch (err) {
+                this.setState({ error: 'Erro ao buscar dados do usuário. Tente novamente.' });
+                console.error('Erro ao buscar dados do usuário:', err);
+                console.error('Código do erro:', err.code);
+                console.error('Mensagem do erro:', err.message);
+            } finally {
+                this.setState({ loading: false });
+            }
+        }
+
     render() {
-        const { reclamacoes, loading, filtroProtocolo, filtroTipoReclamacao, filtroClassificacao, filtroAssuntoDenuncia, filtroProcurouFornecedor, filtroFormaAquisicao, filtroTipoContratacao, filtroDataContratacao, filtroNomeServico, filtroDetalheServico, filtroTipoDocumento, filtroNumeroDocumento, filtroDataOcorrencia, filtroDataNegativa, filtroFormaPagamento, filtroValorCompra, filtroDetalhesReclamacao, filtroPedidoConsumidor, filtroSituacao } = this.state;
+        const { reclamacoes, loading, filtroProtocolo, filtroTipoReclamacao, filtroClassificacao, filtroAssuntoDenuncia, filtroProcurouFornecedor, filtroFormaAquisicao, filtroTipoContratacao, filtroDataContratacao, filtroNomeServico, filtroDetalheServico, filtroTipoDocumento, filtroNumeroDocumento, filtroDataOcorrencia, filtroDataNegativa, filtroFormaPagamento, filtroValorCompra, filtroDetalhesReclamacao, filtroPedidoConsumidor, filtroCPF } = this.state;
 
         if (loading) {
             return <div>Carregando...</div>;
@@ -106,94 +142,48 @@ class Notificacoes extends Component {
                 reclamacao.valorCompra.toLowerCase().includes(filtroValorCompra.toLowerCase()) &&
                 reclamacao.detalhesReclamacao.toLowerCase().includes(filtroDetalhesReclamacao.toLowerCase()) &&
                 reclamacao.pedidoConsumidor.toLowerCase().includes(filtroPedidoConsumidor.toLowerCase()) &&
-                "Em Análise".toLowerCase().includes(filtroSituacao.toLowerCase())
+                reclamacao.cpf.toLowerCase().includes(filtroCPF.toLowerCase())
             );
         });
 
         return (
             <div className="App-header">
+                <MenuAdmin />
                 <div className="favoritos agendarConsulta">
                     <TableContainer component={Paper} className="tabela-design">
                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
                             <TableHead className="tabela-header">
                                 <TableRow>
                                     <TableCell align="center">
-                                        Protocolo
-                                        <input type="text" value={filtroProtocolo} onChange={(e) => this.setState({ filtroProtocolo: e.target.value })} />
+                                        <input type="text" placeholder="Protocolo" value={filtroProtocolo} onChange={(e) => this.setState({ filtroProtocolo: e.target.value })} />
                                     </TableCell>
                                     <TableCell align="center">
-                                        Tipo Reclamação
-                                        <input type="text" value={filtroTipoReclamacao} onChange={(e) => this.setState({ filtroTipoReclamacao: e.target.value })} />
+                                        <input type="text" placeholder="CPF" value={filtroCPF} onChange={(e) => this.setState({ filtroCPF: e.target.value })} />
                                     </TableCell>
                                     <TableCell align="center">
-                                        Classificação
-                                        <input type="text" value={filtroClassificacao} onChange={(e) => this.setState({ filtroClassificacao: e.target.value })} />
+                                        <input type="text" placeholder="Tipo Reclamação" value={filtroTipoReclamacao} onChange={(e) => this.setState({ filtroTipoReclamacao: e.target.value })} />
                                     </TableCell>
                                     <TableCell align="center">
-                                        Assunto Denúncia
-                                        <input type="text" value={filtroAssuntoDenuncia} onChange={(e) => this.setState({ filtroAssuntoDenuncia: e.target.value })} />
+                                        <input type="text" placeholder="Classificação" value={filtroClassificacao} onChange={(e) => this.setState({ filtroClassificacao: e.target.value })} />
                                     </TableCell>
                                     <TableCell align="center">
-                                        Procurou Fornecedor
-                                        <input type="text" value={filtroProcurouFornecedor} onChange={(e) => this.setState({ filtroProcurouFornecedor: e.target.value })} />
+                                        <input type="text" placeholder="Assunto Denúncia" value={filtroAssuntoDenuncia} onChange={(e) => this.setState({ filtroAssuntoDenuncia: e.target.value })} />
                                     </TableCell>
                                     <TableCell align="center">
-                                        Forma Aquisição
-                                        <input type="text" value={filtroFormaAquisicao} onChange={(e) => this.setState({ filtroFormaAquisicao: e.target.value })} />
+                                        <input type="text" placeholder="Procurou Fornecedor" value={filtroProcurouFornecedor} onChange={(e) => this.setState({ filtroProcurouFornecedor: e.target.value })} />
                                     </TableCell>
                                     <TableCell align="center">
-                                        Tipo Contratação
-                                        <input type="text" value={filtroTipoContratacao} onChange={(e) => this.setState({ filtroTipoContratacao: e.target.value })} />
+                                        <input type="text" placeholder="Forma Aquisição" value={filtroFormaAquisicao} onChange={(e) => this.setState({ filtroFormaAquisicao: e.target.value })} />
                                     </TableCell>
                                     <TableCell align="center">
-                                        Data Contratação
-                                        <input type="text" value={filtroDataContratacao} onChange={(e) => this.setState({ filtroDataContratacao: e.target.value })} />
+                                        <input type="text" placeholder="Tipo Contratação" value={filtroTipoContratacao} onChange={(e) => this.setState({ filtroTipoContratacao: e.target.value })} />
                                     </TableCell>
                                     <TableCell align="center">
-                                        Nome Serviço
-                                        <input type="text" value={filtroNomeServico} onChange={(e) => this.setState({ filtroNomeServico: e.target.value })} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        Detalhe Serviço
-                                        <input type="text" value={filtroDetalheServico} onChange={(e) => this.setState({ filtroDetalheServico: e.target.value })} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        Tipo Documento
-                                        <input type="text" value={filtroTipoDocumento} onChange={(e) => this.setState({ filtroTipoDocumento: e.target.value })} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        Número Documento
-                                        <input type="text" value={filtroNumeroDocumento} onChange={(e) => this.setState({ filtroNumeroDocumento: e.target.value })} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        Data Ocorrência
-                                        <input type="text" value={filtroDataOcorrencia} onChange={(e) => this.setState({ filtroDataOcorrencia: e.target.value })} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        Data Negativa
-                                        <input type="text" value={filtroDataNegativa} onChange={(e) => this.setState({ filtroDataNegativa: e.target.value })} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        Forma Pagamento
-                                        <input type="text" value={filtroFormaPagamento} onChange={(e) => this.setState({ filtroFormaPagamento: e.target.value })} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        Valor Compra
-                                        <input type="text" value={filtroValorCompra} onChange={(e) => this.setState({ filtroValorCompra: e.target.value })} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        Detalhes Reclamação
-                                        <input type="text" value={filtroDetalhesReclamacao} onChange={(e) => this.setState({ filtroDetalhesReclamacao: e.target.value })} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        Pedido Consumidor
-                                        <input type="text" value={filtroPedidoConsumidor} onChange={(e) => this.setState({ filtroPedidoConsumidor: e.target.value })} />
+                                        <input type="text" placeholder="Nome Serviço" value={filtroNomeServico} onChange={(e) => this.setState({ filtroNomeServico: e.target.value })} />
                                     </TableCell>
                                     
-                                    <TableCell align="center">
-                                        Situação
-                                        <input type="text" value={filtroSituacao} onChange={(e) => this.setState({ filtroSituacao: e.target.value })} />
-                                    </TableCell>
+                                   
+                                    
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -204,24 +194,15 @@ class Notificacoes extends Component {
                                                 {reclamacao.protocolo}
                                             </a>
                                         </TableCell>
+                                        <TableCell align="center">{reclamacao.cpf}</TableCell>
                                         <TableCell align="center">{reclamacao.tipoReclamacao}</TableCell>
                                         <TableCell align="center">{reclamacao.classificacao}</TableCell>
                                         <TableCell align="center">{reclamacao.assuntoDenuncia}</TableCell>
                                         <TableCell align="center">{reclamacao.procurouFornecedor}</TableCell>
                                         <TableCell align="center">{reclamacao.formaAquisicao}</TableCell>
                                         <TableCell align="center">{reclamacao.tipoContratacao}</TableCell>
-                                        <TableCell align="center">{this.formatarData(reclamacao.dataContratacao)}</TableCell>
                                         <TableCell align="center">{reclamacao.nomeServico}</TableCell>
-                                        <TableCell align="center">{reclamacao.detalheServico}</TableCell>
-                                        <TableCell align="center">{reclamacao.tipoDocumento}</TableCell>
-                                        <TableCell align="center">{reclamacao.numeroDoc}</TableCell>
-                                        <TableCell align="center">{this.formatarData(reclamacao.dataOcorrencia)}</TableCell>
-                                        <TableCell align="center">{this.formatarData(reclamacao.dataNegativa)}</TableCell>
-                                        <TableCell align="center">{reclamacao.formaPagamento}</TableCell>
-                                        <TableCell align="center">{reclamacao.valorCompra}</TableCell>
-                                        <TableCell align="center">{reclamacao.detalhesReclamacao}</TableCell>
-                                        <TableCell align="center">{reclamacao.pedidoConsumidor}</TableCell>
-                                        <TableCell align="center">{reclamacao.situacao}</TableCell>
+                                        
                                     </TableRow>
                                 ))}
                             </TableBody>

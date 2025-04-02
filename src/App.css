@@ -915,6 +915,13 @@ video {
   background-color: #7D7D7D;
   color: #fff !important;
 }
+
+.tabela-header > tr > th > input{
+  height: 30px !important;
+  width: 200px;
+  border-radius: 5px;
+  border: none;
+}
 .css-1ndpvdd-MuiTableCell-root{
   color: #fff !important;
 }
@@ -943,7 +950,80 @@ video {
 }
 
 .voto-branco{
-  background-color: #d9d9d9;
+  background-color: #b19494;
+}
+
+.infosGeral{
+  flex-direction: row;
+  flex: 1;
+  justify-content: space-evenly;
+  width: 90%;
+}
+
+.userData, .infoData, .comentData,  .atualizeData{
+  flex-grow: 3;
+  display: block;
+  background-color: #c7c7c7;
+  margin-left: 5%;
+  margin-top: 50px;
+  border-radius: 10px;
+  width: 40%;
+  font-size: 15px;
+  text-align: left;
+  padding: 20px;
+  color: #1f1f1f;
+  float: left;
+}
+
+.atualizeData{
+  width: 88%;
+}
+
+.comentarioChat{
+  background-color: #a7a7a7;
+  margin-top: 10px;
+  border-radius: 5px;
+  padding: 15px;
+}
+
+#comentarios{
+  background-color: white;
+  border-radius: 5px;
+  width: 98%;
+  height: 100px;
+  color: #000;
+  margin-top: 10px;
+  padding: 10px;
+}
+
+.btnComentario{
+  width: 20%;
+  margin-top: -20px;
+  margin-left: -2px;
+  background-color: #7c7c7c;
+}
+
+#situacao{
+  width: 100%;
+  height: 40px;
+  border-radius: 5px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.btnUpload{
+  padding: 10px;
+  text-align: center;
+  background-color: #7c7c7c;
+  width: 98%;
+  margin: 10px 0 20px 0;
+}
+
+.btnSend{
+  margin-top: 20px;
+  font-weight: bold;
+  width: 100%;
+ background-color: #FF6B07; 
 }
 
 

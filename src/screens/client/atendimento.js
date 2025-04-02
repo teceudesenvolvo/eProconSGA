@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { doc, getDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
 
+// Componente
+import MenuAdmin from '../../componets/menuAdmin'
+
 class ReclamacaoDetalhes extends Component {
     constructor(props) {
         super(props);
@@ -13,6 +16,7 @@ class ReclamacaoDetalhes extends Component {
             comentarios: [],
             situacao: '',
             pdfBase64: null,
+            novoComentario: '', // Adiciona o estado para o novo comentário
         };
     }
 
@@ -37,7 +41,7 @@ class ReclamacaoDetalhes extends Component {
                 this.setState({
                     reclamacao: reclamacaoSnap.data(),
                     loading: false,
-                    comentarios: reclamacaoSnap.data().comentarios || '',
+                    comentarios: reclamacaoSnap.data().comentarios || [], // Garante que é um array
                     situacao: reclamacaoSnap.data().situacao || 'EM ANALISE',
                 }, () => {
                     this.fetchUserData(); // Chama fetchUsuario após carregar a reclamação
@@ -123,12 +127,28 @@ class ReclamacaoDetalhes extends Component {
         }
     };
 
-    adicionarComentario = () => {
+    adicionarComentario = async () => {
         if (this.state.novoComentario) {
-            this.setState({
-                comentarios: [...this.state.comentarios, this.state.novoComentario],
-                novoComentario: ''
-            });
+            const novoComentario = this.state.novoComentario;
+            const reclamacaoId = localStorage.getItem('reclamacaoId');
+            const reclamacaoRef = doc(db, 'reclamacoes', reclamacaoId);
+
+            try {
+                // Atualiza o array de comentários no Firestore
+                await updateDoc(reclamacaoRef, {
+                    comentarios: [...this.state.comentarios, novoComentario],
+                });
+
+                // Atualiza o estado local
+                this.setState(prevState => ({
+                    comentarios: [...prevState.comentarios, novoComentario],
+                    novoComentario: '',
+                }));
+
+                console.log('Comentário adicionado com sucesso!');
+            } catch (error) {
+                console.error('Erro ao adicionar comentário:', error);
+            }
         }
     };
 
@@ -158,76 +178,90 @@ class ReclamacaoDetalhes extends Component {
 
         return (
             <div className="App-header">
+                <MenuAdmin />
                 <div className="favoritos agendarConsulta">
-                  <a href='/atendimentos-sga-hyo6d27'>voltar</a>
-                    <h2>Dados do requerente</h2>
-                    {this.state.userData && (
-                        <div className='userData'>
-                            <p><strong>Nome:</strong> {this.state.userData.nome}</p>
-                            <p><strong>Email:</strong> {this.state.userData.email}</p>
-                            <p><strong>CPF:</strong> {this.state.userData.cpf}</p>
-                            <p><strong>Telefone:</strong> {this.state.userData.telefone}</p>
-                            <p><strong>CEP:</strong> {this.state.userData.cep}</p>
-                            <p><strong>Endereço:</strong> {this.state.userData.endereco}</p>
-                            <p><strong>Número:</strong> {this.state.userData.numero}</p>
-                            <p><strong>Complemento:</strong> {this.state.userData.complemento}</p>
-                            <p><strong>Bairro:</strong> {this.state.userData.bairro}</p>
-                            <p><strong>Cidade:</strong> {this.state.userData.cidade}</p>
-                            <p><strong>UF:</strong> {this.state.userData.ufEmissor}</p>
+                    <div className='infosGeral'>
+                        <div className='atualizeData'>
+                            <h3>Atualize o Requerente</h3>
+                            <label htmlFor="comentarios">Atualizações:</label><br/>
+                            {Array.isArray(this.state.comentarios) && ( // Verifica se é um array
+                                <ol>
+                                    {this.state.comentarios.map((comentario, index) => (
+                                        <li className='comentarioChat' key={index}>{comentario}</li>
+                                    ))}
+                                </ol>
+                            )}
+
+                            <label htmlFor="comentarios">Enviar Mensagem</label><br/>
+                            <textarea
+                                id="comentarios"
+                                value={this.state.novoComentario || ''} // Usar um estado temporário para o novo comentário
+                                onChange={(event) => this.setState({ novoComentario: event.target.value })}
+                                placeholder='Escreva uma mensagem ao requerente...'
+                            /><br/>
+                            <button onClick={this.adicionarComentario} className='buttonLogin btnComentario'>Enviar</button><br/>
+                            </div>
+                            <div className='atualizeData'>
+                            <label htmlFor="situacao">Situação:</label><br/>
+                            <select id="situacao" value={situacao} onChange={this.handleSituacaoChange}>
+                                <option value="">{reclamacao.situacao}</option>
+                                <option value="Em Analise">Em Análise</option>
+                                <option value="Em Negociação com a empresa">Em Negociação</option>
+                                <option value="Finalizada">Finalizada</option>
+                            </select><br/>
+                            <label  htmlFor="situacao">Envie um arquivo</label><br/>
+                            <input className='buttonLogin btnUpload' type="file" accept="application/pdf" onChange={this.handleFileChange} /><br/>
+                        <button className='buttonLogin btnComentario btnSend' onClick={this.salvarAtualizacoes}>Salvar Atualizações</button>
                         </div>
-                    )}
 
-                    <p><strong>Protocolo:</strong> {reclamacao.protocolo}</p>
-                    <p><strong>Tipo Reclamação:</strong> {reclamacao.tipoReclamacao}</p>
-                    <p><strong>Classificação:</strong> {reclamacao.classificacao}</p>
-                    <p><strong>Assunto Denúncia:</strong> {reclamacao.assuntoDenuncia}</p>
-                    <p><strong>Procurou Fornecedor:</strong> {reclamacao.procurouFornecedor}</p>
-                    <p><strong>Forma Aquisição:</strong> {reclamacao.formaAquisicao}</p>
-                    <p><strong>Tipo Contratação:</strong> {reclamacao.tipoContratacao}</p>
-                    <p><strong>Data Contratação:</strong> {this.formatarData(reclamacao.dataContratacao)}</p>
-                    <p><strong>Nome Serviço:</strong> {reclamacao.nomeServico}</p>
-                    <p><strong>Detalhe Serviço:</strong> {reclamacao.detalheServico}</p>
-                    <p><strong>Tipo Documento:</strong> {reclamacao.tipoDocumento}</p>
-                    <p><strong>Número Documento:</strong> {reclamacao.numeroDoc}</p>
-                    <p><strong>Data Ocorrência:</strong> {this.formatarData(reclamacao.dataOcorrencia)}</p>
-                    <p><strong>Data Negativa:</strong> {this.formatarData(reclamacao.dataNegativa)}</p>
-                    <p><strong>Forma Pagamento:</strong> {reclamacao.formaPagamento}</p>
-                    <p><strong>Valor Compra:</strong> {reclamacao.valorCompra}</p>
-                    <p><strong>Detalhes Reclamação:</strong> {reclamacao.detalhesReclamacao}</p>
-                    <p><strong>Pedido Consumidor:</strong> {reclamacao.pedidoConsumidor}</p>
-                    <p><strong>Situação</strong> {reclamacao.situacao}</p>
+                        {this.state.userData && (
+                            <div className='userData'>
+                                <h2>Dados do requerente</h2>
+                                <p><strong>Nome:</strong> {this.state.userData.nome}</p>
+                                <p><strong>Email:</strong> {this.state.userData.email}</p>
+                                <p><strong>CPF:</strong> {this.state.userData.cpf}</p>
+                                <p><strong>Telefone:</strong> {this.state.userData.telefone}</p>
+                                <p><strong>CEP:</strong> {this.state.userData.cep}</p>
+                                <p><strong>Endereço:</strong> {this.state.userData.endereco}</p>
+                                <p><strong>Número:</strong> {this.state.userData.numero}</p>
+                                <p><strong>Complemento:</strong> {this.state.userData.complemento}</p>
+                                <p><strong>Bairro:</strong> {this.state.userData.bairro}</p>
+                                <p><strong>Cidade:</strong> {this.state.userData.cidade}</p>
+                                <p><strong>UF:</strong> {this.state.userData.ufEmissor}</p>
+                            </div>
+                        )}
 
-                    <h3>Comentários:</h3>
-                    {Array.isArray(this.state.comentarios) && ( // Verifica se é um array
-                        <ol>
-                            {this.state.comentarios.map((comentario, index) => (
-                                <li key={index}>{comentario}</li>
-                            ))}
-                        </ol>
-                    )}
+                        <div className='infoData'>
+                            <h2>Dados da Reclamação</h2>
+                            <p><strong>Protocolo:</strong> {reclamacao.protocolo}</p>
+                            <p><strong>Tipo Reclamação:</strong> {reclamacao.tipoReclamacao}</p>
+                            <p><strong>Classificação:</strong> {reclamacao.classificacao}</p>
+                            <p><strong>Assunto Denúncia:</strong> {reclamacao.assuntoDenuncia}</p>
+                            <p><strong>Procurou Fornecedor:</strong> {reclamacao.procurouFornecedor}</p>
+                            <p><strong>Forma Aquisição:</strong> {reclamacao.formaAquisicao}</p>
+                            <p><strong>Tipo Contratação:</strong> {reclamacao.tipoContratacao}</p>
+                            <p><strong>Data Contratação:</strong> {this.formatarData(reclamacao.dataContratacao)}</p>
+                            <p><strong>Nome Serviço:</strong> {reclamacao.nomeServico}</p>
+                            <p><strong>Detalhe Serviço:</strong> {reclamacao.detalheServico}</p>
+                            <p><strong>Tipo Documento:</strong> {reclamacao.tipoDocumento}</p>
+                            <p><strong>Número Documento:</strong> {reclamacao.numeroDoc}</p>
+                            <p><strong>Data Ocorrência:</strong> {this.formatarData(reclamacao.dataOcorrencia)}</p>
+                            <p><strong>Data Negativa:</strong> {this.formatarData(reclamacao.dataNegativa)}</p>
+                            <p><strong>Forma Pagamento:</strong> {reclamacao.formaPagamento}</p>
+                            <p><strong>Valor Compra:</strong> {reclamacao.valorCompra}</p>
+                            <p><strong>Detalhes Reclamação:</strong> {reclamacao.detalhesReclamacao}</p>
+                            <p><strong>Pedido Consumidor:</strong> {reclamacao.pedidoConsumidor}</p>
+                            <p><strong>Situação</strong> {reclamacao.situacao}</p>
+                        </div>
 
-                    <label htmlFor="comentarios">Atualize o requerente:</label>
-                    <textarea
-                        id="comentarios"
-                        value={this.state.novoComentario || ''} // Usar um estado temporário para o novo comentário
-                        onChange={(event) => this.setState({ novoComentario: event.target.value })}
-                    />
-                    <button onClick={this.adicionarComentario}>Enviar</button>
 
-                    <label htmlFor="situacao">Situação:</label>
-                    <select id="situacao" value={situacao} onChange={this.handleSituacaoChange}>
-                        <option value="">{reclamacao.situacao}</option>
-                        <option value="Em Analise">Em Análise</option>
-                        <option value="Em Negociação com a empresa">Em Negociação</option>
-                        <option value="Finalizada">Finalizada</option>
-                    </select>
-                    <input type="file" accept="application/pdf" onChange={this.handleFileChange} />
+
+                    </div>
 
                     {this.state.pdfBase64 && (
                         <iframe src={this.state.pdfBase64} width="100%" height="500px" title="Visualização do PDF" />
                     )}
 
-                    <button onClick={this.salvarAtualizacoes}>Salvar Atualizações</button>
                 </div>
             </div>
         );

@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { auth, signInWithEmailAndPassword } from '../../firebase';
-import { useNavigate } from 'react-router-dom';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import logo from '../../assets/logo-SGA-procon.png';
+import { db, auth } from '../../firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 
 const LoginClient = () => {
-    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     const validateEmail = (email) => {
         if (!email || typeof email !== 'string') {
@@ -45,21 +47,29 @@ const LoginClient = () => {
         }
 
         try {
-            await signInWithEmailAndPassword(auth, email, password);
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             localStorage.setItem('userId', user.uid);
-            const paginaAnterior = localStorage.getItem('paginaAnterior');
-            if (paginaAnterior) {
-                localStorage.removeItem('paginaAnterior');
-                navigate(paginaAnterior);
-            } else {
-                window.location.pathname = '/perfil';
+
+            // Buscar o CPF do usuário no banco de dados
+            const usersRef = collection(db, 'users');
+            const q = query(usersRef, where('uid', '==', user.uid));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                const userDoc = querySnapshot.docs[0].data();
+                const cpf = userDoc.cpf;
+                localStorage.setItem('cpf', cpf);
             }
 
-            
+            // Redirecionamento condicional
+            if (email === 'admin@cmsga.ce.gov.br') {
+                navigate('/atendimentos-sga-hyo6d27');
+            } else {
+                navigate('/perfil');
+            }
         } catch (err) {
-            setError('Email ou senha incorretos.'); // Mensagem de erro genérica para falha no login
+            setError('Email ou senha incorretos.');
         }
     };
 

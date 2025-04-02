@@ -121,6 +121,7 @@ const AddProducts = () => {
             const reclamacaoData = {
                 ...data,
                 userId: userId,
+                cpf: '',
                 timestamp: new Date(),
                 protocolo: protocolo,
             };

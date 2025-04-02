@@ -14,11 +14,12 @@ import Register from './screens/client/register';
 import Login from './screens/client/login';
 
 // Controle Interno
-import Agendamentos from './screens/client/agendamentos';
+import Atendimentos from './screens/client/atendimentosTodos';
 import Relatorios from './screens/client/Relatorios';
+import Atendimento from './screens/client/atendimento';
 
 // Usuário Logado
-import MeusAgendamentos from './screens/meusAgendamentos';
+import MeusAgendamentos from './screens/meusAtendimentos';
 import Perfil from './screens/client/Perfil';
 import RealizarReclamacao from './screens/realizarReclamacao';
 
@@ -27,7 +28,6 @@ import Home from '../src/screens/home';
 import Sessoes from './screens/client/Sessoes';
 import SessaoVirtual from './screens/client/SessaoVirtual';
 import NormasJuridicas from './screens/client/NormasJuridicas';
-import Comissoes from './screens/client/Comissoes';
 import Mais from './screens/client/Mais';
 import Servico from './screens/client/Servico';
 import Produto from './screens/client/Produto';
@@ -54,8 +54,9 @@ function App() {
           <Route path="/register" element={<Register />} />
 
           {/* Controle Interno */}
-          <Route path="/agendamentos" element={<Agendamentos />} />
+          <Route path="/atendimentos-sga-hyo6d27" element={<Atendimentos />} />
           <Route path="/Relatorios" element={<Relatorios />} />
+          <Route path="/atendimento-sga-ppi6g59" element={<Atendimento />} />
 
           {/* Páginas Usuário Logado */}
           <Route path="/meus-atendimentos" element={<MeusAgendamentos />} />
@@ -77,7 +78,6 @@ function App() {
           <Route path="/Sessoes" element={<Sessoes />} />
           <Route path="/Sessao-Virtual" element={<SessaoVirtual />} />
           <Route path="/Normas" element={<NormasJuridicas />} />
-          <Route path="/Comissoes" element={<Comissoes />} />
           <Route path="/Mais" element={<Mais />} />
         </Routes>
      

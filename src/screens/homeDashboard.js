@@ -1,61 +1,41 @@
-import React, { Component } from 'react';
-
-
-
-//Imagens
-
-// Icones
-import {
-    GoBook,
-    GoCircleSlash ,
-    GoCalendar,
-    GoStop 
-} from 'react-icons/go';
-
-// Components
+import React from 'react';
+import { GoBook, GoCircleSlash, GoCalendar, GoStop } from 'react-icons/go';
 import SlideFeacures from '../componets/slideFeactures';
 
-
-//mudança de páginas
-
-class homeDashboard extends Component {
-    render() {
-        return (
-
-            <div className='App-header' >
-                <div className='Home-Dach'>
-                    
-                    <div className='btnsHome'>
-                        <a type='button' href='/login' className='btnHome'>Login</a> 
-                        <a type='button' href='/register' className='btnHome'>Cadastrar</a> 
-                    </div>
-                    <dvi className='header-Dach-div'>
-                        <h1>Destaques</h1>
-                    </dvi>
-
-                    <div className='btnsHome'>
-                        <a className='btnLargeHome' href='https://www.consumidor.gov.br/'><GoBook className="iconHomeBtn" /><br/>Consumidor Gov</a>
-                        <a className='btnLargeHome' href='/login'><GoCircleSlash className="iconHomeBtn" /><br/>Realizar Reclamação</a>
-                        <a className='btnLargeHome' href='/login'><GoCalendar className="iconHomeBtn" /><br/>Agendar Atendimento</a>
-                        <a className='btnLargeHome' href='/'><GoStop className="iconHomeBtn" /><br/>Evite estes sites</a>
-                    </div>
-                   
-                    
-                    <dvi className='header-Dach-div'>
-                        <h1>Nossos Vereadores</h1>
-                    </dvi>
-
-                    <div className='HomeDesktopCarrosel'>
-                        <SlideFeacures />
-                    </div>
-
-
-                </div>
-
-
-            </div>
-        );
-    }
+function HomeDashboard() {
+  return (
+    <div className='App-header'>
+      <div className='Home-Dach'>
+        <div className='btnsHome'>
+          <a href='/login' className='btnHome'>Login</a>
+          <a href='/register' className='btnHome'>Cadastrar</a>
+        </div>
+        <div className='header-Dach-div'>
+          <h1>Destaques</h1>
+        </div>
+        <div className='btnsHome'>
+          <a href='/registrar-reclamacao' className='btnLargeHome'>
+            <GoCircleSlash className="iconHomeBtn" /><br />Realizar Reclamação
+          </a>
+          <a href='/meus-atendimentos' className='btnLargeHome'>
+            <GoCalendar className="iconHomeBtn" /><br />Agendar Atendimento
+          </a>
+          <a href='/' className='btnLargeHome'>
+            <GoStop className="iconHomeBtn" /><br />Evite estes sites
+          </a>
+          <a className='btnLargeHome' href='https://www.consumidor.gov.br/' target="_blank" rel="noopener noreferrer">
+            <GoBook className="iconHomeBtn" /><br />Consumidor Gov
+          </a>
+        </div>
+        <div className='header-Dach-div'>
+          <h1>Nossos Vereadores</h1>
+        </div>
+        <div className='HomeDesktopCarrosel'>
+          <SlideFeacures />
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default homeDashboard;
+export default HomeDashboard;

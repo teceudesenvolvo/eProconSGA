@@ -9,7 +9,7 @@ import {
     FaAddressBook ,
     FaPlusCircle ,
     FaRegUser,
-    FaBook
+    // FaBook
 } from "react-icons/fa";
 
 
@@ -64,10 +64,10 @@ class menuDashboard extends Component {
                     <span className='nav-item'>Meus Atendimentos</span>
                 </a>
 
-                <a href="/agendar-atendimento" className={this.state.linkMenu1}>
+                {/* <a href="/agendar-atendimento" className={this.state.linkMenu1}>
                     <FaBook className='fas fa-home'></FaBook>
                     <span className='nav-item'>Agendar</span>
-                </a>
+                </a> */}
 
              
                 <a href="/registrar-reclamacao" className={this.state.linkMenu2}>

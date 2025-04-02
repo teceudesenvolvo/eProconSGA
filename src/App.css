@@ -464,8 +464,12 @@ h1 {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 50%;
+  width: 90%;
   height: 100%;
+}
+
+.registerForm{
+  margin-top: -80px;
 }
 
 .Container > h1{
@@ -508,7 +512,6 @@ h1 {
   color: #5a5a5a;
   transition: all 0.4s;
   text-align: left;
-  border-radius: 10px;
 }
 
 .labelEndereco {
@@ -2334,6 +2337,19 @@ footer > p {
   .historicoItem {
     width: 100%;
   }
+
+  .conteinar-Add-Products{
+    z-index: 1;
+  }
+  .conteinar-Add-Products>div{
+    width: 100% !important;
+  }
+  .addImg{
+    width: 0;
+    display: none !important;
+  }
+
+
   }
 
 

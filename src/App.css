@@ -8,7 +8,7 @@
 
 .App-logo {
   height: 40vmin;
-  pointer-events: none; 
+  pointer-events: none;
 }
 
 .logo {
@@ -39,19 +39,21 @@
   color: #FF740F;
 }
 
-.loginPage{
+.loginPage {
   background: #0f5294;
 }
 
-.heroDiv{
+.heroDiv {
   width: 100% !important;
   margin-left: -40px !important;
 }
-.hero{
+
+.hero {
   width: 100%;
   background-color: transparent;
 }
-.heroImg{
+
+.heroImg {
   background-position: 25% 75%;
   width: 100%;
   height: 600px;
@@ -61,7 +63,8 @@
   margin-top: -10px;
   position: relative;
 }
-.heroDesc{
+
+.heroDesc {
   height: 120px !important;
   border-radius: 0 !important;
   margin-top: -50px !important;
@@ -71,7 +74,7 @@
   z-index: 1;
 }
 
-.heroDesc > p{
+.heroDesc>p {
   color: #5a5a5a;
   font-size: 15px;
   margin-left: 0px;
@@ -79,7 +82,7 @@
 }
 
 
-.btnHomeAcess{
+.btnHomeAcess {
   width: 40%;
   height: 50px;
   margin: 30px 5px 5px 0px;
@@ -90,11 +93,11 @@
   cursor: pointer;
 }
 
-.btnLoginHome{
+.btnLoginHome {
   background-color: #FF740F;
 }
 
-.btnCadastroHome{
+.btnCadastroHome {
   background-color: #0717ff;
 }
 
@@ -107,16 +110,16 @@
   justify-content: left;
   background-color: #105394;
   border-radius: 0px 0px 10px 10px;
-  padding-bottom: 16px; 
+  padding-bottom: 16px;
   z-index: 10;
 }
 
-.header-home>p{
+.header-home>p {
   font-weight: 800;
 }
 
 
-.header-home>p>img{
+.header-home>p>img {
   height: 80px;
   position: relative;
   top: -30px;
@@ -285,26 +288,28 @@
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
-.btnExame{
+.btnExame {
   margin-left: 10px !important;
 }
 
-.vacinaItem{
+.vacinaItem {
   height: auto;
   margin-bottom: 5px !important;
 }
 
-.profile-img{
+.profile-img {
   width: 150px;
   height: 150px;
   background-color: #b4b4b4;
   margin-top: 20px;
   border-radius: 10px;
 }
-.profile-desc{
+
+.profile-desc {
   background-color: #fff;
 }
-.profile-desc-item{
+
+.profile-desc-item {
   font-size: 20px;
   font-weight: 400;
   color: #949494;
@@ -312,21 +317,26 @@
   padding: 10px;
   border-bottom: 1px solid #b4b4b4;
 }
-.profile-btn-div{
+
+.profile-btn-div {
   width: 80%;
   display: inline-block;
 }
-.btnProfile{
+
+.btnProfile {
   width: 45% !important;
 }
-.btnProfileEdit{
+
+.btnProfileEdit {
   background-color: #6e6e6e !important;
 }
-.profile-btn-exit{
+
+.profile-btn-exit {
   color: #000;
   font-size: 15px;
 }
-.receitaItem{
+
+.receitaItem {
   height: 90px !important;
 }
 
@@ -426,7 +436,8 @@
   margin-bottom: -10px;
   color: #5a5a5a;
 }
-.authorProduct{
+
+.authorProduct {
   color: #ff0f39;
   font-weight: 700;
 }
@@ -468,30 +479,30 @@ h1 {
   height: 100%;
 }
 
-.registerForm{
+.registerForm {
   margin-top: -80px;
 }
 
-.Container > h1{
+.Container>h1 {
   color: #fff !important;
   font-size: 12px;
 }
 
-.Container > p{
+.Container>p {
   color: #fff;
   font-size: 13px;
 }
 
 
-.Container > p > a {
+.Container>p>a {
   color: #fff;
 }
 
-.formLogin > p{
+.formLogin>p {
   color: #fff;
 }
 
-.formLogin > a{
+.formLogin>a {
   color: #FF740F;
   font-weight: bold;
   font-size: 12px;
@@ -543,7 +554,12 @@ h1 {
 
 }
 
-.linkLogin{
+.btnLogin{
+  width: 30% !important;
+  margin: 30px auto;
+}
+
+.linkLogin {
   color: #5a5a5a;
 }
 
@@ -688,7 +704,7 @@ video {
   z-index: 6;
 }
 
-.menuNone{
+.menuNone {
   display: none;
 }
 
@@ -732,11 +748,12 @@ video {
 .splide__pagination__page.is-active {
   background: #FF7A00 !important;
 }
-.splide__pagination__page{
+
+.splide__pagination__page {
   display: none !important;
 }
 
-.splide__track { 
+.splide__track {
   margin-top: -50px;
   overflow: hidden;
   position: relative;
@@ -792,7 +809,7 @@ video {
   font-size: 12px;
 }
 
-.DestaquesDescricao p{
+.DestaquesDescricao p {
   color: #003f36;
   font-size: 10px;
   margin-top: -15px;
@@ -835,20 +852,21 @@ video {
 }
 
 /*  Minhas Consultas */
-.agendarConsulta{
+.agendarConsulta {
   width: 100%;
 }
-.consultas{
+
+.consultas {
   display: inline-flex;
   flex-direction: column;
 }
 
-.agendarConsulta > h1{
+.agendarConsulta>h1 {
   font-size: 15px;
   color: #000;
 }
 
-.titleList{
+.titleList {
   width: 100%;
   margin-left: -10px;
   text-align: start;
@@ -858,51 +876,56 @@ video {
   flex-direction: column;
 }
 
-.agendarConsulta > button{
+.agendarConsulta>button {
   margin-top: 5px;
   width: 95%;
   border-radius: 5px;
 }
 
-.section-header-sessao-virtual{
+.section-header-sessao-virtual {
   width: 95%;
   margin-left: 10%;
   display: flex;
   flex-wrap: wrap;
   margin-top: 50px;
- }
-.videoPlayerTramissao{
-  width: 50%; 
 }
-.videoPlayerTramissao > div >div{
+
+.videoPlayerTramissao {
+  width: 50%;
+}
+
+.videoPlayerTramissao>div>div {
   width: 90% !important;
 }
-.historico-sessao-virtual{
+
+.historico-sessao-virtual {
   width: 40%;
   margin-left: 30px;
   color: #1f1f1f;
   text-align: left;
 }
 
-.historicoItem{
+.historicoItem {
   width: 45%;
-  margin-bottom: 20px !important; 
+  margin-bottom: 20px !important;
   height: auto !important;
   padding: 5px;
   list-style: none;
   height: auto;
 }
-.titleHistorico{
+
+.titleHistorico {
   font-size: 15px;
   font-weight: bold;
 }
-.descricaoHistorico{
+
+.descricaoHistorico {
   font-size: 12px;
   margin-top: -10px;
 }
 
 /* Tabela Materias da Sessão */
-.tabela-design{
+.tabela-design {
   width: 90% !important;
   margin-top: 70px;
   margin-bottom: 100px;
@@ -911,59 +934,74 @@ video {
 
 }
 
-.tabela-header{
+.tabela-header {
   background-color: #7D7D7D;
   color: #fff !important;
 }
 
-.tabela-header > tr > th > input{
+.tabela-header>tr>th>input {
   height: 30px !important;
   width: 200px;
   border-radius: 5px;
   border: none;
 }
-.css-1ndpvdd-MuiTableCell-root{
+
+.css-1ndpvdd-MuiTableCell-root {
   color: #fff !important;
 }
-.css-1gzy9y4{
+
+.css-1gzy9y4 {
   color: #fff !important;
 }
-.btnMateria{
+
+.btnMateria {
   color: #008DC9;
 }
-.votos{
+
+.votos {
   width: 15px;
   height: 15px;
 }
-.voto-sim{
+
+.voto-sim {
   background-color: #c3d90d;
 }
 
-.labelform-materia{
+.labelform-materia {
   color: #000 !important;
   font-size: 12px;
   text-align: initial;
 }
 
-.voto-nao{
+.voto-nao {
   background-color: #fdbeb1;
 }
 
-.voto-branco{
+.imgHeader {
+  margin-top: -10px;
+  margin-bottom: 50px;
+  margin-left: 30px;
+  width: 98%;
+}
+
+.voto-branco {
   background-color: #b19494;
 }
 
-.infosGeral{
+.infosGeral {
   flex-direction: row;
   flex: 1;
   justify-content: space-evenly;
   width: 90%;
 }
 
-.userData, .infoData, .comentData,  .atualizeData{
+.userData,
+.infoData,
+.comentData,
+.atualizeData {
   flex-grow: 3;
   display: block;
-  background-color: #c7c7c7;
+  background-color: #d8d8d8;
   margin-left: 5%;
   margin-top: 50px;
   border-radius: 10px;
@@ -975,18 +1013,48 @@ video {
   float: left;
 }
 
-.atualizeData{
+.profile-desc-ul{
+  width: 100%;
+  display: inline-block;
+}
+
+
+.profile-desc{
+  flex-grow: 3;
+  display: block;
+  background-color: #d8d8d8;
+  margin-left: 5%;
+  margin-top: 50px;
+  border-radius: 10px;
+  width: 40%;
+  height: auto;
+  font-size: 15px;
+  text-align: left;
+  padding: 20px;
+  color: #1f1f1f;
+  float: left;
+}
+
+.profile-btn-exit{
+  width: 100px !important;
+  background: red;
+  text-decoration: none;
+  padding: 10px 100px;
+}
+
+
+.atualizeData {
   width: 88%;
 }
 
-.comentarioChat{
+.comentarioChat {
   background-color: #a7a7a7;
   margin-top: 10px;
   border-radius: 5px;
   padding: 15px;
 }
 
-#comentarios{
+#comentarios {
   background-color: white;
   border-radius: 5px;
   width: 98%;
@@ -996,14 +1064,14 @@ video {
   padding: 10px;
 }
 
-.btnComentario{
+.btnComentario {
   width: 20%;
   margin-top: -20px;
   margin-left: -2px;
   background-color: #7c7c7c;
 }
 
-#situacao{
+#situacao {
   width: 100%;
   height: 40px;
   border-radius: 5px;
@@ -1011,7 +1079,7 @@ video {
   margin-bottom: 20px;
 }
 
-.btnUpload{
+.btnUpload {
   padding: 10px;
   text-align: center;
   background-color: #7c7c7c;
@@ -1019,19 +1087,46 @@ video {
   margin: 10px 0 20px 0;
 }
 
-.btnSend{
+.btnSend {
   margin-top: 20px;
   font-weight: bold;
   width: 100%;
- background-color: #FF6B07; 
+  background-color: #FF6B07;
+}
+
+.formLogin {
+  align-items: flex-start;
+  text-align: left;
+  
+}
+
+.formLogin > div {
+  width: 100%;
+}
+
+.label-input {
+  font-size: 15px !important;
+}
+
+.label-register{
+  display: none;
+}
+
+.inputLogin {
+  background-color: white;
+  border-radius: 5px;
+  height: 40px;
+  width: 100% !important;
+  color: #000;
+  margin-top: 10px;
 }
 
 
 
 .minhasCompras {
-    width: 90%;
-    height: 50%;
-    align-items: center;
+  width: 90%;
+  height: 50%;
+  align-items: center;
 }
 
 .productItem-minhasCompras {
@@ -1064,7 +1159,7 @@ video {
   height: 65%;
   margin-left: 10px;
   cursor: pointer;
-  
+
 }
 
 .descricaoProduct-minhasCompras>p {
@@ -1081,6 +1176,7 @@ video {
   font-weight: bold;
   color: #000;
 }
+
 .descricaoProduct-minhasCompras>p>a {
   color: #008DC9;
 }
@@ -1678,7 +1774,7 @@ video {
 
 /* Mais */
 
-.MenuPage{
+.MenuPage {
   background-color: #126b5e;
 }
 
@@ -1991,7 +2087,7 @@ video {
 }
 
 
-.balanco-legislativo-painel-item{
+.balanco-legislativo-painel-item {
   text-align: left;
   background-color: #D9D9D9;
   width: 100%;
@@ -2002,7 +2098,7 @@ video {
   padding: 10px;
 }
 
-.balanco-legislativo-painel-item>div{
+.balanco-legislativo-painel-item>div {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
@@ -2030,12 +2126,13 @@ video {
 
 /* Dashboard Materias */
 
-.materias-dash-btn-div{
+.materias-dash-btn-div {
   width: 40%;
   display: inline-block;
   margin-bottom: -50px;
 }
-.btnMateriasDash{
+
+.btnMateriasDash {
   width: 40% !important;
 }
 
@@ -2257,6 +2354,7 @@ video {
   border-bottom: 1px solid #BCBCBC;
   margin-bottom: 20px;
 }
+
 .conteinar-Add-Products>div>form>textarea {
   background-color: #fff;
   color: #242424;
@@ -2274,11 +2372,12 @@ video {
   border-bottom: 1px solid #BCBCBC;
   margin-bottom: 20px;
 }
-.btnProtocolar{
+
+.btnProtocolar {
   cursor: pointer;
 }
 
-.btnsHome{
+.btnsHome {
   width: 100%;
   height: auto;
   flex-direction: row;
@@ -2287,11 +2386,11 @@ video {
   margin-bottom: 10px;
 }
 
-.btnsHome:first-child{
+.btnsHome:first-child {
   height: 100px;
 }
 
-.btnHome{
+.btnHome {
   display: inline-block;
   width: 40%;
   height: 50px;
@@ -2307,20 +2406,22 @@ video {
   text-align: center;
 }
 
-.btnHome:hover, .btnLargeHome:hover{
+.btnHome:hover,
+.btnLargeHome:hover {
   transition: 0.3s all;
   transform: scale(1.03);
 }
 
 
-.btnHome:first-child{
+.btnHome:first-child {
   background-color: #0d5193;
 }
-.btnHome:last-child{
+
+.btnHome:last-child {
   background-color: #FF6B07;
 }
 
-.btnLargeHome{
+.btnLargeHome {
   display: inline-block;
   flex: 1;
   flex-direction: column;
@@ -2336,7 +2437,7 @@ video {
   text-align: center;
 }
 
-.iconHomeBtn{
+.iconHomeBtn {
   font-size: 100px;
   margin: 20px;
 }
@@ -2354,13 +2455,14 @@ textarea {
 
 
 /* Footer */
-.footer{
-  background-color: #105394;
+.footer {
+  background-color: #012447;
   color: #fff !important;
   font-size: 12px;
   padding: 10px;
 }
-footer > p {
+
+footer>p {
   color: #fff !important;
   font-size: 12px;
 }
@@ -2369,7 +2471,7 @@ footer > p {
 
 /* Menu for desktop */
 
-@media (min-width: 800px){
+@media (min-width: 800px) {
   .menu {
     display: none;
   }
@@ -2380,10 +2482,11 @@ footer > p {
 
 @media (max-width: 800px) {
 
-  .Conteiner-Home-Dach{
+  .Conteiner-Home-Dach {
     padding-left: 0;
   }
-  .balanco-legislativo-painel-item>div>div{
+
+  .balanco-legislativo-painel-item>div>div {
     width: 90%;
   }
 
@@ -2391,7 +2494,7 @@ footer > p {
     display: none;
   }
 
-  .menuDashboard{
+  .menuDashboard {
     display: none;
   }
 
@@ -2399,12 +2502,14 @@ footer > p {
     display: none;
   }
 
-  .videoPlayerTramissao{
+  .videoPlayerTramissao {
     width: 95%;
   }
-  .videoPlayer-view{
+
+  .videoPlayer-view {
     width: 100% !important;
   }
+
   .historico-sessao-virtual {
     width: 98%;
     margin-top: 20px;
@@ -2413,23 +2518,26 @@ footer > p {
     color: #1f1f1f;
     text-align: left;
   }
+
   .historicoItem {
     width: 100%;
   }
 
-  .conteinar-Add-Products{
+  .conteinar-Add-Products {
     z-index: 1;
   }
-  .conteinar-Add-Products>div{
+
+  .conteinar-Add-Products>div {
     width: 100% !important;
   }
-  .addImg{
+
+  .addImg {
     width: 0;
     display: none !important;
   }
 
 
-  }
+}
 
 
 
@@ -2507,6 +2615,7 @@ footer > p {
 .aDesktop:hover {
   color: #04b398;
 }
+
 .fas {
   font-size: 18px;
   position: relative;
@@ -2537,14 +2646,15 @@ footer > p {
 
 
 @media (max-width: 600px) {
-  
-  
-  .heroDesc{
-    margin-top: -85px;   
-    height: auto !important; 
+
+
+  .heroDesc {
+    margin-top: -85px;
+    height: auto !important;
   }
-  .heroDesc > p{
-    margin-left: 5%;    
+
+  .heroDesc>p {
+    margin-left: 5%;
   }
 
   .conteinerHome {
@@ -2552,7 +2662,7 @@ footer > p {
     align-items: center;
   }
 
-  .Container > h1{
+  .Container>h1 {
     margin-left: 4%;
     font-size: 15px;
   }
@@ -2593,17 +2703,19 @@ footer > p {
     margin-left: 5px;
     margin-bottom: 10px;
   }
-  .vistosHome{
+
+  .vistosHome {
     display: inline-block;
   }
-  .productItem{
+
+  .productItem {
     width: 45% !important;
     display: inherit !important;
   }
 
-  .vacinaItem{
+  .vacinaItem {
     margin-left: 5px;
-    margin-bottom: 10px !important; 
+    margin-bottom: 10px !important;
     height: auto !important;
   }
 
@@ -2616,7 +2728,7 @@ footer > p {
     width: 115%;
   }
 
-  .btnLargeHome{
+  .btnLargeHome {
     width: 150px !important;
   }
 
@@ -2625,65 +2737,73 @@ footer > p {
     height: 320px !important;
   }
 
-  .productItem{
+  .productItem {
     margin: 0px 0px 20px 50px;
   }
 
-  .areaTextDescProduct{
+  .areaTextDescProduct {
     padding: 1px 0 30px 10px;
   }
 
-  .areaTextDescProductF{
+  .areaTextDescProductF {
     margin-bottom: 0px;
   }
 
-  .imgProduct{
+  .imgProduct {
     height: 500px;
   }
-  
-  .descricaoProduct{
+
+  .descricaoProduct {
     font-size: 10px;
   }
 
   .Servico-container {
     width: 70%;
- 
+
   }
-  .Produto-img{
+
+  .Produto-img {
     height: 500px;
   }
-  .productId{
+
+  .productId {
     height: 330px;
   }
-  .price-buttom{
+
+  .price-buttom {
     left: 0;
     width: 480px;
     border-radius: 15px;
     margin-left: 55px;
-    
+
   }
-  .price-buttom-calendar{
+
+  .price-buttom-calendar {
     width: 50%;
     left: 50%;
     margin-left: 0;
   }
-  
-  .css-zw3mfo-MuiModal-root-MuiDialog-root{
+
+  .css-zw3mfo-MuiModal-root-MuiDialog-root {
     left: 50% !important;
   }
 
-  .minhasCompras{
+  .minhasCompras {
     width: 80%;
-  } 
-  .favoritos{
+  }
+
+  .favoritos {
     width: 90%;
   }
+
   .notificacoes {
     width: 70%;
   }
-  .Container{
+
+  .Container {
     width: 80%;
   }
+
   .logo {
     width: 40%;
   }

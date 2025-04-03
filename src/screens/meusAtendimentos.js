@@ -84,15 +84,12 @@ class LoginDashboard extends Component {
                                 <TableCell align="center">Tipo Contratação</TableCell>
                                 <TableCell align="center">Data Contratação</TableCell>
                                 <TableCell align="center">Nome Serviço</TableCell>
-                                <TableCell align="center">Detalhe Serviço</TableCell>
                                 <TableCell align="center">Tipo Documento</TableCell>
                                 <TableCell align="center">Número Documento</TableCell>
                                 <TableCell align="center">Data Ocorrência</TableCell>
                                 <TableCell align="center">Data Negativa</TableCell>
                                 <TableCell align="center">Forma Pagamento</TableCell>
                                 <TableCell align="center">Valor Compra</TableCell>
-                                <TableCell align="center">Detalhes Reclamação</TableCell>
-                                <TableCell align="center">Pedido Consumidor</TableCell>
                                 <TableCell align="center">Situação</TableCell>
                             </TableRow>
                         </TableHead>
@@ -111,15 +108,12 @@ class LoginDashboard extends Component {
                                     <TableCell align="center">{reclamacao.tipoContratacao}</TableCell>
                                     <TableCell align="center">{reclamacao.dataContratacao}</TableCell>
                                     <TableCell align="center">{reclamacao.nomeServico}</TableCell>
-                                    <TableCell align="center">{reclamacao.detalheServico}</TableCell>
                                     <TableCell align="center">{reclamacao.tipoDocumento}</TableCell>
                                     <TableCell align="center">{reclamacao.numeroDoc}</TableCell>
                                     <TableCell align="center">{reclamacao.dataOcorrencia}</TableCell>
                                     <TableCell align="center">{reclamacao.dataNegativa}</TableCell>
                                     <TableCell align="center">{reclamacao.formaPagamento}</TableCell>
                                     <TableCell align="center">R$ {reclamacao.valorCompra},00</TableCell>
-                                    <TableCell align="center">{reclamacao.detalhesReclamacao}</TableCell>
-                                    <TableCell align="center">{reclamacao.pedidoConsumidor}</TableCell>
                                     <TableCell align="center">{reclamacao.situacao}</TableCell>
                                 </TableRow>
                             ))}

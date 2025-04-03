@@ -4,6 +4,10 @@ import SlideFeacures from '../componets/slideFeactures';
 import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 
+// Imagens
+import imgHeader from '../assets/banner-header.png'
+
+
 function HomeDashboard() {
     const navigate = useNavigate();
 
@@ -28,6 +32,7 @@ function HomeDashboard() {
     return (
         <div className='App-header'>
             <div className='Home-Dach'>
+                <img src={imgHeader} className='imgHeader' alt='banner imagem inicio' />
                 <div className='btnsHome'>
                     <a href='/login' className='btnHome'>Login</a>
                     <a href='/register' className='btnHome'>Cadastrar</a>

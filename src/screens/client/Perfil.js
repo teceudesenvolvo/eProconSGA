@@ -73,26 +73,38 @@ const Perfil = () => {
     return (
         <div className="App-header">
             <MenuDashboard />
-            <div className="favoritos agendarConsulta">
+            <div className="favoritos agendarConsulta profile-desc-ul">
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <ul className="vistosHome" style={{ listStyle: 'none', padding: 0 }}>
+                    <ul className="profile-desc-ul" style={{ listStyle: 'none', padding: 0 }}>
                         <li className="profile-desc">
-                            <div className="profile-desc">
-                                <p className="profile-desc-item">Nome Completo: <br/>{userData.nome}</p>
-                                <p className="profile-desc-item">Sexo: <br/>{userData.sexo}</p>
-                                <p className="profile-desc-item">Email: <br/>{userData.email}</p>
-                                <p className="profile-desc-item">Telefone: <br/>{userData.telefone}</p>
-                                <p className="profile-desc-item">Estado Civil: <br/>{userData.estadoCivil}</p>
-                                
-                            </div>
+                            <h2>Dados Pessoais</h2>
+                            <p><strong>Nome:</strong> {userData.nome}</p>
+                            <p><strong>Email:</strong> {userData.email}</p>
+                            <p><strong>Telefone:</strong> {userData.telefone}</p>
+                            <p><strong>CPF:</strong> {userData.cpf}</p>
+                            <p><strong>Estado Civil:</strong> {userData.estadoCivil}</p>
+                            <p><strong>Sexo:</strong> {userData.sexo}</p>
+
                         </li>
+                        <li className="profile-desc">
+                            <h2>Endereço</h2>
+                            <p><strong>CEP:</strong> {userData.cep}</p>
+                            <p><strong>Endereço:</strong> {userData.endereco}</p>
+                            <p><strong>Número:</strong> {userData.numero}</p>
+                            <p><strong>Complemento:</strong> {userData.complemento}</p>
+                            <p><strong>Bairro:</strong> {userData.bairro}</p>
+                            <p><strong>Cidade:</strong> {userData.municipio}</p>
+                            <p><strong>UF:</strong> {userData.ufEmissor}</p>
+
+                        </li>
+
                     </ul>
                     <div className="profile-btn-div">
-                        <input className="btnProfile btnProfileEdit btnHomeAcess btnCadastroHome buttonLogin" type="button" value="Editar" onClick={() => { }} />
-                        <input className="btnProfile btnHomeAcess btnCadastroHome buttonLogin" type="button" value="Salvar" onClick={() => { }} />
+                        {/* <input className="btnProfile btnProfileEdit btnHomeAcess btnCadastroHome buttonLogin" type="button" value="Editar" onClick={() => { }} />
+                        <input className="btnProfile btnHomeAcess btnCadastroHome buttonLogin" type="button" value="Salvar" onClick={() => { }} /> */}
                     </div>
                     <p>
-                        <a href="/" className="profile-btn-exit" onClick={handleLogout}>Sair da conta</a>
+                        <a href="/" className="profile-btn-exit btnProfile btnHomeAcess btnCadastroHome buttonLogin" onClick={handleLogout}>Sair da conta</a>
                     </p>
                 </div>
             </div>

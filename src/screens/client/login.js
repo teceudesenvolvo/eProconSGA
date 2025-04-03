@@ -96,7 +96,7 @@ const LoginClient = () => {
                     <a href="/consultas" className="linkLogin">
                         Esqueceu a senha?
                     </a>
-                    <input type="submit" className="buttonLogin" value="Entrar" />
+                    <input type="submit" className="buttonLogin btnLogin" value="Entrar" />
                     {error && <p style={{ color: 'red' }}>{error}</p>}
                 </form>
                 <p>

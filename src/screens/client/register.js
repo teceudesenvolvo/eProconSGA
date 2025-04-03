@@ -125,17 +125,17 @@ const CadastroForm = () => {
 
                 <form onSubmit={handleSubmit} className='formLogin'>
                     <div>
-                        <label className="label-input">Nome:</label>
+                        <label className="label-input label-register">Nome:</label>
                         <input type="text" name="nome" value={formData.nome} onChange={handleChange} placeholder="Nome" className="inputLogin" />
                         {errors.nome && <p className="error">{errors.nome}</p>}
                     </div>
                     <div>
-                        <label className="label-input">Email:</label>
+                        <label className="label-input label-register">Email:</label>
                         <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" className="inputLogin" />
                         {errors.email && <p className="error">{errors.email}</p>}
                     </div>
                     <div>
-                        <label className="label-input">Sexo:</label>
+                        <label className="label-input label-register">Sexo:</label>
                         <select name="sexo" value={formData.sexo} onChange={handleChange} className="inputLogin">
                             <option value="">Selecione o sexo</option>
                             <option value="masculino">Masculino</option>
@@ -145,17 +145,17 @@ const CadastroForm = () => {
                         {errors.sexo && <p className="error">{errors.sexo}</p>}
                     </div>
                     <div>
-                        <label className="label-input">CPF:</label>
+                        <label className="label-input label-register">CPF:</label>
                         <input type="number" name="cpf" value={formData.cpf} onChange={handleChange} placeholder="CPF" className="inputLogin" />
                         {errors.cpf && <p className="error">{errors.cpf}</p>}
                     </div>
                     <div>
-                        <label className="label-input">RG:</label>
+                        <label className="label-input label-register">RG:</label>
                         <input type="number" name="rg" value={formData.rg} onChange={handleChange} placeholder="RG" className="inputLogin" />
                         {errors.rg && <p className="error">{errors.rg}</p>}
                     </div>
                     <div>
-                        <label className="label-input">UF Emissor:</label>
+                        <label className="label-input label-register">UF Emissor:</label>
                         <select name="ufEmissor" value={formData.ufEmissor} onChange={handleChange} className="inputLogin">
                             <option value="">Selecione o UF Emissor</option>
                             {ufOptions.map((uf) => (
@@ -165,7 +165,7 @@ const CadastroForm = () => {
                         {errors.ufEmissor && <p className="error">{errors.ufEmissor}</p>}
                     </div>
                     <div>
-                        <label className="label-input">Orgão Emissor:</label>
+                        <label className="label-input label-register">Orgão Emissor:</label>
                         <input type="text" name="orgaoEmissor" value={formData.orgaoEmissor} onChange={handleChange} placeholder="Orgão Emissor" className="inputLogin" />
                         {errors.orgaoEmissor && <p className="error">{errors.orgaoEmissor}</p>}
                     </div>
@@ -175,7 +175,7 @@ const CadastroForm = () => {
                         {errors.dataNascimento && <p className="error">{errors.dataNascimento}</p>}
                     </div>
                     <div>
-                        <label className="label-input">Estado Civil:</label>
+                        <label className="label-input label-register">Estado Civil:</label>
                         <select name="estadoCivil" value={formData.estadoCivil} onChange={handleChange} className="inputLogin">
                             <option value="">Selecione o Estado Civil</option>
                             <option value="solteiro">Solteiro</option>
@@ -186,64 +186,64 @@ const CadastroForm = () => {
                         {errors.estadoCivil && <p className="error">{errors.estadoCivil}</p>}
                     </div>
                     <div>
-                        <label className="label-input">Endereço:</label>
+                        <label className="label-input label-register">Endereço:</label>
                         <input type="text" name="endereco" value={formData.endereco} onChange={handleChange} placeholder="Endereço" className="inputLogin" />
                         {errors.endereco && <p className="error">{errors.endereco}</p>}
                     </div>
                     <div>
-                        <label className="label-input">CEP:</label>
+                        <label className="label-input label-register">CEP:</label>
                         <input type="number" name="cep" value={formData.cep} onChange={handleChange} placeholder="CEP" className="inputLogin" />
                         {errors.cep && <p className="error">{errors.cep}</p>}
                     </div>
                     <div>
-                        <label className="label-input">Número:</label>
+                        <label className="label-input label-register">Número:</label>
                         <input type="number" name="numero" value={formData.numero} onChange={handleChange} placeholder="Número" className="inputLogin" />
                         {errors.numero && <p className="error">{errors.numero}</p>}
                     </div>
                     <div>
-                        <label className="label-input">Complemento:</label>
+                        <label className="label-input label-register">Complemento:</label>
                         <input type="text" name="complemento" value={formData.complemento} onChange={handleChange} placeholder="Complemento" className="inputLogin" />
                         {errors.complemento && <p className="error">{errors.complemento}</p>}
                     </div>
                     <div>
-                        <label className="label-input">Bairro:</label>
+                        <label className="label-input label-register">Bairro:</label>
                         <input type="text" name="bairro" value={formData.bairro} onChange={handleChange} placeholder="Bairro" className="inputLogin" />
                         {errors.bairro && <p className="error">{errors.bairro}</p>}
                     </div>
                     <div>
-                        <label className="label-input">Estado:</label>
+                        <label className="label-input label-register">Estado:</label>
                         <input type="text" name="estado" value={formData.estado} onChange={handleChange} placeholder="Estado" className="inputLogin" />
                         {errors.estado && <p className="error">{errors.estado}</p>}
                     </div>
                     <div>
-                        <label className="label-input">Município:</label>
+                        <label className="label-input label-register">Município:</label>
                         <input type="text" name="municipio" value={formData.municipio} onChange={handleChange} placeholder="Município" className="inputLogin" />
                         {errors.municipio && <p className="error">{errors.municipio}</p>}
                     </div>
                     <div>
-                        <label className="label-input">Telefone:</label>
+                        <label className="label-input label-register">Telefone:</label>
                         <input type="number" name="telefone" value={formData.telefone} onChange={handleChange} placeholder="Telefone" className="inputLogin" />
                         {errors.telefone && <p className="error">{errors.telefone}</p>}
                     </div>
                     <div>
-                        <label className="label-input">Celular:</label>
+                        <label className="label-input label-register">Celular:</label>
                         <input type="number" name="celular" value={formData.celular} onChange={handleChange} placeholder="Celular" className="inputLogin" />
                         {errors.celular && <p className="error">{errors.celular}</p>}
                     </div>
                     <div>
-                        <label className="label-input">Senha:</label>
+                        <label className="label-input label-register">Senha:</label>
                         <input type="password" name="senha" value={formData.senha} onChange={handleChange} placeholder="Senha" className="inputLogin" />
                         {errors.senha && <p className="error">{errors.senha}</p>}
                     </div>
                     <div>
-                        <label className="label-input">Confirmar Senha:</label>
+                        <label className="label-input label-register">Confirmar Senha:</label>
                         <input type="password" name="confirmarSenha" value={formData.confirmarSenha} onChange={handleChange} placeholder="Confirmar Senha" className="inputLogin" />
                         {errors.confirmarSenha && <p className="error">{errors.confirmarSenha}</p>}
                     </div>
 
                     {errors.firebase && <p className="error">{errors.firebase}</p>}
-                    <button type="submit" className='buttonLogin'>Cadastrar</button>
-                    <p>Já tem uma conta? <a href='/login' className='linkLogin'>Faça login</a></p>
+                    <button type="submit" className='buttonLogin btnLogin'>Cadastrar</button>
+                    <p className='label-input'>Já tem uma conta? <a href='/login' className='label-input'>Faça login</a></p>
                 </form>
             </div>
         </div>

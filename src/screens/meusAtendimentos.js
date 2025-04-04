@@ -61,6 +61,11 @@ class LoginDashboard extends Component {
         }
     }
 
+    handleProtocoloClick = (reclamacaoId) => {
+        localStorage.setItem('reclamacaoId', reclamacaoId);
+        this.navigate('/reclamacao-detalhes');
+    };
+
     render() {
         const { reclamacoes, loading } = this.state;
 
@@ -99,7 +104,13 @@ class LoginDashboard extends Component {
                                     key={reclamacao.id}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
-                                    <TableCell align="center">{reclamacao.protocolo}</TableCell>
+                                    <TableCell
+                                        align="center"
+                                        style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}
+                                        onClick={() => this.handleProtocoloClick(reclamacao.id)}
+                                    >
+                                        {reclamacao.protocolo}
+                                    </TableCell>
                                     <TableCell align="center">{reclamacao.tipoReclamacao}</TableCell>
                                     <TableCell align="center">{reclamacao.classificacao}</TableCell>
                                     <TableCell align="center">{reclamacao.assuntoDenuncia}</TableCell>

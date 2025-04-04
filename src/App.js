@@ -20,6 +20,7 @@ import Atendimento from './screens/client/atendimento';
 
 // Usuário Logado
 import MeusAgendamentos from './screens/meusAtendimentos';
+import ReclamacaoDetalhes from './screens/client/reclamacaoDetalhes';
 import Perfil from './screens/client/Perfil';
 import RealizarReclamacao from './screens/realizarReclamacao';
 
@@ -32,7 +33,6 @@ import Mais from './screens/client/Mais';
 import Servico from './screens/client/Servico';
 import Produto from './screens/client/Produto';
 import Carrinho from './screens/client/carrinho';
-import Pagamento from './screens/client/pagamento';
 import Pesquisar from './screens/client/pesquisa';
 import RegisterDashboard from './screens/registerDashboard';
 import RegisterEndereco from './screens/registerEndereco';
@@ -61,10 +61,10 @@ function App() {
           {/* Páginas Usuário Logado */}
           <Route path="/meus-atendimentos" element={<MeusAgendamentos />} />
           <Route path="/registrar-reclamacao" element={<RealizarReclamacao />} />
+          <Route path="/reclamacao-detalhes" element={<ReclamacaoDetalhes />} />
           <Route path="/perfil" element={<Perfil />} />
 
           {/* Páginas sem uso */}
-          <Route path="/pagamento" element={<Pagamento />} />
           <Route path="/registerDashboard" element={<RegisterDashboard />} />
           <Route path="/registerEndereco" element={<RegisterEndereco />} />
           <Route path="/juizo-materia" element={<JuizoMateria />} />

@@ -62,11 +62,21 @@ const AddProducts = () => {
     const handleFileChange = (e) => {
         const files = e.target.files;
         const errors = [];
-        const filePromises = Array.from(files).map((file) => {
-            if (file.size > 2 * 1024 * 1024) {
-                errors.push(`O arquivo ${file.name} excede o limite de 2MB.`);
-                return null;
+        const allowedTypes = ['image/png', 'image/jpeg', 'application/pdf'];
+
+        const validatedFiles = Array.from(files).filter(file => {
+            if (!allowedTypes.includes(file.type)) {
+                errors.push(`O arquivo "${file.name}" não é um formato permitido. Use .png, .jpg ou .pdf.`);
+                return false;
             }
+            if (file.size > 2 * 1024 * 1024) {
+                errors.push(`O arquivo "${file.name}" excede o limite de 2MB.`);
+                return false;
+            }
+            return true;
+        });
+
+        const filePromises = validatedFiles.map((file) => {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (event) => {
@@ -79,7 +89,7 @@ const AddProducts = () => {
                 reader.onerror = (error) => reject(error);
                 reader.readAsDataURL(file);
             });
-        }).filter(Boolean);
+        });
 
         Promise.all(filePromises)
             .then((fileData) => {
@@ -87,7 +97,7 @@ const AddProducts = () => {
                     ...formData,
                     arquivos: fileData,
                 });
-                setFileCount(files.length);
+                setFileCount(validatedFiles.length);
                 setFileErrors(errors);
             })
             .catch((error) => console.error('Erro ao converter arquivos:', error));
@@ -187,7 +197,7 @@ const AddProducts = () => {
         <div className="App-header">
             <MenuDashboard />
             <div className="conteinar-Add-Products">
-                <div>
+                <div className='atualizeData'>
                     <form onSubmit={handleSubmit}>
                         <p>Informações Principais</p>
                         <select
@@ -197,8 +207,9 @@ const AddProducts = () => {
                             onChange={handleChange}
                         >
                             <option value="">Tipo de Reclamação</option>
+                            <option value="Outra Compra/Contratação">Compra de Produto</option>
+                            <option value="Outra Compra/Contratação">Contratação de Serviço</option>
                             <option value="Jogos e Apostas">Jogos e Apostas</option>
-                            <option value="Outra Compra/Contratação">Outra Compra/Contratação</option>
                         </select>
                         <select
                             name="classificacao"
@@ -230,15 +241,15 @@ const AddProducts = () => {
                             onChange={handleChange}
                         />
                         <br />
-                        <label className="labelform-materia">CNPJ da Empresa Reclamada:</label><br />
+                        <label className="labelform-materia">Empresa Reclamada:</label><br />
                         <input
                             type="text"
                             name="cnpj"
                             placeholder="Digite o CNPJ"
                             value={formData.cnpj}
                             onChange={handleChange}
-                        />
-                        <button type="button" onClick={buscarEmpresaPorCnpj} disabled={loadingCnpj}>
+                        /><br/>
+                        <button className='buttonLogin btnComentario' type="button" onClick={buscarEmpresaPorCnpj} disabled={loadingCnpj}>
                             {loadingCnpj ? 'Buscando...' : 'Buscar Empresa'}
                         </button>
                         {cnpjError && <p style={{ color: 'red' }}>{cnpjError}</p>}
@@ -396,13 +407,14 @@ const AddProducts = () => {
                         </select>
                         <p>Anexos</p>
                         <label>
-                            Selecione arquivos (máximo 2MB por arquivo)
+                            Selecione arquivos (máximo 2MB por arquivo, formatos: .png, .jpg, .pdf)
                             <input
                                 key={fileInputKey}
                                 type="file"
                                 multiple
                                 onChange={handleFileChange}
-                                accept=".png,.pdf"
+                                accept=".png,.jpg,.jpeg,.pdf"
+                                className='buttonLogin btnUpload'
                             />
                         </label>
                         {fileCount > 0 && <p>{fileCount} arquivos selecionados</p>}
@@ -410,7 +422,7 @@ const AddProducts = () => {
                             <p key={index} style={{ color: 'red' }}>{error}</p>
                         ))}
                         <br />
-                        <button type="submit">Protocolar Materia</button>
+                        <button type="submit" className='buttonLogin btnLogin'>Enviar Reclamação</button>
                     </form>
                 </div>
             </div>

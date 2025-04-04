@@ -29,7 +29,12 @@ const AddProducts = () => {
         pedidoConsumidor: '',
         numeroMateriaExt: '',
         arquivos: [],
+        cnpj: '', // Adiciona o campo CNPJ ao state
     });
+
+    const [empresaInfo, setEmpresaInfo] = useState(null);
+    const [cnpjError, setCnpjError] = useState('');
+    const [loadingCnpj, setLoadingCnpj] = useState(false);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -48,6 +53,10 @@ const AddProducts = () => {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+        if (e.target.name === 'cnpj') {
+            setEmpresaInfo(null); // Limpa as informações da empresa ao digitar um novo CNPJ
+            setCnpjError('');
+        }
     };
 
     const handleFileChange = (e) => {
@@ -84,6 +93,34 @@ const AddProducts = () => {
             .catch((error) => console.error('Erro ao converter arquivos:', error));
     };
 
+    const buscarEmpresaPorCnpj = async () => {
+        const cnpj = formData.cnpj.replace(/\D/g, ''); // Remove caracteres não numéricos
+        if (cnpj.length !== 14) {
+            setCnpjError('CNPJ inválido');
+            setEmpresaInfo(null);
+            return;
+        }
+        setCnpjError('');
+        setLoadingCnpj(true);
+        setEmpresaInfo(null);
+
+        try {
+            const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
+            if (response.ok) {
+                const data = await response.json();
+                setEmpresaInfo(data);
+            } else {
+                const errorData = await response.json();
+                setCnpjError(errorData.message || 'Erro ao buscar CNPJ');
+            }
+        } catch (error) {
+            setCnpjError('Erro ao conectar com a API');
+            console.error('Erro ao buscar CNPJ:', error);
+        } finally {
+            setLoadingCnpj(false);
+        }
+    };
+
     const gerarProtocolo = (comprimento = 10) => {
         let protocolo = '';
         for (let i = 0; i < comprimento; i++) {
@@ -99,6 +136,8 @@ const AddProducts = () => {
                 { text: 'Tipo de Reclamação: ' + formData.tipoReclamacao },
                 { text: 'Classificação: ' + formData.classificacao },
                 { text: 'Assunto da Denúncia: ' + formData.assuntoDenuncia },
+                { text: 'CNPJ da Empresa: ' + formData.cnpj },
+                { text: 'Nome da Empresa: ' + (empresaInfo?.razao_social || 'Não Informado') },
                 // Adicione outros campos do formulário aqui
             ],
             styles: {
@@ -121,9 +160,10 @@ const AddProducts = () => {
             const reclamacaoData = {
                 ...data,
                 userId: userId,
-                cpf: '',
+                cpf: '', // Você pode querer buscar o CPF do localStorage ou de outro lugar
                 timestamp: new Date(),
                 protocolo: protocolo,
+                nomeEmpresaReclamada: empresaInfo?.razao_social || '',
             };
 
             const docRef = await addDoc(collection(db, 'reclamacoes'), reclamacaoData);
@@ -189,6 +229,25 @@ const AddProducts = () => {
                             value={formData.assuntoDenuncia}
                             onChange={handleChange}
                         />
+                        <br />
+                        <label className="labelform-materia">CNPJ da Empresa Reclamada:</label><br />
+                        <input
+                            type="text"
+                            name="cnpj"
+                            placeholder="Digite o CNPJ"
+                            value={formData.cnpj}
+                            onChange={handleChange}
+                        />
+                        <button type="button" onClick={buscarEmpresaPorCnpj} disabled={loadingCnpj}>
+                            {loadingCnpj ? 'Buscando...' : 'Buscar Empresa'}
+                        </button>
+                        {cnpjError && <p style={{ color: 'red' }}>{cnpjError}</p>}
+                        {empresaInfo && (
+                            <p>
+                                <strong>Empresa:</strong> {empresaInfo.razao_social}
+                                {empresaInfo.fantasia && ` (${empresaInfo.fantasia})`}
+                            </p>
+                        )}
                         <br />
                         <label className="labelform-materia">Detalhes da Reclamação</label>
                         <br />

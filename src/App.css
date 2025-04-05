@@ -557,7 +557,23 @@ h1 {
 .btnLogin{
   width: 30% !important;
   margin: 30px auto;
+  text-decoration: none;
 }
+
+.btnNewReclam{
+  width: 88% !important;
+  font-size: 20px;
+  align-items: center;
+  align-content: center;
+  text-decoration: none;
+  margin-bottom: -50px !important;
+}
+
+.btnNewReclam:hover{
+  transition: all 0.3s;
+  background-color: #d45a03;
+}
+
 
 .linkLogin {
   color: #5a5a5a;
@@ -1122,7 +1138,7 @@ video {
 }
 
 .formRealizarReclamacao{
-  width: 50% !important;
+  width: 80% !important;
 }
 
 .minhasCompras {
@@ -2368,12 +2384,28 @@ video {
 }
 
 .conteinar-Add-Products-select {
-  width: 70%;
+  width: 100%;
   height: 40px;
   border: 0;
   border-bottom: 1px solid #BCBCBC;
   margin-bottom: 20px;
 }
+
+.inputLogin.error {
+  border: 1px solid red;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 5px;
+}
+
+.error-message.firebase-error {
+  text-align: center;
+  margin-top: 15px;
+}
+
 
 .btnProtocolar {
   cursor: pointer;

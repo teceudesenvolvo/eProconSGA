@@ -66,7 +66,7 @@ const LoginClient = () => {
             if (email === 'admin@cmsga.ce.gov.br') {
                 navigate('/atendimentos-sga-hyo6d27');
             } else {
-                navigate('/perfil');
+                navigate('/meus-atendimentos');
             }
         } catch (err) {
             setError('Email ou senha incorretos.');

@@ -76,6 +76,7 @@ class LoginDashboard extends Component {
         return (
             <div className="App-header">
                 <MenuDashboard />
+                <a href='/registrar-reclamacao' className='buttonLogin btnNewReclam'>Nova Reclamação</a>
                 <TableContainer component={Paper} className="tabela-design">
                     <Table sx={{ minWidth: 650 }} aria-label="simple table">
                         <TableHead className="tabela-header">

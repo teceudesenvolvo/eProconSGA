@@ -71,15 +71,21 @@ const CadastroForm = () => {
                 });
 
                 console.log('Usuário registrado e dados salvos com sucesso:', user);
+                localStorage.setItem('userId', user.uid);
 
-                // Autenticar o usuário
+                // Autenticar o usuário após o registro
                 await signInWithEmailAndPassword(auth, formData.email, formData.senha);
 
+
                 // Redirecionar para o perfil
-                navigate('/perfil');
+                navigate('/meus-atendimentos');
             } catch (error) {
                 console.error('Erro ao registrar/autenticar usuário ou salvar dados:', error);
-                setErrors({ firebase: 'Erro ao registrar usuário. Tente novamente.' });
+                if (error.code === 'auth/email-already-in-use') {
+                    setErrors({ firebase: `Este email já está em uso. ${<a href='/login'>Faça login</a>}` });
+                } else {
+                    setErrors({ firebase: 'Erro ao registrar usuário. Tente novamente.' });
+                }
             }
         }
     };
@@ -118,6 +124,14 @@ const CadastroForm = () => {
         'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO',
     ];
 
+    const getInputErrorClass = (fieldName) => {
+        return errors[fieldName] ? 'inputLogin error' : 'inputLogin';
+    };
+
+    const getSelectErrorClass = (fieldName) => {
+        return errors[fieldName] ? 'inputLogin error' : 'inputLogin';
+    };
+
     return (
         <div className='App-header loginPage'>
             <div className='Container'>
@@ -126,122 +140,122 @@ const CadastroForm = () => {
                 <form onSubmit={handleSubmit} className='formLogin'>
                     <div>
                         <label className="label-input label-register">Nome:</label>
-                        <input type="text" name="nome" value={formData.nome} onChange={handleChange} placeholder="Nome" className="inputLogin" />
-                        {errors.nome && <p className="error">{errors.nome}</p>}
+                        <input type="text" name="nome" value={formData.nome} onChange={handleChange} placeholder="Nome" className={getInputErrorClass('nome')} />
+                        {errors.nome && <p className="error-message">{errors.nome}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">Email:</label>
-                        <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" className="inputLogin" />
-                        {errors.email && <p className="error">{errors.email}</p>}
+                        <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" className={getInputErrorClass('email')} />
+                        {errors.email && <p className="error-message">{errors.email}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">Sexo:</label>
-                        <select name="sexo" value={formData.sexo} onChange={handleChange} className="inputLogin">
+                        <select name="sexo" value={formData.sexo} onChange={handleChange} className={getSelectErrorClass('sexo')}>
                             <option value="">Selecione o sexo</option>
                             <option value="masculino">Masculino</option>
                             <option value="feminino">Feminino</option>
                             <option value="outros">Outros</option>
                         </select>
-                        {errors.sexo && <p className="error">{errors.sexo}</p>}
+                        {errors.sexo && <p className="error-message">{errors.sexo}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">CPF:</label>
-                        <input type="number" name="cpf" value={formData.cpf} onChange={handleChange} placeholder="CPF" className="inputLogin" />
-                        {errors.cpf && <p className="error">{errors.cpf}</p>}
+                        <input type="number" name="cpf" value={formData.cpf} onChange={handleChange} placeholder="CPF" className={getInputErrorClass('cpf')} />
+                        {errors.cpf && <p className="error-message">{errors.cpf}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">RG:</label>
-                        <input type="number" name="rg" value={formData.rg} onChange={handleChange} placeholder="RG" className="inputLogin" />
-                        {errors.rg && <p className="error">{errors.rg}</p>}
+                        <input type="number" name="rg" value={formData.rg} onChange={handleChange} placeholder="RG" className={getInputErrorClass('rg')} />
+                        {errors.rg && <p className="error-message">{errors.rg}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">UF Emissor:</label>
-                        <select name="ufEmissor" value={formData.ufEmissor} onChange={handleChange} className="inputLogin">
+                        <select name="ufEmissor" value={formData.ufEmissor} onChange={handleChange} className={getSelectErrorClass('ufEmissor')}>
                             <option value="">Selecione o UF Emissor</option>
                             {ufOptions.map((uf) => (
                                 <option key={uf} value={uf}>{uf}</option>
                             ))}
                         </select>
-                        {errors.ufEmissor && <p className="error">{errors.ufEmissor}</p>}
+                        {errors.ufEmissor && <p className="error-message">{errors.ufEmissor}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">Orgão Emissor:</label>
-                        <input type="text" name="orgaoEmissor" value={formData.orgaoEmissor} onChange={handleChange} placeholder="Orgão Emissor" className="inputLogin" />
-                        {errors.orgaoEmissor && <p className="error">{errors.orgaoEmissor}</p>}
+                        <input type="text" name="orgaoEmissor" value={formData.orgaoEmissor} onChange={handleChange} placeholder="Orgão Emissor" className={getInputErrorClass('orgaoEmissor')} />
+                        {errors.orgaoEmissor && <p className="error-message">{errors.orgaoEmissor}</p>}
                     </div>
                     <div>
                         <label className="label-input">Data de Nascimento:</label>
-                        <input type="date" name="dataNascimento" value={formData.dataNascimento} onChange={handleChange} placeholder="Data de Nascimento" className="inputLogin" />
-                        {errors.dataNascimento && <p className="error">{errors.dataNascimento}</p>}
+                        <input type="date" name="dataNascimento" value={formData.dataNascimento} onChange={handleChange} placeholder="Data de Nascimento" className={getInputErrorClass('dataNascimento')} />
+                        {errors.dataNascimento && <p className="error-message">{errors.dataNascimento}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">Estado Civil:</label>
-                        <select name="estadoCivil" value={formData.estadoCivil} onChange={handleChange} className="inputLogin">
+                        <select name="estadoCivil" value={formData.estadoCivil} onChange={handleChange} className={getSelectErrorClass('estadoCivil')}>
                             <option value="">Selecione o Estado Civil</option>
                             <option value="solteiro">Solteiro</option>
                             <option value="casado">Casado</option>
                             <option value="divorciado">Divorciado</option>
                             <option value="viuvo">Viúvo</option>
                         </select>
-                        {errors.estadoCivil && <p className="error">{errors.estadoCivil}</p>}
+                        {errors.estadoCivil && <p className="error-message">{errors.estadoCivil}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">Endereço:</label>
-                        <input type="text" name="endereco" value={formData.endereco} onChange={handleChange} placeholder="Endereço" className="inputLogin" />
-                        {errors.endereco && <p className="error">{errors.endereco}</p>}
+                        <input type="text" name="endereco" value={formData.endereco} onChange={handleChange} placeholder="Endereço" className={getInputErrorClass('endereco')} />
+                        {errors.endereco && <p className="error-message">{errors.endereco}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">CEP:</label>
-                        <input type="number" name="cep" value={formData.cep} onChange={handleChange} placeholder="CEP" className="inputLogin" />
-                        {errors.cep && <p className="error">{errors.cep}</p>}
+                        <input type="number" name="cep" value={formData.cep} onChange={handleChange} placeholder="CEP" className={getInputErrorClass('cep')} />
+                        {errors.cep && <p className="error-message">{errors.cep}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">Número:</label>
-                        <input type="number" name="numero" value={formData.numero} onChange={handleChange} placeholder="Número" className="inputLogin" />
-                        {errors.numero && <p className="error">{errors.numero}</p>}
+                        <input type="number" name="numero" value={formData.numero} onChange={handleChange} placeholder="Número" className={getInputErrorClass('numero')} />
+                        {errors.numero && <p className="error-message">{errors.numero}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">Complemento:</label>
-                        <input type="text" name="complemento" value={formData.complemento} onChange={handleChange} placeholder="Complemento" className="inputLogin" />
-                        {errors.complemento && <p className="error">{errors.complemento}</p>}
+                        <input type="text" name="complemento" value={formData.complemento} onChange={handleChange} placeholder="Complemento" className={getInputErrorClass('complemento')} />
+                        {errors.complemento && <p className="error-message">{errors.complemento}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">Bairro:</label>
-                        <input type="text" name="bairro" value={formData.bairro} onChange={handleChange} placeholder="Bairro" className="inputLogin" />
-                        {errors.bairro && <p className="error">{errors.bairro}</p>}
+                        <input type="text" name="bairro" value={formData.bairro} onChange={handleChange} placeholder="Bairro" className={getInputErrorClass('bairro')} />
+                        {errors.bairro && <p className="error-message">{errors.bairro}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">Estado:</label>
-                        <input type="text" name="estado" value={formData.estado} onChange={handleChange} placeholder="Estado" className="inputLogin" />
-                        {errors.estado && <p className="error">{errors.estado}</p>}
+                        <input type="text" name="estado" value={formData.estado} onChange={handleChange} placeholder="Estado" className={getInputErrorClass('estado')} />
+                        {errors.estado && <p className="error-message">{errors.estado}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">Município:</label>
-                        <input type="text" name="municipio" value={formData.municipio} onChange={handleChange} placeholder="Município" className="inputLogin" />
-                        {errors.municipio && <p className="error">{errors.municipio}</p>}
+                        <input type="text" name="municipio" value={formData.municipio} onChange={handleChange} placeholder="Município" className={getInputErrorClass('municipio')} />
+                        {errors.municipio && <p className="error-message">{errors.municipio}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">Telefone:</label>
-                        <input type="number" name="telefone" value={formData.telefone} onChange={handleChange} placeholder="Telefone" className="inputLogin" />
-                        {errors.telefone && <p className="error">{errors.telefone}</p>}
+                        <input type="number" name="telefone" value={formData.telefone} onChange={handleChange} placeholder="Telefone" className={getInputErrorClass('telefone')} />
+                        {errors.telefone && <p className="error-message">{errors.telefone}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">Celular:</label>
-                        <input type="number" name="celular" value={formData.celular} onChange={handleChange} placeholder="Celular" className="inputLogin" />
-                        {errors.celular && <p className="error">{errors.celular}</p>}
+                        <input type="number" name="celular" value={formData.celular} onChange={handleChange} placeholder="Celular" className={getInputErrorClass('celular')} />
+                        {errors.celular && <p className="error-message">{errors.celular}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">Senha:</label>
-                        <input type="password" name="senha" value={formData.senha} onChange={handleChange} placeholder="Senha" className="inputLogin" />
-                        {errors.senha && <p className="error">{errors.senha}</p>}
+                        <input type="password" name="senha" value={formData.senha} onChange={handleChange} placeholder="Senha" className={getInputErrorClass('senha')} />
+                        {errors.senha && <p className="error-message">{errors.senha}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">Confirmar Senha:</label>
-                        <input type="password" name="confirmarSenha" value={formData.confirmarSenha} onChange={handleChange} placeholder="Confirmar Senha" className="inputLogin" />
-                        {errors.confirmarSenha && <p className="error">{errors.confirmarSenha}</p>}
+                        <input type="password" name="confirmarSenha" value={formData.confirmarSenha} onChange={handleChange} placeholder="Confirmar Senha" className={getInputErrorClass('confirmarSenha')} />
+                        {errors.confirmarSenha && <p className="error-message">{errors.confirmarSenha}</p>}
                     </div>
 
-                    {errors.firebase && <p className="error">{errors.firebase}</p>}
+                    {errors.firebase && <p className="error-message firebase-error">{errors.firebase}</p>}
                     <button type="submit" className='buttonLogin btnLogin'>Cadastrar</button>
                     <p className='label-input'>Já tem uma conta? <a href='/login' className='label-input'>Faça login</a></p>
                 </form>

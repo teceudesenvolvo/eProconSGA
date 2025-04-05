@@ -196,8 +196,9 @@ const AddProducts = () => {
     return (
         <div className="App-header">
             <MenuDashboard />
-            <div className="conteinar-Add-Products">
+            <div className="formRealizarReclamacao">
                 <div className='atualizeData formRealizarReclamacao'>
+                    <h3>Faça sua reclamação</h3>
                     <form onSubmit={handleSubmit}>
                         <p>Informações Principais</p>
                         <select
@@ -234,6 +235,7 @@ const AddProducts = () => {
                             <option value="Demais Serviços">Demais Serviços</option>
                         </select>
                         <input
+                            className="conteinar-Add-Products-select"
                             type="text"
                             name="assuntoDenuncia"
                             placeholder="Assunto da Denuncia"
@@ -243,12 +245,13 @@ const AddProducts = () => {
                         <br />
                         <label className="labelform-materia">Empresa Reclamada:</label><br />
                         <input
+                            className="conteinar-Add-Products-select"
                             type="text"
                             name="cnpj"
                             placeholder="Digite o CNPJ"
                             value={formData.cnpj}
                             onChange={handleChange}
-                        /><br/>
+                        /><br />
                         <button className='buttonLogin btnComentario' type="button" onClick={buscarEmpresaPorCnpj} disabled={loadingCnpj}>
                             {loadingCnpj ? 'Buscando...' : 'Buscar Empresa'}
                         </button>
@@ -300,6 +303,7 @@ const AddProducts = () => {
                         </select>
                         <br /><label className="labelform-materia">Data da contratação</label><br />
                         <input
+                            className="conteinar-Add-Products-select"
                             type="date"
                             name="dataContratacao"
                             placeholder="Data da Compra"
@@ -307,6 +311,7 @@ const AddProducts = () => {
                             onChange={handleChange}
                         />
                         <input
+                            className="conteinar-Add-Products-select"
                             type="text"
                             name="nomeServico"
                             placeholder="Nome do Serviço ou Plano"
@@ -314,6 +319,8 @@ const AddProducts = () => {
                             onChange={handleChange}
                         />
                         <textarea
+                            id="comentarios"
+                            className="conteinar-Add-Products-select"
                             name="detalheServico"
                             placeholder="Detalhes do Serviço ou Plano"
                             value={formData.detalheServico}
@@ -333,6 +340,7 @@ const AddProducts = () => {
                             <option value="Outros">Outros</option>
                         </select>
                         <input
+                            className="conteinar-Add-Products-select"
                             type="number"
                             name="numeroDoc"
                             placeholder="Número do documento"
@@ -341,6 +349,7 @@ const AddProducts = () => {
                         />
                         <br /><label className="labelform-materia">Data da ocorrência</label><br />
                         <input
+                            className="conteinar-Add-Products-select"
                             type="date"
                             name="dataOcorrencia"
                             placeholder="Data da ocorrência ou serviço"
@@ -351,6 +360,7 @@ const AddProducts = () => {
                         <br /><label className="labelform-materia">Data do cancelamento, desistência ou negativa</label><br />
 
                         <input
+                            className="conteinar-Add-Products-select"
                             type="date"
                             name="dataNegativa"
                             placeholder="Data de cancelamento, desistência ou negativa"
@@ -376,6 +386,7 @@ const AddProducts = () => {
                             <option value="Pix">Pix</option>
                         </select>
                         <input
+                            className="conteinar-Add-Products-select"
                             type="number"
                             name="valorCompra"
                             placeholder="Valor da Compra"
@@ -384,6 +395,8 @@ const AddProducts = () => {
                         />
                         <p>Outras Informações</p>
                         <textarea
+                            id="comentarios"
+                            className="conteinar-Add-Products-select"
                             name="detalhesReclamacao"
                             placeholder="Descreva em detalhes sua reclamação"
                             value={formData.detalhesReclamacao}

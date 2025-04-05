@@ -197,7 +197,7 @@ const AddProducts = () => {
         <div className="App-header">
             <MenuDashboard />
             <div className="conteinar-Add-Products">
-                <div className='atualizeData'>
+                <div className='atualizeData formRealizarReclamacao'>
                     <form onSubmit={handleSubmit}>
                         <p>Informações Principais</p>
                         <select

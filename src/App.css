@@ -1121,7 +1121,9 @@ video {
   margin-top: 10px;
 }
 
-
+.formRealizarReclamacao{
+  width: 50% !important;
+}
 
 .minhasCompras {
   width: 90%;

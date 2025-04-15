@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { GoBook, GoCircleSlash, GoCalendar, GoStop } from 'react-icons/go';
+import { GoBook, GoCircleSlash, GoCalendar, GoFile  } from 'react-icons/go';
 import SlideFeacures from '../componets/slideFeactures';
 import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
@@ -47,8 +47,8 @@ function HomeDashboard() {
                     <a href='/meus-atendimentos' className='btnLargeHome'>
                         <GoCalendar className="iconHomeBtn" /><br />Agendar Atendimento
                     </a>
-                    <a href='/' className='btnLargeHome'>
-                        <GoStop className="iconHomeBtn" /><br />Evite estes sites
+                    <a href='https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm' className='btnLargeHome'>
+                        <GoFile  className="iconHomeBtn" /><br />Codigo Defesa do Consumidor
                     </a>
                     <a className='btnLargeHome' href='https://www.consumidor.gov.br/' target="_blank" rel="noopener noreferrer">
                         <GoBook className="iconHomeBtn" /><br />Consumidor Gov

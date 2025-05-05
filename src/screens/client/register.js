@@ -4,6 +4,7 @@ import { auth, db } from '../../firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/logo-SGA-procon.png';
+import InputMask from 'react-input-mask'; // Importe a biblioteca de máscara
 
 const CadastroForm = () => {
     const [formData, setFormData] = useState({
@@ -16,8 +17,8 @@ const CadastroForm = () => {
         orgaoEmissor: '',
         dataNascimento: '',
         estadoCivil: '',
+        cep: '', // Primeiro campo de endereço
         endereco: '',
-        cep: '',
         numero: '',
         complemento: '',
         bairro: '',
@@ -30,9 +31,67 @@ const CadastroForm = () => {
 
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
+    const ufOptions = [
+        'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
+        'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
+        'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO',
+    ];
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleCepChange = (e) => {
+        const cep = e.target.value.replace(/\D/g, '');
+        setFormData({ ...formData, cep });
+        if (cep.length === 8) {
+            fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.erro) {
+                        setFormData({
+                            ...formData,
+                            cep: data.cep,
+                            endereco: data.logradouro,
+                            complemento: data.complemento,
+                            bairro: data.bairro,
+                            municipio: data.localidade,
+                            estado: data.uf,
+                        });
+                    } else {
+                        setErrors({ ...errors, cep: 'CEP não encontrado' });
+                        setFormData({
+                            ...formData,
+                            endereco: '',
+                            complemento: '',
+                            bairro: '',
+                            municipio: '',
+                            estado: '',
+                        });
+                    }
+                })
+                .catch(() => {
+                    setErrors({ ...errors, cep: 'Erro ao buscar CEP' });
+                    setFormData({
+                        ...formData,
+                        endereco: '',
+                        complemento: '',
+                        bairro: '',
+                        municipio: '',
+                        estado: '',
+                    });
+                });
+        } else if (cep.length < 8) {
+            setFormData({
+                ...formData,
+                cep,
+                endereco: '',
+                complemento: '',
+                bairro: '',
+                municipio: '',
+                estado: '',
+            });
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -74,7 +133,6 @@ const CadastroForm = () => {
                 // Autenticar o usuário após o registro
                 await signInWithEmailAndPassword(auth, formData.email, formData.senha);
 
-
                 // Redirecionar para o perfil
                 navigate('/meus-atendimentos');
             } catch (error) {
@@ -96,13 +154,15 @@ const CadastroForm = () => {
         else if (!/\S+@\S+\.\S+/.test(data.email)) errors.email = 'Email inválido';
         if (!data.sexo) errors.sexo = 'Sexo é obrigatório';
         if (!data.cpf) errors.cpf = 'CPF é obrigatório';
+        else if (data.cpf.replace(/\D/g, '').length !== 11) errors.cpf = 'CPF inválido';
         if (!data.rg) errors.rg = 'RG é obrigatório';
         if (!data.ufEmissor) errors.ufEmissor = 'UF Emissor é obrigatório';
         if (!data.orgaoEmissor) errors.orgaoEmissor = 'Orgão Emissor é obrigatório';
         if (!data.dataNascimento) errors.dataNascimento = 'Data de Nascimento é obrigatório';
         if (!data.estadoCivil) errors.estadoCivil = 'Estado Civil é obrigatório';
-        if (!data.endereco) errors.endereco = 'Endereço é obrigatório';
         if (!data.cep) errors.cep = 'CEP é obrigatório';
+        else if (data.cep.replace(/\D/g, '').length !== 8) errors.cep = 'CEP inválido';
+        if (!data.endereco) errors.endereco = 'Endereço é obrigatório';
         if (!data.numero) errors.numero = 'Número é obrigatório';
         if (!data.bairro) errors.bairro = 'Bairro é obrigatório';
         if (!data.estado) errors.estado = 'Estado é obrigatório';
@@ -114,12 +174,6 @@ const CadastroForm = () => {
 
         return errors;
     };
-
-    const ufOptions = [
-        'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
-        'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
-        'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO',
-    ];
 
     const getInputErrorClass = (fieldName) => {
         return errors[fieldName] ? 'inputLogin error' : 'inputLogin';
@@ -157,7 +211,14 @@ const CadastroForm = () => {
                     </div>
                     <div>
                         <label className="label-input label-register">CPF:</label>
-                        <input type="number" name="cpf" value={formData.cpf} onChange={handleChange} placeholder="CPF" className={getInputErrorClass('cpf')} />
+                        <InputMask
+                            mask="999.999.999-99"
+                            name="cpf"
+                            value={formData.cpf}
+                            onChange={handleChange}
+                            placeholder="CPF"
+                            className={getInputErrorClass('cpf')}
+                        />
                         {errors.cpf && <p className="error-message">{errors.cpf}</p>}
                     </div>
                     <div>
@@ -196,15 +257,24 @@ const CadastroForm = () => {
                         </select>
                         {errors.estadoCivil && <p className="error-message">{errors.estadoCivil}</p>}
                     </div>
-                    <div>
-                        <label className="label-input label-register">Endereço:</label>
-                        <input type="text" name="endereco" value={formData.endereco} onChange={handleChange} placeholder="Endereço" className={getInputErrorClass('endereco')} />
-                        {errors.endereco && <p className="error-message">{errors.endereco}</p>}
-                    </div>
+
+                    {/* Campos de Endereço (CEP como primeiro) */}
                     <div>
                         <label className="label-input label-register">CEP:</label>
-                        <input type="number" name="cep" value={formData.cep} onChange={handleChange} placeholder="CEP" className={getInputErrorClass('cep')} />
+                        <InputMask
+                            mask="99999-999"
+                            name="cep"
+                            value={formData.cep}
+                            onChange={handleCepChange}
+                            placeholder="CEP"
+                            className={getInputErrorClass('cep')}
+                        />
                         {errors.cep && <p className="error-message">{errors.cep}</p>}
+                    </div>
+                    <div>
+                        <label className="label-input label-register">Endereço:</label>
+                        <input type="text" name="endereco" value={formData.endereco} onChange={handleChange} placeholder="Endereço" className={getInputErrorClass('endereco')} readOnly />
+                        {errors.endereco && <p className="error-message">{errors.endereco}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">Número:</label>
@@ -213,25 +283,25 @@ const CadastroForm = () => {
                     </div>
                     <div>
                         <label className="label-input label-register">Complemento:</label>
-                        <input type="text" name="complemento" value={formData.complemento} onChange={handleChange} placeholder="Complemento" className={getInputErrorClass('complemento')} />
+                        <input type="text" name="complemento" value={formData.complemento} onChange={handleChange} placeholder="Complemento" className={getInputErrorClass('complemento')} readOnly />
                         {errors.complemento && <p className="error-message">{errors.complemento}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">Bairro:</label>
-                        <input type="text" name="bairro" value={formData.bairro} onChange={handleChange} placeholder="Bairro" className={getInputErrorClass('bairro')} />
+                        <input type="text" name="bairro" value={formData.bairro} onChange={handleChange} placeholder="Bairro" className={getInputErrorClass('bairro')} readOnly />
                         {errors.bairro && <p className="error-message">{errors.bairro}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">Estado:</label>
-                        <input type="text" name="estado" value={formData.estado} onChange={handleChange} placeholder="Estado" className={getInputErrorClass('estado')} />
+                        <input type="text" name="estado" value={formData.estado} onChange={handleChange} placeholder="Estado" className={getInputErrorClass('estado')} readOnly />
                         {errors.estado && <p className="error-message">{errors.estado}</p>}
                     </div>
                     <div>
                         <label className="label-input label-register">Município:</label>
-                        <input type="text" name="municipio" value={formData.municipio} onChange={handleChange} placeholder="Município" className={getInputErrorClass('municipio')} />
+                        <input type="text" name="municipio" value={formData.municipio} onChange={handleChange} placeholder="Município" className={getInputErrorClass('municipio')} readOnly />
                         {errors.municipio && <p className="error-message">{errors.municipio}</p>}
                     </div>
-                    
+
                     <div>
                         <label className="label-input label-register">Celular:</label>
                         <input type="number" name="celular" value={formData.celular} onChange={handleChange} placeholder="Celular" className={getInputErrorClass('celular')} />

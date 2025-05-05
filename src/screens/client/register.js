@@ -23,7 +23,6 @@ const CadastroForm = () => {
         bairro: '',
         estado: '',
         municipio: '',
-        telefone: '',
         celular: '',
         senha: '',
         confirmarSenha: '',
@@ -66,7 +65,6 @@ const CadastroForm = () => {
                     bairro: formData.bairro,
                     estado: formData.estado,
                     municipio: formData.municipio,
-                    telefone: formData.telefone,
                     celular: formData.celular,
                 });
 
@@ -109,7 +107,6 @@ const CadastroForm = () => {
         if (!data.bairro) errors.bairro = 'Bairro é obrigatório';
         if (!data.estado) errors.estado = 'Estado é obrigatório';
         if (!data.municipio) errors.municipio = 'Município é obrigatório';
-        if (!data.telefone) errors.telefone = 'Telefone é obrigatório';
         if (!data.celular) errors.celular = 'Celular é obrigatório';
         if (!data.senha) errors.senha = 'Senha é obrigatório';
         if (!data.confirmarSenha) errors.confirmarSenha = 'Confirmar Senha é obrigatório';
@@ -234,11 +231,7 @@ const CadastroForm = () => {
                         <input type="text" name="municipio" value={formData.municipio} onChange={handleChange} placeholder="Município" className={getInputErrorClass('municipio')} />
                         {errors.municipio && <p className="error-message">{errors.municipio}</p>}
                     </div>
-                    <div>
-                        <label className="label-input label-register">Telefone:</label>
-                        <input type="number" name="telefone" value={formData.telefone} onChange={handleChange} placeholder="Telefone" className={getInputErrorClass('telefone')} />
-                        {errors.telefone && <p className="error-message">{errors.telefone}</p>}
-                    </div>
+                    
                     <div>
                         <label className="label-input label-register">Celular:</label>
                         <input type="number" name="celular" value={formData.celular} onChange={handleChange} placeholder="Celular" className={getInputErrorClass('celular')} />

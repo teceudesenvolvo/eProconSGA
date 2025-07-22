@@ -746,8 +746,252 @@ video {
 
 /* Slides */
 
+
+  /* SlideFeactures.css */
+
+  /* --- Container Principal do Splide --- */
+  .splide-container {
+    padding: 20px 0;
+    /* Espaçamento superior e inferior para o carrossel */
+    width: 100%;
+    max-width: 90%;
+    /* Limita a largura para centralizar e dar respiro */
+    margin: 0 auto;
+    /* Centraliza o container */
+  }
+
+  /* --- Estilo do Slide Individual (Card do Representante) --- */
+  .representative-card-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    /* Espaçamento interno para o card dentro do slide */
+  }
+
+  .representative-card {
+    background-color: #ffffff;
+    /* Fundo branco do card */
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    /* Sombra suave */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    /* Ocupa a largura disponível no slide */
+    max-width: 280px;
+    /* Largura máxima para o card individual */
+    height: auto;
+    /* Altura automática baseada no conteúdo */
+    min-height: 180px;
+    /* Altura mínima para consistência */
+    transition: transform 0.2s ease-in-out;
+    /* Animação suave no hover */
+  }
+
+  .representative-card:hover {
+    transform: translateY(-5px);
+    /* Efeito de "levantar" no hover */
+  }
+
+  /* --- Cabeçalho do Card (Imagem e Info) --- */
+  .representative-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
+    justify-content: center;
+    /* Centraliza o cabeçalho */
+    flex-direction: column;
+    /* Empilha imagem e info em telas menores */
+    text-align: center;
+  }
+
+  .representative-image-wrapper {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    /* Torna a imagem circular */
+    overflow: hidden;
+    /* Garante que a imagem seja cortada em círculo */
+    border: 2px solid #e0e0e0;
+    /* Borda clara ao redor da imagem */
+    margin-bottom: 10px;
+    /* Espaçamento entre imagem e nome */
+  }
+
+  .representative-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Garante que a imagem preencha o círculo */
+  }
+
+  .representative-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Centraliza o texto */
+  }
+
+  .representative-name {
+    font-size: 15px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+    align-items: center !important;
+    white-space: nowrap;
+    width: 17ch;
+    overflow: hidden;
+    text-overflow: ellipsis !important;
+  }
+
+  .verified-icon {
+    font-size: 0.8em;
+    /* Tamanho do ícone de verificação */
+    color: #4CAF50;
+    /* Cor verde para o ícone de verificação */
+  }
+
+  .representative-role {
+    font-size: 12px;
+    color: #777;
+    margin: 5px 0 0 0;
+  }
+
+  /* --- Estatísticas do Representante --- */
+  .representative-stats {
+    display: flex;
+    justify-content: space-around;
+    /* Distribui as estatísticas horizontalmente */
+    width: 100%;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+    /* Linha divisória sutil */
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+    color: #555;
+    margin: 0;
+  }
+
+  .stat-value {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+  }
+
+  /* --- Estilos das Setas de Navegação do Splide --- */
+  /* Sobrescreve os estilos padrão do Splide para as setas */
+  .splide__arrow {
+    background-color: rgba(255, 255, 255, 0.8);
+    /* Fundo branco semi-transparente */
+    border-radius: 50%;
+    /* Torna as setas circulares */
+    width: 40px;
+    height: 40px;
+    /* Sombra para destacá-las */
+    opacity: 1;
+    /* Garante que estejam sempre visíveis */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .splide__arrow svg {
+    fill: #888;
+    /* Cor cinza para o ícone da seta */
+    width: 1.2em;
+    height: 1.2em;
+  }
+
+  .splide__arrow--prev {
+    top: 11em !important;
+    left: -2px;
+    /* Ajusta a posição da seta esquerda */
+  }
+
+  .splide__arrow--next {
+    top: 11em !important;
+    left: 71.5% !important;
+    margin-left: 61%;
+    z-index: 1;
+    /* Ajusta a posição da seta direita */
+  }
+
+  /* --- Responsividade --- */
+  @media (max-width: 768px) {
+    .splide-container {
+      max-width: 95%;
+      /* Ocupa mais largura em telas menores */
+    }
+
+    .representative-card {
+      padding: 15px;
+      min-height: 160px;
+    }
+
+    .representative-image-wrapper {
+      width: 70px;
+      height: 70px;
+    }
+
+    .representative-name {
+      font-size: 1.1em;
+    }
+
+    .representative-role {
+      font-size: 0.85em;
+    }
+
+    .representative-stats {
+      flex-direction: column;
+      /* Empilha as estatísticas em telas muito pequenas */
+      gap: 5px;
+    }
+
+    .stat-item {
+      font-size: 0.8em;
+    }
+
+    .stat-value {
+      font-size: 1.1em;
+    }
+
+    .splide__arrow {
+      width: 35px;
+      height: 35px;
+    }
+
+    .splide__arrow svg {
+      width: 1em;
+      height: 1em;
+    }
+
+    .splide__arrow--prev {
+      left: -10px;
+    }
+
+    .splide__arrow--next {
+      right: -10px;
+    }
+  }
+
+
+
+  .slidesFeacture {
+    width: 250px !important;
+    height: 255px !important;
+  }
+
+
 .splide__arrow {
-  display: none !important;
+  display: block !important;
 }
 
 .splide.is-initialized,
@@ -766,7 +1010,7 @@ video {
 }
 
 .splide__pagination__page {
-  display: none !important;
+  display: block !important;
 }
 
 .splide__track {

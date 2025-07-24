@@ -1174,14 +1174,14 @@ video {
 }
 
 .splide__arrow--prev {
-  top: 11em !important;
-  left: -2px;
+  top: 9em !important;
+  left: -15px !important;
   /* Ajusta a posição da seta esquerda */
 }
 
 .splide__arrow--next {
-  top: 11em !important;
-  left: 71.5% !important;
+  top: 9em !important;
+  left: 67.5% !important;
   margin-left: 61%;
   z-index: 1;
   /* Ajusta a posição da seta direita */

@@ -15,6 +15,32 @@
   width: 60%;
 }
 
+body {
+  font-family: 'Inter', sans-serif;
+  /* Usando a fonte Inter, conforme as instruções */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Exemplo de estilo para a classe 'App' se necessário */
+.App {
+  /* Pode ser usado para definir um fundo global, por exemplo */
+  background-color: #f0f2f5;
+  /* Um cinza claro para o fundo */
+}
+
+/*
+  Para garantir que o Tailwind CSS funcione corretamente,
+  você precisará ter o Tailwind configurado no seu projeto.
+  Isso geralmente envolve a instalação via npm/yarn e a configuração
+  do `tailwind.config.js` e a inclusão das diretivas `@tailwind`
+  como mostrado acima.
+*/
+
+
 
 
 @media (prefers-reduced-motion: no-preference) {
@@ -554,13 +580,13 @@ h1 {
 
 }
 
-.btnLogin{
+.btnLogin {
   width: 30% !important;
   margin: 30px auto;
   text-decoration: none;
 }
 
-.btnNewReclam{
+.btnNewReclam {
   width: 88% !important;
   font-size: 20px;
   align-items: center;
@@ -569,7 +595,7 @@ h1 {
   margin-bottom: -50px !important;
 }
 
-.btnNewReclam:hover{
+.btnNewReclam:hover {
   transition: all 0.3s;
   background-color: #d45a03;
 }
@@ -747,247 +773,247 @@ video {
 /* Slides */
 
 
-  /* SlideFeactures.css */
+/* SlideFeactures.css */
 
-  /* --- Container Principal do Splide --- */
+/* --- Container Principal do Splide --- */
+.splide-container {
+  padding: 0px 0;
+  /* Espaçamento superior e inferior para o carrossel */
+  width: 100%;
+  max-width: 90%;
+  /* Limita a largura para centralizar e dar respiro */
+  margin: 0 auto;
+  /* Centraliza o container */
+}
+
+/* --- Estilo do Slide Individual (Card do Representante) --- */
+.representative-card-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  /* Espaçamento interno para o card dentro do slide */
+}
+
+.representative-card {
+  background-color: #ffffff;
+  /* Fundo branco do card */
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  /* Sombra suave */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  /* Ocupa a largura disponível no slide */
+  max-width: 280px;
+  /* Largura máxima para o card individual */
+  height: auto;
+  /* Altura automática baseada no conteúdo */
+  max-height: 130px;
+  /* Altura mínima para consistência */
+  transition: transform 0.2s ease-in-out;
+  /* Animação suave no hover */
+}
+
+.representative-card:hover {
+  transform: translateY(-5px);
+  /* Efeito de "levantar" no hover */
+}
+
+/* --- Cabeçalho do Card (Imagem e Info) --- */
+.representative-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+  justify-content: center;
+  /* Centraliza o cabeçalho */
+  flex-direction: column;
+  /* Empilha imagem e info em telas menores */
+  text-align: center;
+}
+
+.representative-image-wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  /* Torna a imagem circular */
+  overflow: hidden;
+  /* Garante que a imagem seja cortada em círculo */
+  border: 2px solid #e0e0e0;
+  /* Borda clara ao redor da imagem */
+  margin-bottom: 10px;
+  /* Espaçamento entre imagem e nome */
+}
+
+.representative-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Garante que a imagem preencha o círculo */
+}
+
+.representative-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Centraliza o texto */
+}
+
+.representative-name {
+  font-size: 15px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+  align-items: center !important;
+  white-space: nowrap;
+  width: 17ch;
+  overflow: hidden;
+  text-overflow: ellipsis !important;
+}
+
+.verified-icon {
+  font-size: 0.8em;
+  /* Tamanho do ícone de verificação */
+  color: #4CAF50;
+  /* Cor verde para o ícone de verificação */
+}
+
+.representative-role {
+  font-size: 12px;
+  color: #777;
+  margin: 5px 0 0 0;
+}
+
+/* --- Estatísticas do Representante --- */
+.representative-stats {
+  display: flex;
+  justify-content: space-around;
+  /* Distribui as estatísticas horizontalmente */
+  width: 100%;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+  /* Linha divisória sutil */
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 12px;
+  color: #555;
+  margin: 0;
+}
+
+.stat-value {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+/* --- Estilos das Setas de Navegação do Splide --- */
+/* Sobrescreve os estilos padrão do Splide para as setas */
+.splide__arrow {
+  background-color: rgba(255, 255, 255, 0.8);
+  /* Fundo branco semi-transparente */
+  border-radius: 50%;
+  /* Torna as setas circulares */
+  width: 40px;
+  height: 40px;
+  /* Sombra para destacá-las */
+  opacity: 1;
+  /* Garante que estejam sempre visíveis */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.splide__arrow svg {
+  fill: #888;
+  /* Cor cinza para o ícone da seta */
+  width: 1.2em;
+  height: 1.2em;
+}
+
+.splide__arrow--prev {
+  top: 11em !important;
+  left: -2px;
+  /* Ajusta a posição da seta esquerda */
+}
+
+.splide__arrow--next {
+  top: 11em !important;
+  left: 71.5% !important;
+  margin-left: 61%;
+  z-index: 1;
+  /* Ajusta a posição da seta direita */
+}
+
+/* --- Responsividade --- */
+@media (max-width: 768px) {
   .splide-container {
-    padding: 20px 0;
-    /* Espaçamento superior e inferior para o carrossel */
-    width: 100%;
-    max-width: 90%;
-    /* Limita a largura para centralizar e dar respiro */
-    margin: 0 auto;
-    /* Centraliza o container */
-  }
-
-  /* --- Estilo do Slide Individual (Card do Representante) --- */
-  .representative-card-slide {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    /* Espaçamento interno para o card dentro do slide */
+    max-width: 95%;
+    /* Ocupa mais largura em telas menores */
   }
 
   .representative-card {
-    background-color: #ffffff;
-    /* Fundo branco do card */
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    /* Sombra suave */
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    /* Ocupa a largura disponível no slide */
-    max-width: 280px;
-    /* Largura máxima para o card individual */
-    height: auto;
-    /* Altura automática baseada no conteúdo */
-    min-height: 180px;
-    /* Altura mínima para consistência */
-    transition: transform 0.2s ease-in-out;
-    /* Animação suave no hover */
-  }
-
-  .representative-card:hover {
-    transform: translateY(-5px);
-    /* Efeito de "levantar" no hover */
-  }
-
-  /* --- Cabeçalho do Card (Imagem e Info) --- */
-  .representative-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    width: 100%;
-    justify-content: center;
-    /* Centraliza o cabeçalho */
-    flex-direction: column;
-    /* Empilha imagem e info em telas menores */
-    text-align: center;
+    padding: 15px;
+    min-height: 160px;
   }
 
   .representative-image-wrapper {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    /* Torna a imagem circular */
-    overflow: hidden;
-    /* Garante que a imagem seja cortada em círculo */
-    border: 2px solid #e0e0e0;
-    /* Borda clara ao redor da imagem */
-    margin-bottom: 10px;
-    /* Espaçamento entre imagem e nome */
-  }
-
-  .representative-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* Garante que a imagem preencha o círculo */
-  }
-
-  .representative-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    /* Centraliza o texto */
+    width: 70px;
+    height: 70px;
   }
 
   .representative-name {
-    font-size: 15px;
-    font-weight: bold;
-    color: #333;
-    margin: 0;
-    align-items: center !important;
-    white-space: nowrap;
-    width: 17ch;
-    overflow: hidden;
-    text-overflow: ellipsis !important;
-  }
-
-  .verified-icon {
-    font-size: 0.8em;
-    /* Tamanho do ícone de verificação */
-    color: #4CAF50;
-    /* Cor verde para o ícone de verificação */
+    font-size: 1.1em;
   }
 
   .representative-role {
-    font-size: 12px;
-    color: #777;
-    margin: 5px 0 0 0;
+    font-size: 0.85em;
   }
 
-  /* --- Estatísticas do Representante --- */
   .representative-stats {
-    display: flex;
-    justify-content: space-around;
-    /* Distribui as estatísticas horizontalmente */
-    width: 100%;
-    padding-top: 15px;
-    border-top: 1px solid #f0f0f0;
-    /* Linha divisória sutil */
+    flex-direction: column;
+    /* Empilha as estatísticas em telas muito pequenas */
+    gap: 5px;
   }
 
   .stat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 12px;
-    color: #555;
-    margin: 0;
+    font-size: 0.8em;
   }
 
   .stat-value {
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 5px;
+    font-size: 1.1em;
   }
 
-  /* --- Estilos das Setas de Navegação do Splide --- */
-  /* Sobrescreve os estilos padrão do Splide para as setas */
   .splide__arrow {
-    background-color: rgba(255, 255, 255, 0.8);
-    /* Fundo branco semi-transparente */
-    border-radius: 50%;
-    /* Torna as setas circulares */
-    width: 40px;
-    height: 40px;
-    /* Sombra para destacá-las */
-    opacity: 1;
-    /* Garante que estejam sempre visíveis */
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 35px;
+    height: 35px;
   }
 
   .splide__arrow svg {
-    fill: #888;
-    /* Cor cinza para o ícone da seta */
-    width: 1.2em;
-    height: 1.2em;
+    width: 1em;
+    height: 1em;
   }
 
   .splide__arrow--prev {
-    top: 11em !important;
-    left: -2px;
-    /* Ajusta a posição da seta esquerda */
+    left: -10px;
   }
 
   .splide__arrow--next {
-    top: 11em !important;
-    left: 71.5% !important;
-    margin-left: 61%;
-    z-index: 1;
-    /* Ajusta a posição da seta direita */
+    right: -10px;
   }
-
-  /* --- Responsividade --- */
-  @media (max-width: 768px) {
-    .splide-container {
-      max-width: 95%;
-      /* Ocupa mais largura em telas menores */
-    }
-
-    .representative-card {
-      padding: 15px;
-      min-height: 160px;
-    }
-
-    .representative-image-wrapper {
-      width: 70px;
-      height: 70px;
-    }
-
-    .representative-name {
-      font-size: 1.1em;
-    }
-
-    .representative-role {
-      font-size: 0.85em;
-    }
-
-    .representative-stats {
-      flex-direction: column;
-      /* Empilha as estatísticas em telas muito pequenas */
-      gap: 5px;
-    }
-
-    .stat-item {
-      font-size: 0.8em;
-    }
-
-    .stat-value {
-      font-size: 1.1em;
-    }
-
-    .splide__arrow {
-      width: 35px;
-      height: 35px;
-    }
-
-    .splide__arrow svg {
-      width: 1em;
-      height: 1em;
-    }
-
-    .splide__arrow--prev {
-      left: -10px;
-    }
-
-    .splide__arrow--next {
-      right: -10px;
-    }
-  }
+}
 
 
 
-  .slidesFeacture {
-    width: 250px !important;
-    height: 255px !important;
-  }
+.slidesFeacture {
+  width: 250px !important;
+  height: 255px !important;
+}
 
 
 .splide__arrow {
@@ -1272,13 +1298,13 @@ video {
   float: left;
 }
 
-.profile-desc-ul{
+.profile-desc-ul {
   width: 100%;
   display: inline-block;
 }
 
 
-.profile-desc{
+.profile-desc {
   flex-grow: 3;
   display: block;
   background-color: #d8d8d8;
@@ -1294,7 +1320,7 @@ video {
   float: left;
 }
 
-.profile-btn-exit{
+.profile-btn-exit {
   width: 100px !important;
   background: red;
   text-decoration: none;
@@ -1356,10 +1382,10 @@ video {
 .formLogin {
   align-items: flex-start;
   text-align: left;
-  
+
 }
 
-.formLogin > div {
+.formLogin>div {
   width: 100%;
 }
 
@@ -1367,7 +1393,7 @@ video {
   font-size: 15px !important;
 }
 
-.label-register{
+.label-register {
   display: none;
 }
 
@@ -1380,7 +1406,7 @@ video {
   margin-top: 10px;
 }
 
-.formRealizarReclamacao{
+.formRealizarReclamacao {
   width: 80% !important;
 }
 
@@ -2261,8 +2287,9 @@ video {
   display: inline-flex;
   text-align: left;
   flex-direction: row;
-  color: #1f1f1f;
-  margin-left: 40px;
+  color: #8a8a8a;
+  margin-top: 50px;
+  margin-left: 10%;
   width: 300px;
 }
 
@@ -2271,7 +2298,7 @@ video {
 
 .header-Dach-div>h1 {
   width: 100%;
-  font-weight: bold;
+  font-weight: 300;
 }
 
 
@@ -2657,6 +2684,7 @@ video {
 .btnsHome {
   width: 100%;
   height: auto;
+  display: ruby ;
   flex-direction: row;
   align-items: center;
   align-content: center;
@@ -2699,23 +2727,23 @@ video {
 }
 
 .btnLargeHome {
-  display: inline-block;
-  flex: 1;
-  flex-direction: column;
-  background-color: #ECECEC;
-  color: #5A5A5A;
-  width: 19% !important;
-  height: 200px;
+  display: flex;
+  flex-direction: row;
+  background-color: #0f6b34;
+  color: #fff;
+  width: 20% !important;
+  height: 79px;
   font-size: 15px;
   border-radius: 10px;
-  margin: 10px;
+  margin: 0.2%;
   text-decoration: none;
   align-items: center;
   text-align: center;
+  box-shadow: 1px 3px 10px rgba(0, 0, 0, 0.06);
 }
 
 .iconHomeBtn {
-  font-size: 100px;
+  font-size: 40px;
   margin: 20px;
 }
 
@@ -2732,6 +2760,136 @@ textarea {
 
 
 /* Footer */
+
+.footer {
+  background-color: #2d3748;
+  /* Cor de fundo cinza escuro */
+  color: #ffffff !important;
+  /* Cor do texto branco */
+  padding: 32px 16px;
+  /* Padding vertical e horizontal */
+  margin-top: auto;
+  /* Empurra o rodapé para baixo em layouts flexbox */
+  border-top-left-radius: 8px;
+  /* Cantos arredondados superiores */
+  border-top-right-radius: 8px;
+  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06);
+  /* Sombra sutil */
+}
+
+.footer-container {
+  max-width: 1120px;
+  /* Largura máxima do conteúdo */
+  margin: 0 auto;
+  /* Centraliza o container */
+  display: grid;
+  grid-template-columns: 1fr;
+  /* Uma coluna por padrão (mobile) */
+  gap: 32px;
+  /* Espaçamento entre as colunas */
+}
+
+@media (min-width: 768px) {
+
+  /* Para telas médias e maiores (md breakpoint) */
+  .footer-container {
+    grid-template-columns: repeat(3, 1fr);
+    /* Três colunas */
+  }
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Centraliza itens em mobile */
+  text-align: center;
+  /* Centraliza texto em mobile */
+}
+
+@media (min-width: 768px) {
+  .footer-column {
+    align-items: flex-start;
+    /* Alinha itens à esquerda em desktop */
+    text-align: left;
+    /* Alinha texto à esquerda em desktop */
+  }
+}
+
+.footer-column h3 {
+  font-size: 1.25rem;
+  /* text-xl */
+  font-weight: bold;
+  margin-bottom: 8px;
+  /* mb-2 */
+}
+
+.footer-column h4 {
+  font-size: 1.125rem;
+  /* text-lg */
+  font-weight: 600;
+  /* font-semibold */
+  margin-top: 24px;
+  /* mt-6 */
+  margin-bottom: 12px;
+  /* mb-3 */
+}
+
+.footer-column p {
+  font-size: 0.875rem;
+  /* text-sm */
+  color: #cbd5e0;
+  /* text-gray-400 */
+  margin-bottom: 8px;
+  /* mb-2 */
+}
+
+.footer-column ul {
+  list-style: none;
+  /* Remove marcadores de lista */
+  padding: 0;
+  margin: 0;
+  line-height: 1.5;
+  /* Espaçamento entre linhas */
+}
+
+.footer-column ul li {
+  margin-bottom: 8px;
+  /* space-y-2 */
+}
+
+.footer-column ul li a {
+  color: #d1d5db;
+  /* text-gray-300 */
+  text-decoration: none;
+  /* Remove sublinhado */
+  transition: color 0.2s ease-in-out;
+  /* Transição suave na cor */
+}
+
+.footer-column ul li a:hover {
+  color: #63b3ed;
+  /* hover:text-blue-400 */
+}
+
+.footer-copyright {
+  margin-top: 32px;
+  /* mt-8 */
+  padding-top: 16px;
+  /* pt-4 */
+  border-top: 1px solid #4a5568;
+  /* border-t border-gray-700 */
+  text-align: center;
+  color: #a0aec0;
+  /* text-gray-500 */
+  font-size: 0.875rem;
+  /* text-sm */
+}
+
+.footer-copyright>p {
+  color: white;
+}
+
 .footer {
   background-color: #012447;
   color: #fff !important;
@@ -2740,7 +2898,7 @@ textarea {
 }
 
 footer>p {
-  color: #fff !important;
+  color: #ffffff !important;
   font-size: 12px;
 }
 
@@ -2816,6 +2974,50 @@ footer>p {
 
 }
 
+
+
+/* Estilos para o Iframe do Código de Defesa do Consumidor */
+.cdc-embed-container {
+  width: 100%;
+  position: relative;
+  padding-bottom: 75%;
+  /* Proporção de aspecto (ex: 4:3, 16:9, etc.). 75% para 4:3, 56.25% para 16:9 */
+  height: 90%;
+  overflow: hidden;
+  margin: 20px auto;
+  /* Centraliza e adiciona margem */
+  max-width: 1000px;
+  /* Largura máxima para o iframe */
+  border-radius: 8px;
+  /* Cantos arredondados */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* Sombra */
+}
+
+.cdc-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  /* Remove a borda padrão do iframe */
+}
+
+/* Estilos para o layout geral da aplicação */
+.App-header {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* Garante que o layout ocupe a altura total da viewport */
+}
+
+.minhasCompras {
+  flex-grow: 1;
+  /* Permite que o conteúdo principal ocupe todo o espaço disponível */
+  padding: 20px;
+  /* Adiciona um padding para o conteúdo */
+}
 
 
 .menuDesktop {

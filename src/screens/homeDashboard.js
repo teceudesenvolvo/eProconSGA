@@ -47,7 +47,7 @@ function HomeDashboard() {
                     <a href='/meus-atendimentos' className='btnLargeHome'>
                         <GoCalendar className="iconHomeBtn" /><br />Agendar Atendimento
                     </a>
-                    <a href='https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm' className='btnLargeHome'>
+                    <a href='/codigo-de-defesa-do-consumidor' className='btnLargeHome'>
                         <GoFile  className="iconHomeBtn" /><br />Codigo Defesa do Consumidor
                     </a>
                     <a className='btnLargeHome' href='https://www.consumidor.gov.br/' target="_blank" rel="noopener noreferrer">

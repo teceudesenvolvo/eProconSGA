@@ -108,6 +108,243 @@ body {
 }
 
 
+
+/* Estilos para o Iframe do Código de Defesa do Consumidor */
+.cdc-embed-container {
+  position: relative;
+  padding-bottom: 75%;
+  /* Proporção de aspecto (ex: 4:3, 16:9, etc.). 75% para 4:3, 56.25% para 16:9 */
+  height: 0;
+  overflow: hidden;
+  margin: 20px auto;
+  /* Centraliza e adiciona margem */
+  max-width: 1000px;
+  /* Largura máxima para o iframe */
+  border-radius: 8px;
+  /* Cantos arredondados */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* Sombra */
+}
+
+.cdc-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  /* Remove a borda padrão do iframe */
+}
+
+/* Estilos para o layout geral da aplicação */
+.App-header {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* Garante que o layout ocupe a altura total da viewport */
+}
+
+.minhasCompras {
+  flex-grow: 1;
+  /* Permite que o conteúdo principal ocupe todo o espaço disponível */
+  padding: 20px;
+  /* Adiciona um padding para o conteúdo */
+}
+
+/* Estilos para o cabeçalho da HomeDashboard (baseado na imagem) */
+.Home-Dach {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80%;
+  align-items: center;
+  justify-content: center;
+  height: 500px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .header-content {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+.header-text {
+  margin-top: 100px;
+  height: 200px;
+  flex: 1;
+  width: 50%;
+  text-align: left;
+}
+
+.header-text h1 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 25px;
+  color: #000;
+}
+
+.header-text p {
+  font-family: "Montserrat", sans-serif;
+  margin-left: 10px;
+  font-size: 15px;
+  color: #666;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.header-button-primary {
+  background-color: #007bff;
+  /* Azul primário */
+  color: white;
+  padding: 12px 25px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.header-button-primary:hover {
+  background-color: #0056b3;
+  /* Azul mais escuro no hover */
+}
+
+.header-button-secondary {
+  background-color: #ffffff;
+  /* Fundo branco */
+  color: #007bff;
+  /* Texto azul */
+  padding: 12px 25px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  border: 1px solid #007bff;
+  /* Borda azul */
+  cursor: pointer;
+}
+
+.header-button-secondary:hover {
+  background-color: #e0f2f7;
+  /* Fundo azul claro no hover */
+  color: #0056b3;
+  border-color: #0056b3;
+}
+
+.header-image-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 20px;
+}
+
+.header-image {
+  width:100%;
+  max-width: 600px;
+  background-size: cover;
+  border-radius: 100px 50px 50px 200px;
+  border: 10px solid #008dc965;
+  margin-top: 50px;
+}
+
+/* Estilos para os botões de ação abaixo do header principal */
+.btnsHome {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 30px;
+  /* Espaçamento do header */
+  margin-bottom: 30px;
+  width: 100%;
+  max-width: 1000px;
+  /* Ajuste conforme necessário */
+}
+
+.btnLargeHome {
+  background-color: #0d5193;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  flex: 1 1 calc(50% - 15px);
+  max-width: 250px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  display: inline-flex;
+  flex-direction: row;
+  color: #fff;
+  width: 20% !important;
+  height: 79px;
+  font-size: 12px;
+  border-radius: 10px;
+  margin-right: 20px;
+  text-decoration: none;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  box-shadow: 1px 3px 10px rgba(0, 0, 0, 0.06);
+  padding: 5px;
+}
+
+@media (min-width: 768px) {
+  .btnLargeHome {
+    flex: 1 1 calc(25% - 15px);
+  }
+}
+
+.btnLargeHome:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+.btnHome {
+  background-color: #007bff;
+  color: white;
+  padding: 12px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  margin: 0 10px;
+}
+
+.btnHome:hover {
+  background-color: #0056b3;
+}
+
+.HomeDesktopCarrosel {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 30px;
+  /* Espaçamento inferior */
+}
+
 .btnHomeAcess {
   width: 40%;
   height: 50px;
@@ -2285,12 +2522,11 @@ video {
 
 .header-Dach-div {
   display: inline-flex;
-  text-align: left;
+  text-align: center;
   flex-direction: row;
   color: #8a8a8a;
   margin-top: 50px;
-  margin-left: 10%;
-  width: 300px;
+  width: 100%;
 }
 
 
@@ -2682,13 +2918,11 @@ video {
 }
 
 .btnsHome {
-  width: 100%;
+  width: 90%;
   height: auto;
-  display: ruby ;
-  flex-direction: row;
-  align-items: center;
-  align-content: center;
-  margin-bottom: 10px;
+  display: ruby;
+  margin: 0 auto;
+  justify-content: center !important;
 }
 
 .btnsHome:first-child {
@@ -2697,9 +2931,9 @@ video {
 
 .btnHome {
   display: inline-block;
-  width: 40%;
-  height: 50px;
   margin: 10px;
+  width: 20%;
+  height: 20px;
   border: none;
   color: white;
   text-decoration: none;
@@ -2711,40 +2945,28 @@ video {
   text-align: center;
 }
 
-.btnHome:hover,
-.btnLargeHome:hover {
-  transition: 0.3s all;
-  transform: scale(1.03);
-}
 
 
 .btnHome:first-child {
   background-color: #0d5193;
 }
 
+
 .btnHome:last-child {
-  background-color: #FF6B07;
+  border: 2px solid #0d5193;
+  color: #0d5193;
+  background-color: transparent;
 }
 
-.btnLargeHome {
-  display: flex;
-  flex-direction: row;
-  background-color: #0f6b34;
+
+.btnLargeHome>a {
   color: #fff;
-  width: 20% !important;
-  height: 79px;
-  font-size: 15px;
-  border-radius: 10px;
-  margin: 0.2%;
   text-decoration: none;
-  align-items: center;
-  text-align: center;
-  box-shadow: 1px 3px 10px rgba(0, 0, 0, 0.06);
 }
 
 .iconHomeBtn {
-  font-size: 40px;
-  margin: 20px;
+  font-size: 30px;
+  margin: 5px;
 }
 
 

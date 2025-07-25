@@ -67,6 +67,7 @@ body {
 
 .loginPage {
   background: #0f5294;
+  margin-bottom: -10px;
 }
 
 .heroDiv {
@@ -763,9 +764,134 @@ body {
 }
 
 /* login */
+
+
+/* Estilos da Página de Login (LoginClient.js) */
+
+.loginPage {
+    background-color: #0a1128; /* Fundo azul escuro */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.loginPage .Container {
+    background-color: #1a202c; /* Fundo mais claro para o formulário */
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 20%;
+    margin-top: 10%;
+    margin-bottom: 10%;
+}
+
+.container-register{
+  width: 50% !important;
+}
+
+.loginPage .logoLogin {
+    width: 300px; /* Tamanho do logo */
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.loginPage .formLogin {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.loginPage .formLogin h1 {
+    color: #cbd5e0; /* Cor do texto do título do formulário */
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.loginPage .inputLogin {
+    width: calc(98% - 20px) !important; /* Largura total com padding */
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #4a5568; /* Borda sutil */
+    border-radius: 5px;
+    background-color: #2d3748; /* Fundo dos inputs */
+    color: #e2e8f0; /* Cor do texto dos inputs */
+    font-size: 1rem;
+    outline: none; /* Remove o contorno ao focar */
+}
+
+.loginPage .inputLogin::placeholder {
+    color: #a0aec0; /* Cor do placeholder */
+}
+
+.loginPage .linkLogin {
+    color: #63b3ed; /* Azul claro para links */
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    align-self: flex-end; /* Alinha à direita */
+    transition: color 0.2s ease;
+}
+
+.loginPage .linkLogin:hover {
+    color: #3182ce; /* Azul mais escuro no hover */
+}
+
+.loginPage .buttonLogin {
+    background-color: #007bff; /* Azul primário */
+    color: white;
+    padding: 10px 30px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 40% !important;
+    margin-top: 10px;
+}
+
+.loginPage .buttonLogin:hover {
+    background-color: #0056b3; /* Azul mais escuro no hover */
+    transform: translateY(-2px);
+}
+
+.loginPage p {
+    color: #cbd5e0;
+    margin-top: 25px;
+    font-size: 0.95rem;
+}
+
+.loginPage p .linkLogin {
+    margin-bottom: 0; /* Remove margem inferior para links dentro de p */
+    align-self: auto; /* Reseta o alinhamento para links dentro de p */
+}
+
+.loginPage .error-message {
+    color: #fc8181; /* Vermelho para mensagens de erro */
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
+    .loginPage .Container{
+     width: 80%;
+    }
+}
+
+.image-background-login{
+  height: 120% !important;
+  opacity: 0.3;
+}
 .Container {
   width: 100%;
-  min-height: 100vh;
+  min-height: 46vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -775,9 +901,7 @@ body {
 
 h1 {
   align-self: start;
-  font-size: 15px;
   font-weight: bold;
-  margin-left: 10px;
 }
 
 .formLogin {
@@ -812,13 +936,13 @@ h1 {
   color: #fff;
 }
 
-.formLogin>a {
+.formLogin > a {
   color: #FF740F;
   font-weight: bold;
   font-size: 12px;
   text-align: right;
   align-self: end;
-  margin-right: 5%;
+  margin-right: -3%;
   margin-top: 10px;
 }
 
@@ -3035,6 +3159,8 @@ textarea {
   border-top-right-radius: 8px;
   box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06);
   /* Sombra sutil */
+  position: relative;
+  z-index: 1;
 }
 
 .footer-container {

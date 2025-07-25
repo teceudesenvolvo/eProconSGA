@@ -185,7 +185,8 @@ const CadastroForm = () => {
 
     return (
         <div className='App-header loginPage'>
-            <div className='Container'>
+           
+            <div className='Container container-register'>
                 <img src={logo} alt="logo" className='logo logoLogin' />
 
                 <form onSubmit={handleSubmit} className='formLogin'>

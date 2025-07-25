@@ -388,7 +388,7 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding-bottom: 30px;
-  margin-bottom: 0px;
+  margin-bottom: -60px;
   /* Espaçamento inferior */
 }
 

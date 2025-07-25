@@ -1,5 +1,10 @@
 import React, { useEffect } from 'react';
-import { GoBook, GoCircleSlash, GoCalendar, GoFile } from 'react-icons/go';
+import {
+    GoBook,
+    GoCircleSlash,
+    // GoCalendar,
+    GoFile
+} from 'react-icons/go';
 import SlideFeacures from '../componets/slideFeactures';
 import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
@@ -38,7 +43,7 @@ function HomeDashboard() {
                         <img src={imgHeader} alt="Médico sorrindo" className="header-image" />
                     </div>
                     <div className="header-text">
-                        <h1>Acessar o PROCON agora é online e fácil!</h1>
+                        <h1>Acessar o PROCON agora é online, é fácil</h1>
                         <p>Seja atendido fácilemente no portal online.</p>
                         {/* Botões de Login/Cadastro (mantidos) */}
                         <div className='btnsHome'>
@@ -57,11 +62,11 @@ function HomeDashboard() {
                         </a>
                     </div>
 
-                    <div className='btnLargeHome'>
+                    {/* <div className='btnLargeHome'>
                         <a href='/meus-atendimentos'>
                             <GoCalendar className="iconHomeBtn" /><br />Agendar Atendimento
                         </a>
-                    </div>
+                    </div> */}
 
                     <div className='btnLargeHome'>
                         <a href='/codigo-de-defesa-do-consumidor'>

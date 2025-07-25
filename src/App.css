@@ -164,7 +164,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 80%;
+  width: 100%;
   align-items: center;
   justify-content: center;
   height: 500px;
@@ -178,28 +178,62 @@ body {
     align-items: flex-start;
     text-align: left;
   }
+
 }
 
+
+@media (max-width: 800px) {
+  .header-image-container {
+    margin-top: -70px !important;
+  }
+
+  .header-text {
+    margin-top: -30px !important;
+    width: 95% !important;
+  }
+
+  .btnsHome {
+    display: flex !important;
+  }
+
+  .btnLargeHome {
+    width: 210px;
+  }
+
+  .splide__arrow--prev {
+    top: 10em !important;
+    left: -15px !important;
+  }
+
+  .splide__arrow--next {
+    top: 9em !important;
+    left: 12.5% !important;
+  }
+}
+
+
 .header-text {
-  margin-top: 100px;
+  margin: 0 auto;
+  text-align: center;
   height: 200px;
-  flex: 1;
   width: 50%;
-  text-align: left;
+  z-index: 1;
+  margin-top: 8%;
 }
 
 .header-text h1 {
   font-family: 'Montserrat', sans-serif;
   font-size: 25px;
-  color: #000;
+  color: #fff;
 }
 
 .header-text p {
   font-family: "Montserrat", sans-serif;
   margin-left: 10px;
   font-size: 15px;
-  color: #666;
+  color: #fff;
 }
+
 
 .header-buttons {
   display: flex;
@@ -250,20 +284,21 @@ body {
 }
 
 .header-image-container {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-left: 20px;
+  position: absolute;
+  background-color: #000;
+  width: 100%;
+  height: 500px;
+  margin-top: -20px;
 }
 
 .header-image {
-  width:100%;
-  max-width: 600px;
-  background-size: cover;
-  border-radius: 100px 50px 50px 200px;
-  border: 10px solid #008dc965;
-  margin-top: 50px;
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  z-index: 0;
+  opacity: 0.3;
+  background-color: #000;
+  object-fit: cover;
 }
 
 /* Estilos para os botões de ação abaixo do header principal */
@@ -272,17 +307,21 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   gap: 15px;
-  margin-top: 30px;
   /* Espaçamento do header */
   margin-bottom: 30px;
   width: 100%;
   max-width: 1000px;
+  z-index: 1;
   /* Ajuste conforme necessário */
+  height: auto;
+  display: ruby;
+  margin: 0 auto;
+  justify-content: center !important;
+  margin-top: 1%;
 }
 
 .btnLargeHome {
   background-color: #0d5193;
-  border: 1px solid #e0e0e0;
   border-radius: 10px;
   padding: 20px;
   text-align: center;
@@ -290,14 +329,12 @@ body {
   color: #333;
   font-weight: bold;
   transition: all 0.3s ease;
-  flex: 1 1 calc(50% - 15px);
-  max-width: 250px;
+  width: 220px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   display: inline-flex;
   flex-direction: row;
   color: #fff;
-  width: 20% !important;
   height: 79px;
   font-size: 12px;
   border-radius: 10px;
@@ -342,6 +379,7 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding-bottom: 30px;
+  margin-bottom: 120px;
   /* Espaçamento inferior */
 }
 
@@ -1017,7 +1055,6 @@ video {
   padding: 0px 0;
   /* Espaçamento superior e inferior para o carrossel */
   width: 100%;
-  max-width: 90%;
   /* Limita a largura para centralizar e dar respiro */
   margin: 0 auto;
   /* Centraliza o container */
@@ -1181,7 +1218,7 @@ video {
 
 .splide__arrow--next {
   top: 9em !important;
-  left: 67.5% !important;
+  left: 67.5% ;
   margin-left: 61%;
   z-index: 1;
   /* Ajusta a posição da seta direita */
@@ -2917,14 +2954,6 @@ video {
   cursor: pointer;
 }
 
-.btnsHome {
-  width: 90%;
-  height: auto;
-  display: ruby;
-  margin: 0 auto;
-  justify-content: center !important;
-}
-
 .btnsHome:first-child {
   height: 100px;
 }
@@ -2953,8 +2982,8 @@ video {
 
 
 .btnHome:last-child {
-  border: 2px solid #0d5193;
-  color: #0d5193;
+  border: 2px solid #fff;
+  color: #fff;
   background-color: transparent;
 }
 
@@ -3429,9 +3458,7 @@ footer>p {
     width: 115%;
   }
 
-  .btnLargeHome {
-    width: 150px !important;
-  }
+
 
   .slidesFeacture {
     width: 200px !important;

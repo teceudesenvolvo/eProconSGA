@@ -33,19 +33,20 @@ function HomeDashboard() {
             <div className='Home-Dach'>
                 {/* Novo Header baseado na imagem */}
                 <div className="header-content">
+                    <div className="header-image-container">
+                        {/*  */}
+                        <img src={imgHeader} alt="Médico sorrindo" className="header-image" />
+                    </div>
                     <div className="header-text">
-                        <h1>Acessar o PROCON agora é online e fácil de usar!</h1>
-                        <p>Seja atendido fácilemente por nosso portal online.</p>
+                        <h1>Acessar o PROCON agora é online e fácil!</h1>
+                        <p>Seja atendido fácilemente no portal online.</p>
                         {/* Botões de Login/Cadastro (mantidos) */}
                         <div className='btnsHome'>
                             <a href='/login' className='btnHome'>Login</a>
                             <a href='/register' className='btnHome'>Cadastrar</a>
                         </div>
                     </div>
-                    <div className="header-image-container">
-                        {/*  */}
-                        <img src={imgHeader} alt="Médico sorrindo" className="header-image" />
-                    </div>
+
                 </div>
 
                 {/* Seção de botões de ação (mantida, mas com margem ajustada) */}

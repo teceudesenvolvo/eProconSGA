@@ -209,6 +209,15 @@ body {
     top: 9em !important;
     left: 12.5% !important;
   }
+  .splide__slide{
+    width: 89.4% !important;
+  }
+  .representative-card{
+    width: 60% !important;
+  }
+  .HomeDesktopCarrosel{
+    margin-bottom: -50px !important;
+  }
 }
 
 

@@ -7,7 +7,7 @@ import Menu from '../src/componets/menu'; // Caminho e nome da pasta corrigidos
 import MenuDesktop from '../src/componets/menuDesktop'; // Caminho e nome da pasta corrigidos
 
 // Páginas Principais
-import HomeDashboard from '../src/screens/homeDashboard'; // Caminho corrigido
+import HomeDashboard from './screens/homePage'; // Caminho corrigido
 import Cdc from './screens/client/CodigoDefesaConsumidor'; // Caminho corrigido
 
 // Controle de Acesso
@@ -25,20 +25,6 @@ import ReclamacaoDetalhes from '../src/screens/client/reclamacaoDetalhes'; // Ca
 import Perfil from '../src/screens/client/Perfil'; // Caminho corrigido
 import RealizarReclamacao from '../src/screens/realizarReclamacao'; // Caminho corrigido
 
-// Páginas sem uso
-import Home from '../src/screens/home'; // Caminho corrigido
-import SessaoVirtual from '../src/screens/client/SessaoVirtual'; // Caminho corrigido
-import NormasJuridicas from '../src/screens/client/NormasJuridicas'; // Caminho corrigido
-import Mais from '../src/screens/client/Mais'; // Caminho corrigido
-import Servico from '../src/screens/client/Servico'; // Caminho corrigido
-import Produto from '../src/screens/client/Produto'; // Caminho corrigido
-import Carrinho from '../src/screens/client/carrinho'; // Caminho corrigido
-import Pesquisar from '../src/screens/client/pesquisa'; // Caminho corrigido
-import RegisterDashboard from '../src/screens/registerDashboard'; // Caminho corrigido
-import RegisterEndereco from '../src/screens/registerEndereco'; // Caminho corrigido
-import RegisterLoja from '../src/screens/resgisterLoja'; // Caminho corrigido
-import JuizoMateria from '../src/screens/juizoMateria'; // Caminho corrigido
-import TesteGeneratePDF from '../src/screens/testePage'; // Caminho corrigido
 
 function App() {
 
@@ -54,6 +40,7 @@ function App() {
         <Routes>
           {/* Página Principal */}
           <Route path="/" element={<HomeDashboard />} />
+          <Route path="/codigo-de-defesa-do-consumidor" element={<Cdc />} />
 
           {/* Controle de Acesso */}
           <Route path="/login" element={<Login />} />
@@ -70,21 +57,7 @@ function App() {
           <Route path="/reclamacao-detalhes" element={<ReclamacaoDetalhes />} />
           <Route path="/perfil" element={<Perfil />} />
 
-          {/* Páginas sem uso */}
-          <Route path="/registerDashboard" element={<RegisterDashboard />} />
-          <Route path="/registerEndereco" element={<RegisterEndereco />} />
-          <Route path="/juizo-materia" element={<JuizoMateria />} />
-          <Route path="/registerLoja" element={<RegisterLoja />} />
-          <Route path="/testePage" element={<TesteGeneratePDF />} />
-          <Route path="/novidades" element={<Home />} />
-          <Route path="/Servico" element={<Servico />} />
-          <Route path="/Produto" element={<Produto />} />
-          <Route path="/Carrinho" element={<Carrinho />} />
-          <Route path="/pesquisar" element={<Pesquisar />} />
-          <Route path="/codigo-de-defesa-do-consumidor" element={<Cdc />} />
-          <Route path="/Sessao-Virtual" element={<SessaoVirtual />} />
-          <Route path="/Normas" element={<NormasJuridicas />} />
-          <Route path="/Mais" element={<Mais />} />
+          
         </Routes>
       </main> {/* Fim do conteúdo principal */}
      

@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
 import MenuDashboard from '../../componets/menuDashboard';
+import { useNavigate } from 'react-router-dom';
 
 const Perfil = () => {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+        const navigate = useNavigate();
+    
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -32,6 +35,7 @@ const Perfil = () => {
                         }
                     } else {
                         setError('Usuário não autenticado. Faça login novamente.');
+                        navigate('/login');
                     }
                 } else {
                     setError('LocalStorage não suportado.');
@@ -47,7 +51,7 @@ const Perfil = () => {
         };
 
         fetchUserData();
-    }, []);
+    }, [navigate]);
 
     const handleLogout = () => {
         if (typeof localStorage !== 'undefined') {

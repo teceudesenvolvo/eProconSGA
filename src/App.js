@@ -146,10 +146,10 @@ function App() {
               Endereço: Avenida Prefeito Mauricio Brasileiro, Av. Cel. Neco Martins - Liberdade, São Gonçalo do Amarante - CE, 62670-000
             </p>
             <p>
-              Telefone: 085 3315-4482
+              Telefone: <a href="tel:08533154482">085 3315-4482</a>
             </p>
             <p>
-              Email: procon@cmsga.ce.gov.br
+              Email: <a href="mailto:procon@cmsga.ce.gov.br">procon@cmsga.ce.gov.br</a>
             </p>
           </div>
         </div>

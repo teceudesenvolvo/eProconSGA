@@ -6,6 +6,7 @@ import {
     GoFile
 } from 'react-icons/go';
 import SlideFeacures from '../componets/slideFeactures';
+import SlideDicas from '../componets/slideDicas'
 import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 
@@ -54,7 +55,10 @@ function HomeDashboard() {
                     </div>
 
                 </div>
-
+                {/* Seção "Dicas do Procon" e Carrossel */}
+                <div className='HomeDesktopCarrosel'>
+                    <SlideDicas />
+                </div>
                 {/* Seção de botões de ação (mantida, mas com margem ajustada) */}
                 <div className='btnsHome'>
                     <div className='btnLargeHome'>
@@ -83,7 +87,7 @@ function HomeDashboard() {
                 </div>
 
 
-
+                
                 {/* Seção "Nossos Vereadores" e Carrossel (mantidos) */}
                 <div className='header-Dach-div'>
                     <h1>Nossos Vereadores</h1>

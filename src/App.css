@@ -325,7 +325,7 @@ body {
   justify-content: center;
   gap: 15px;
   /* Espaçamento do header */
-  margin-bottom: 30px;
+  margin-bottom: 80px !important;
   width: 100%;
   max-width: 1000px;
   z-index: 1;
@@ -1185,6 +1185,71 @@ video {
 
 
 /* Slides */
+/* Estilos para o componente ProconCarousel */
+
+.procon-carousel-container {
+    padding: 0px 0px;
+    margin: 30px auto 10px auto;
+    width: 100%;
+    text-align: center;
+}
+
+.procon-carousel-title {
+    font-size: 15px !important;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    line-height: 1.4;
+    font-weight: bold;
+    width: 60%;
+    margin: 0 auto;
+}
+
+.procon-carousel-link{
+  font-size: 15px;
+  color: #0056b3;
+}
+
+/* Estilos para o Splide */
+.procon-splide .splide__track {
+    padding: 10px 0; /* Espaçamento para as sombras dos slides */
+}
+
+.procon-splide-slide {
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+.slide-content {
+  border: 1px solid #ffb776; /* Borda sutil */
+    border-radius: 10px;
+    padding: 25px;
+    min-height: 80px; /* Altura mínima para os slides */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start; /* Alinha o texto à esquerda */
+    text-align: left;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.slide-content:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.slide-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #f47632; 
+}
+
+.slide-text {
+    font-size: 15px !important;
+    color: #333;
+    line-height: 1.6;
+    text-transform: uppercase ;
+}
+
 
 
 /* SlideFeactures.css */
@@ -1330,7 +1395,7 @@ video {
 /* --- Estilos das Setas de Navegação do Splide --- */
 /* Sobrescreve os estilos padrão do Splide para as setas */
 .splide__arrow {
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.8) !important;
   /* Fundo branco semi-transparente */
   border-radius: 50%;
   /* Torna as setas circulares */
@@ -1445,11 +1510,12 @@ video {
 }
 
 .splide__pagination__page.is-active {
-  background: #FF7A00 !important;
+  background: #fff !important;
+  display: none;
 }
 
 .splide__pagination__page {
-  display: block !important;
+  display: none !important;
 }
 
 .splide__track {
@@ -3420,7 +3486,7 @@ footer>p {
   height: 100vh;
   left: 0;
   background: #105394;
-  width: 35px;
+  width: 40px;
   overflow: hidden;
   transition: width 0.2 linear;
   box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
@@ -3602,6 +3668,9 @@ footer>p {
     padding-left: 10px;
     width: 115%;
   }
+
+  
+
 
 
 

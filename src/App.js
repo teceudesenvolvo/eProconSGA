@@ -113,8 +113,13 @@ function App() {
                 </a>
               </li>
               <li>
-                <a href="/agendar-atendimento">
-                  Agendar Atendimento
+                <a href="/login">
+                  Entrar na sua conta
+                </a>
+              </li>
+              <li>
+                <a href="/register">
+                  Criar uma conta
                 </a>
               </li>
             </ul>

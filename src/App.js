@@ -8,16 +8,15 @@ import MenuDesktop from '../src/componets/menuDesktop'; // Caminho e nome da pas
 
 // Páginas Principais
 import HomeDashboard from './screens/homePage'; // Caminho corrigido
-import Cdc from './screens/client/CodigoDefesaConsumidor'; // Caminho corrigido
+import Cdc from './screens/CodigoDefesaConsumidor'; // Caminho corrigido
 
 // Controle de Acesso
-import Register from '../src/screens/client/register'; // Caminho corrigido
-import Login from '../src/screens/client/login'; // Caminho corrigido
+import Register from '../src/screens/register'; // Caminho corrigido
+import Login from '../src/screens/login'; // Caminho corrigido
 
 // Controle Interno
-import Atendimentos from '../src/screens/client/atendimentosTodos'; // Caminho corrigido
-import Relatorios from '../src/screens/client/Relatorios'; // Caminho corrigido
-import Atendimento from '../src/screens/client/atendimento'; // Caminho corrigido
+import Atendimentos from '../src/screens/admin/atendimentosTodos'; // Caminho corrigido
+import Atendimento from '../src/screens/admin/atendimento'; // Caminho corrigido
 
 // Usuário Logado
 import MeusAgendamentos from '../src/screens/meusAtendimentos'; // Caminho corrigido
@@ -48,7 +47,6 @@ function App() {
 
           {/* Controle Interno */}
           <Route path="/atendimentos-sga-hyo6d27" element={<Atendimentos />} />
-          <Route path="/Relatorios" element={<Relatorios />} />
           <Route path="/atendimento-sga-ppi6g59" element={<Atendimento />} />
 
           {/* Páginas Usuário Logado */}

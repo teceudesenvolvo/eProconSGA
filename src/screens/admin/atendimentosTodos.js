@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { db, auth } from '../../firebase'; // Importe 'auth'
 import { useNavigate, useLocation } from 'react-router-dom';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -19,7 +19,9 @@ class Notificacoes extends Component {
         super(props);
         this.state = {
             reclamacoes: [],
-            loading: true,
+            isLoadingData: true, // Renomeado de 'loading' para ser mais específico sobre o carregamento de dados
+            isLoadingAuth: true, // NOVO ESTADO: Para indicar se a verificação de autenticação está em andamento
+            isAuthorized: false, // Novo estado para controlar a autorização
             filtroProtocolo: '',
             filtroTipoReclamacao: '',
             filtroClassificacao: '',
@@ -44,10 +46,46 @@ class Notificacoes extends Component {
     }
 
     componentDidMount() {
-        this.fetchReclamacoes();
+        // Verifica o estado de autenticação do usuário
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            // Verifica se o usuário existe e se o email existe
+            if (user && user.email) {
+                // Se o usuário existe e o email é o admin
+                if (user.email === 'admin@cmsga.ce.gov.br') {
+                    this.setState({ isAuthorized: true, isLoadingAuth: false });
+                    this.fetchReclamacoes(); // Busca as reclamações apenas se autorizado
+                } else {
+                    // Se o usuário existe, tem um email, mas NÃO é o email do admin
+                    this.setState({
+                        isAuthorized: false, // Não autorizado para esta página específica
+                        isLoadingAuth: false,
+                        isLoadingData: false // Não há dados para carregar para esta página
+                    });
+                    this.navigate('/registrar-reclamacao'); // Redireciona para /registrar-reclamacao
+                }
+            } else {
+                // Se o usuário não existe (não logado) ou não tem email
+                this.setState({
+                    isAuthorized: false,
+                    isLoadingAuth: false,
+                    isLoadingData: false
+                });
+                this.navigate('/login'); // Redireciona para a página de login
+            }
+        });
+
+        // Limpa o listener ao desmontar o componente
+        this.unsubscribeAuth = unsubscribe;
+    }
+
+    componentWillUnmount() {
+        if (this.unsubscribeAuth) {
+            this.unsubscribeAuth();
+        }
     }
 
     async fetchReclamacoes() {
+        this.setState({ isLoadingData: true }); // Inicia o carregamento dos dados
         try {
             const reclamacoesRef = collection(db, 'reclamacoes');
             const querySnapshot = await getDocs(reclamacoesRef);
@@ -57,10 +95,10 @@ class Notificacoes extends Component {
                 ...doc.data(),
             }));
 
-            this.setState({ reclamacoes: reclamacoesData, loading: false });
+            this.setState({ reclamacoes: reclamacoesData, isLoadingData: false });
         } catch (error) {
             console.error('Erro ao buscar reclamações:', error);
-            this.setState({ loading: false });
+            this.setState({ isLoadingData: false });
         }
     }
 
@@ -84,10 +122,12 @@ class Notificacoes extends Component {
     };
 
     async fetchUserData() {
-            this.setState({ loading: true, error: null });
+            // Este método não precisa gerenciar o isLoadingData, pois fetchReclamacoes já o faz.
+            // Ele apenas lida com o estado de erro específico para os dados do usuário, se houver.
+            this.setState({ error: null });
     
             try {
-                const userId = this.state.reclamacao.userId;
+                const userId = this.state.reclamacao.userId; // Cuidado: 'reclamacao' não está no estado de Notificacoes
                 console.log('UserID da reclamação:', userId);
     
                 if (userId) {
@@ -110,16 +150,47 @@ class Notificacoes extends Component {
                 console.error('Erro ao buscar dados do usuário:', err);
                 console.error('Código do erro:', err.code);
                 console.error('Mensagem do erro:', err.message);
-            } finally {
-                this.setState({ loading: false });
             }
         }
 
     render() {
-        const { reclamacoes, loading, filtroProtocolo, filtroTipoReclamacao, filtroClassificacao, filtroAssuntoDenuncia, filtroProcurouFornecedor, filtroFormaAquisicao, filtroTipoContratacao, filtroDataContratacao, filtroNomeServico, filtroDetalheServico, filtroTipoDocumento, filtroNumeroDocumento, filtroDataOcorrencia, filtroDataNegativa, filtroFormaPagamento, filtroValorCompra, filtroDetalhesReclamacao, filtroPedidoConsumidor, filtroCPF } = this.state;
+        const { reclamacoes, isLoadingData, isAuthorized, isLoadingAuth, filtroProtocolo, filtroTipoReclamacao, filtroClassificacao, filtroAssuntoDenuncia, filtroProcurouFornecedor, filtroFormaAquisicao, filtroTipoContratacao, filtroDataContratacao, filtroNomeServico, filtroDetalheServico, filtroTipoDocumento, filtroNumeroDocumento, filtroDataOcorrencia, filtroDataNegativa, filtroFormaPagamento, filtroValorCompra, filtroDetalhesReclamacao, filtroPedidoConsumidor, filtroCPF } = this.state;
 
-        if (loading) {
-            return <div>Carregando...</div>;
+        // 1. Exibe "Carregando autenticação..." enquanto o estado de autenticação não foi verificado
+        if (isLoadingAuth) {
+            return (
+                <div className="App-header">
+                    <div className="loading-message">
+                        <h1>Carregando autenticação...</h1>
+                        <p>Verificando suas permissões de acesso.</p>
+                    </div>
+                </div>
+            );
+        }
+
+        // 2. Se a autenticação foi verificada e o usuário não está autorizado
+        if (!isAuthorized) {
+            return (
+                <div className="App-header">
+                    <div className="unauthorized-message">
+                        <h1>Acesso Não Autorizado</h1>
+                        <p>Você não tem permissão para visualizar esta página. Por favor, faça login com uma conta de administrador.</p>
+                        <button onClick={() => this.navigate('/login')} className="go-to-login-button">Ir para Login</button>
+                    </div>
+                </div>
+            );
+        }
+
+        // 3. Se o usuário está autorizado, mas os dados da reclamação ainda estão carregando
+        if (isLoadingData) {
+            return (
+                <div className="App-header">
+                    <div className="loading-message">
+                        <h1>Carregando dados das reclamações...</h1>
+                        <p>Por favor, aguarde.</p>
+                    </div>
+                </div>
+            );
         }
 
         const reclamacoesFiltradas = reclamacoes.filter((reclamacao) => {

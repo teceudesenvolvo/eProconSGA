@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import logo from '../../assets/logo-SGA-procon.png';
-import { db, auth } from '../../firebase';
+import logo from '../assets/logo-SGA-procon.png';
+import { db, auth } from '../firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-import imgHeader from '../../assets/plenario.png' // Esta imagem será usada no carrossel ou como um banner genérico
+import imgHeader from '../assets/plenario.png' // Esta imagem será usada no carrossel ou como um banner genérico
 
 
 const LoginClient = () => {

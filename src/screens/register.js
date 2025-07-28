@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { auth, db } from '../../firebase';
+import { auth, db } from '../firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-import logo from '../../assets/logo-SGA-procon.png';
+import logo from '../assets/logo-SGA-procon.png';
 import InputMask from 'react-input-mask'; // Importe a biblioteca de máscara
 
 const CadastroForm = () => {

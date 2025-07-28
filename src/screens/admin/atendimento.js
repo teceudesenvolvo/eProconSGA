@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { doc, getDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { db, auth } from '../../firebase'; // Importe 'auth'
+import { useNavigate } from 'react-router-dom'; // Importe useNavigate
 
 // Componente
 import MenuAdmin from '../../componets/menuAdmin'
@@ -11,26 +12,65 @@ class ReclamacaoDetalhes extends Component {
         this.state = {
             reclamacao: null,
             userData: null,
-            loading: true,
+            isLoadingData: true, // Renomeado de 'loading' para ser mais específico sobre o carregamento de dados
+            isLoadingAuth: true, // NOVO ESTADO: Para indicar se a verificação de autenticação está em andamento
             error: null,
             comentarios: [],
             situacao: '',
             pdfBase64: null,
-            novoComentario: '', // Adiciona o estado para o novo comentário
+            novoComentario: '',
+            isAuthorized: false, // Novo estado para controlar a autorização
         };
+        this.navigate = props.navigate; // Recebe navigate via props
     }
 
     componentDidMount() {
-        this.fetchReclamacao();
+        // Verifica o estado de autenticação do usuário
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            // Verifica se o usuário existe e se o email existe
+            if (user && user.email) {
+                // Se o usuário existe e o email é o admin
+                if (user.email === 'admin@cmsga.ce.gov.br') {
+                    this.setState({ isAuthorized: true, isLoadingAuth: false });
+                    this.fetchReclamacao(); // Busca a reclamação apenas se autorizado
+                } else {
+                    // Se o usuário existe, tem um email, mas NÃO é o email do admin
+                    this.setState({
+                        isAuthorized: false, // Não autorizado para esta página específica
+                        isLoadingAuth: false,
+                        isLoadingData: false // Não há dados para carregar para esta página
+                    });
+                    this.navigate('/registrar-reclamacao'); // Redireciona para /registrar-reclamacao
+                }
+            } else {
+                // Se o usuário não existe (não logado) ou não tem email
+                this.setState({
+                    isAuthorized: false,
+                    isLoadingAuth: false,
+                    isLoadingData: false
+                });
+                this.navigate('/login'); // Redireciona para a página de login
+            }
+        });
+
+        // Limpa o listener ao desmontar o componente
+        this.unsubscribeAuth = unsubscribe;
+    }
+
+    componentWillUnmount() {
+        if (this.unsubscribeAuth) {
+            this.unsubscribeAuth();
+        }
     }
 
     async fetchReclamacao() {
+        this.setState({ isLoadingData: true }); // Inicia o carregamento dos dados
         try {
             const reclamacaoId = localStorage.getItem('reclamacaoId');
 
             if (!reclamacaoId) {
                 console.error('ID da reclamação não encontrado no localStorage.');
-                this.setState({ loading: false });
+                this.setState({ isLoadingData: false });
                 return;
             }
 
@@ -40,24 +80,26 @@ class ReclamacaoDetalhes extends Component {
             if (reclamacaoSnap.exists()) {
                 this.setState({
                     reclamacao: reclamacaoSnap.data(),
-                    loading: false,
-                    comentarios: reclamacaoSnap.data().comentarios || [], // Garante que é um array
+                    isLoadingData: false,
+                    comentarios: reclamacaoSnap.data().comentarios || [],
                     situacao: reclamacaoSnap.data().situacao || 'EM ANALISE',
                 }, () => {
                     this.fetchUserData(); // Chama fetchUsuario após carregar a reclamação
                 });
             } else {
                 console.error('Reclamação não encontrada.');
-                this.setState({ loading: false });
+                this.setState({ isLoadingData: false });
             }
         } catch (error) {
             console.error('Erro ao buscar reclamação:', error);
-            this.setState({ loading: false });
+            this.setState({ isLoadingData: false });
         }
     }
 
     async fetchUserData() {
-        this.setState({ loading: true, error: null });
+        // Este método não precisa gerenciar o isLoadingData, pois fetchReclamacao já o faz.
+        // Ele apenas lida com o estado de erro específico para os dados do usuário, se houver.
+        this.setState({ error: null });
 
         try {
             const userId = this.state.reclamacao.userId;
@@ -83,9 +125,8 @@ class ReclamacaoDetalhes extends Component {
             console.error('Erro ao buscar dados do usuário:', err);
             console.error('Código do erro:', err.code);
             console.error('Mensagem do erro:', err.message);
-        } finally {
-            this.setState({ loading: false });
         }
+        // Não há 'finally' aqui para isLoadingData, pois fetchReclamacao já o gerencia.
     }
 
     handleComentariosChange = (event) => {
@@ -118,7 +159,7 @@ class ReclamacaoDetalhes extends Component {
             await updateDoc(reclamacaoRef, {
                 comentarios: this.state.comentarios,
                 situacao: this.state.situacao,
-                pdfBase64: this.state.pdfBase64, // Adiciona o Base64 do PDF ao documento
+                pdfBase64: this.state.pdfBase64,
             });
 
             console.log('Atualizações salvas com sucesso!');
@@ -134,12 +175,10 @@ class ReclamacaoDetalhes extends Component {
             const reclamacaoRef = doc(db, 'reclamacoes', reclamacaoId);
 
             try {
-                // Atualiza o array de comentários no Firestore
                 await updateDoc(reclamacaoRef, {
                     comentarios: [...this.state.comentarios, novoComentario],
                 });
 
-                // Atualiza o estado local
                 this.setState(prevState => ({
                     comentarios: [...prevState.comentarios, novoComentario],
                     novoComentario: '',
@@ -166,14 +205,55 @@ class ReclamacaoDetalhes extends Component {
     };
 
     render() {
-        const { reclamacao, loading, situacao } = this.state;
+        const { reclamacao, isLoadingData, situacao, isAuthorized, isLoadingAuth } = this.state;
 
-        if (loading) {
-            return <div>Carregando...</div>;
+        // 1. Exibe "Carregando autenticação..." enquanto o estado de autenticação não foi verificado
+        if (isLoadingAuth) {
+            return (
+                <div className="App-header">
+                    <div className="loading-message">
+                        <h1>Carregando autenticação...</h1>
+                        <p>Verificando suas permissões de acesso.</p>
+                    </div>
+                </div>
+            );
         }
 
+        // 2. Se a autenticação foi verificada e o usuário não está autorizado
+        if (!isAuthorized) {
+            return (
+                <div className="App-header">
+                    <div className="unauthorized-message">
+                        <h1>Acesso Não Autorizado</h1>
+                        <p>Você não tem permissão para visualizar esta página. Por favor, faça login com uma conta de administrador.</p>
+                        <button onClick={() => this.navigate('/login')} className="go-to-login-button">Ir para Login</button>
+                    </div>
+                </div>
+            );
+        }
+
+        // 3. Se o usuário está autorizado, mas os dados da reclamação ainda estão carregando
+        if (isLoadingData) {
+            return (
+                <div className="App-header">
+                    <div className="loading-message">
+                        <h1>Carregando dados da reclamação...</h1>
+                        <p>Por favor, aguarde.</p>
+                    </div>
+                </div>
+            );
+        }
+
+        // 4. Se os dados não estão carregando e a reclamação não foi encontrada (após autorizado e carregamento concluído)
         if (!reclamacao) {
-            return <div>Reclamação não encontrada.</div>;
+            return (
+                <div className="App-header">
+                    <div className="not-found-message">
+                        <h1>Reclamação não encontrada.</h1>
+                        <p>Não foi possível carregar os detalhes da reclamação.</p>
+                    </div>
+                </div>
+            );
         }
 
         return (
@@ -184,7 +264,7 @@ class ReclamacaoDetalhes extends Component {
                         <div className='atualizeData'>
                             <h3>Atualize o Requerente</h3>
                             <label htmlFor="comentarios">Atualizações:</label><br/>
-                            {Array.isArray(this.state.comentarios) && ( // Verifica se é um array
+                            {Array.isArray(this.state.comentarios) && (
                                 <ol>
                                     {this.state.comentarios.map((comentario, index) => (
                                         <li className='comentarioChat' key={index}>{comentario}</li>
@@ -195,7 +275,7 @@ class ReclamacaoDetalhes extends Component {
                             <label htmlFor="comentarios">Enviar Mensagem</label><br/>
                             <textarea
                                 id="comentarios"
-                                value={this.state.novoComentario || ''} // Usar um estado temporário para o novo comentário
+                                value={this.state.novoComentario || ''}
                                 onChange={(event) => this.setState({ novoComentario: event.target.value })}
                                 placeholder='Escreva uma mensagem ao requerente...'
                             /><br/>
@@ -249,7 +329,7 @@ class ReclamacaoDetalhes extends Component {
                             <p><strong>Data Negativa:</strong> {this.formatarData(reclamacao.dataNegativa)}</p>
                             <p><strong>Forma Pagamento:</strong> {reclamacao.formaPagamento}</p>
                             <p><strong>Valor Compra:</strong> {reclamacao.valorCompra}</p>
-                            <p><strong>Detalhes Reclamação:</strong> {reclamacao.detalhesReclamacao}</p>
+                            <p><strong>Detalhes Reclamacao:</strong> {reclamacao.detalhesReclamacao}</p>
                             <p><strong>Pedido Consumidor:</strong> {reclamacao.pedidoConsumidor}</p>
                             <p><strong>Situação</strong> {reclamacao.situacao}</p>
                         </div>
@@ -268,4 +348,10 @@ class ReclamacaoDetalhes extends Component {
     }
 }
 
-export default ReclamacaoDetalhes;
+// Wrapper para injetar o hook useNavigate
+function WithNavigate(props) {
+    let navigate = useNavigate();
+    return <ReclamacaoDetalhes {...props} navigate={navigate} />
+}
+
+export default WithNavigate;

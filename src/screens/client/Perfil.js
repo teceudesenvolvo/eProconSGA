@@ -1,62 +1,79 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { db, auth } from '../../firebase'; // Importe 'auth'
 import MenuDashboard from '../../componets/menuDashboard';
 import { useNavigate } from 'react-router-dom';
+import MenuAdmin from '../../componets/menuAdmin'
+
 
 const Perfil = () => {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-        const navigate = useNavigate();
+    const [isAdmin, setIsAdmin] = useState(false); // NOVO ESTADO: Para verificar se é admin
+    const navigate = useNavigate();
     
 
     useEffect(() => {
-        const fetchUserData = async () => {
+        const checkAuthAndFetchUserData = async () => {
             setLoading(true);
             setError(null);
 
-            try {
-                if (typeof localStorage !== 'undefined') {
-                    const userId = localStorage.getItem('userId');
-                    console.log('UserID do localStorage:', userId);
-                    if (userId) {
-                        const usersCollection = collection(db, 'users');
-                        const q = query(usersCollection, where('uid', '==', userId));
-                        const querySnapshot = await getDocs(q);
-
-                        if (!querySnapshot.empty) {
-                            // Assumindo que há apenas um documento correspondente
-                            const userDoc = querySnapshot.docs[0];
-                            console.log('Dados do Firestore:', userDoc.data());
-                            setUserData(userDoc.data());
-                        } else {
-                            setError('Dados do usuário não encontrados.');
-                        }
+            // Verifica o estado de autenticação do usuário
+            const unsubscribe = auth.onAuthStateChanged(async (user) => {
+                if (user && user.email) {
+                    if (user.email === 'admin@cmsga.ce.gov.br') {
+                        setIsAdmin(true); // Define como admin
                     } else {
-                        setError('Usuário não autenticado. Faça login novamente.');
-                        navigate('/login');
+                        setIsAdmin(false); // Não é admin
+                    }
+
+                    // Continua a buscar os dados do usuário logado
+                    try {
+                        const userId = localStorage.getItem('userId');
+                        console.log('UserID do localStorage:', userId);
+                        if (userId) {
+                            const usersCollection = collection(db, 'users');
+                            const q = query(usersCollection, where('uid', '==', userId));
+                            const querySnapshot = await getDocs(q);
+
+                            if (!querySnapshot.empty) {
+                                const userDoc = querySnapshot.docs[0];
+                                console.log('Dados do Firestore:', userDoc.data());
+                                setUserData(userDoc.data());
+                            } else {
+                                setError('Dados do usuário não encontrados.');
+                            }
+                        } else {
+                            setError('Usuário não autenticado. Faça login novamente.');
+                            navigate('/login');
+                        }
+                    } catch (err) {
+                        setError('Erro ao buscar dados do usuário. Tente novamente.');
+                        console.error('Erro ao buscar dados do usuário:', err);
+                    } finally {
+                        setLoading(false);
                     }
                 } else {
-                    setError('LocalStorage não suportado.');
+                    // Usuário não logado ou sem email
+                    setIsAdmin(false);
+                    setLoading(false);
+                    setError('Usuário não autenticado. Faça login novamente.');
+                    navigate('/login');
                 }
-            } catch (err) {
-                setError('Erro ao buscar dados do usuário. Tente novamente.');
-                console.error('Erro ao buscar dados do usuário:', err);
-                console.error('Código do erro:', err.code);
-                console.error('Mensagem do erro:', err.message);
-            } finally {
-                setLoading(false);
-            }
+            });
+
+            // Limpa o listener quando o componente for desmontado
+            return () => unsubscribe();
         };
 
-        fetchUserData();
+        checkAuthAndFetchUserData();
     }, [navigate]);
 
     const handleLogout = () => {
         if (typeof localStorage !== 'undefined') {
             localStorage.removeItem('userId'); // Limpa o userId do localStorage
-            window.location.pathname = '/'; // Redireciona para a página inicial
+            navigate('/'); // Redireciona para a página inicial usando navigate
         } else {
             setError('LocalStorage não suportado.');
         }
@@ -76,7 +93,7 @@ const Perfil = () => {
 
     return (
         <div className="App-header">
-            <MenuDashboard />
+            {isAdmin ? <MenuAdmin /> : <MenuDashboard />} {/* Carrega MenuAdmin se for admin, senão MenuDashboard */}
             <div className="favoritos agendarConsulta profile-desc-ul">
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <ul className="profile-desc-ul" style={{ listStyle: 'none', padding: 0 }}>

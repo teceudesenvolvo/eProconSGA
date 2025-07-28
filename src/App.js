@@ -156,7 +156,7 @@ function App() {
 
         {/* Copyright */}
         <div className="footer-copyright">
-          <p>Copyright &copy; 2025 Procon CMSGA. Todos os direitos reservados. <br/>Desenvolvido por Blu Tecnologias.</p>
+          <p>Copyright &copy; 2025 Procon CMSGA. Todos os direitos reservados. <br/>Desenvolvido por Blu Tecnologias</p>
         </div>
       </footer>
     </div>

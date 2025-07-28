@@ -1467,7 +1467,7 @@ video {
   .splide__track--loop{
     margin-left: 0px !important;
   }
-  .splide__arrows--ltr{
+  .procon-carousel-container > .procon-splide > .splide__arrows--ltr{
     display: none !important;
   }
 

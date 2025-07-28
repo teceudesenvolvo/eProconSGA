@@ -56,7 +56,7 @@ function HomeDashboard() {
 
                 </div>
                 {/* Seção "Dicas do Procon" e Carrossel */}
-                <div className='HomeDesktopCarrosel'>
+                <div className='ProconCarrosel'>
                     <SlideDicas />
                 </div>
                 {/* Seção de botões de ação (mantida, mas com margem ajustada) */}

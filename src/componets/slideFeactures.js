@@ -80,7 +80,7 @@ class slideFeactures extends Component {
                             <p className="representative-role">Vereador(a)</p> {/* Assumindo o cargo como Vereador(a) */}
                         </div>
                     </div>
-                   
+
                 </div>
             </SplideSlide>
         );

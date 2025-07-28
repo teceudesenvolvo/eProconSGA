@@ -210,13 +210,16 @@ body {
     top: 9em !important;
     left: 12.5% !important;
   }
-  .splide__slide{
+
+  .splide__slide {
     width: 89.4% !important;
   }
-  .representative-card{
+
+  .representative-card {
     width: 60% !important;
   }
-  .HomeDesktopCarrosel{
+
+  .HomeDesktopCarrosel {
     margin-bottom: -50px !important;
   }
 }
@@ -231,14 +234,14 @@ body {
   margin-top: 7%;
 }
 
-.header-text > h1 {
+.header-text>h1 {
   font-family: 'Montserrat', sans-serif;
   font-size: 15px;
   color: #fff;
   margin-bottom: -25px;
 }
 
-.header-text > h2{
+.header-text>h2 {
   font-size: 40px;
   margin-bottom: -10px;
 }
@@ -776,126 +779,145 @@ body {
 /* Estilos da Página de Login (LoginClient.js) */
 
 .loginPage {
-    background-color: #0a1128; /* Fundo azul escuro */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-    box-sizing: border-box;
+  background-color: #0a1128;
+  /* Fundo azul escuro */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .loginPage .Container {
-    background-color: #1a202c; /* Fundo mais claro para o formulário */
-    border-radius: 10px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-    padding: 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 20%;
-    margin-top: 10%;
-    margin-bottom: 10%;
+  background-color: #1a202c;
+  /* Fundo mais claro para o formulário */
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 20%;
+  margin-top: 10%;
+  margin-bottom: 10%;
 }
 
-.container-register{
+.container-register {
   width: 50% !important;
 }
 
 .loginPage .logoLogin {
-    width: 300px; /* Tamanho do logo */
-    height: auto;
-    margin-bottom: 10px;
+  width: 300px;
+  /* Tamanho do logo */
+  height: auto;
+  margin-bottom: 10px;
 }
 
 .loginPage .formLogin {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .loginPage .formLogin h1 {
-    color: #cbd5e0; /* Cor do texto do título do formulário */
-    font-size: 14px;
-    margin-bottom: 5px;
+  color: #cbd5e0;
+  /* Cor do texto do título do formulário */
+  font-size: 14px;
+  margin-bottom: 5px;
 }
 
 .loginPage .inputLogin {
-    width: calc(98% - 20px) !important; /* Largura total com padding */
-    padding: 15px;
-    margin-bottom: 15px;
-    border: 1px solid #4a5568; /* Borda sutil */
-    border-radius: 5px;
-    background-color: #2d3748; /* Fundo dos inputs */
-    color: #e2e8f0; /* Cor do texto dos inputs */
-    font-size: 1rem;
-    outline: none; /* Remove o contorno ao focar */
+  width: calc(98% - 20px) !important;
+  /* Largura total com padding */
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 1px solid #4a5568;
+  /* Borda sutil */
+  border-radius: 5px;
+  background-color: #2d3748;
+  /* Fundo dos inputs */
+  color: #e2e8f0;
+  /* Cor do texto dos inputs */
+  font-size: 1rem;
+  outline: none;
+  /* Remove o contorno ao focar */
 }
 
 .loginPage .inputLogin::placeholder {
-    color: #a0aec0; /* Cor do placeholder */
+  color: #a0aec0;
+  /* Cor do placeholder */
 }
 
 .loginPage .linkLogin {
-    color: #63b3ed; /* Azul claro para links */
-    text-decoration: none;
-    font-size: 0.9rem;
-    margin-bottom: 20px;
-    align-self: flex-end; /* Alinha à direita */
-    transition: color 0.2s ease;
+  color: #63b3ed;
+  /* Azul claro para links */
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  align-self: flex-end;
+  /* Alinha à direita */
+  transition: color 0.2s ease;
 }
 
 .loginPage .linkLogin:hover {
-    color: #3182ce; /* Azul mais escuro no hover */
+  color: #3182ce;
+  /* Azul mais escuro no hover */
 }
 
 .loginPage .buttonLogin {
-    background-color: #007bff; /* Azul primário */
-    color: white;
-    padding: 10px 30px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    font-size: 1.1rem;
-    font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    width: 40% !important;
-    margin-top: 10px;
+  background-color: #007bff;
+  /* Azul primário */
+  color: white;
+  padding: 10px 30px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 40% !important;
+  margin-top: 10px;
 }
 
 .loginPage .buttonLogin:hover {
-    background-color: #0056b3; /* Azul mais escuro no hover */
-    transform: translateY(-2px);
+  background-color: #0056b3;
+  /* Azul mais escuro no hover */
+  transform: translateY(-2px);
 }
 
 .loginPage p {
-    color: #cbd5e0;
-    margin-top: 25px;
-    font-size: 0.95rem;
+  color: #cbd5e0;
+  margin-top: 25px;
+  font-size: 0.95rem;
 }
 
 .loginPage p .linkLogin {
-    margin-bottom: 0; /* Remove margem inferior para links dentro de p */
-    align-self: auto; /* Reseta o alinhamento para links dentro de p */
+  margin-bottom: 0;
+  /* Remove margem inferior para links dentro de p */
+  align-self: auto;
+  /* Reseta o alinhamento para links dentro de p */
 }
 
 .loginPage .error-message {
-    color: #fc8181; /* Vermelho para mensagens de erro */
-    margin-top: 10px;
-    font-size: 0.9rem;
+  color: #fc8181;
+  /* Vermelho para mensagens de erro */
+  margin-top: 10px;
+  font-size: 0.9rem;
 }
 
 @media (max-width: 600px) {
-    .loginPage .Container{
-     width: 80%;
-    }
+  .loginPage .Container {
+    width: 80%;
+  }
 }
 
-.image-background-login{
+.image-background-login {
   height: 120% !important;
   opacity: 0.3;
 }
+
 .Container {
   width: 100%;
   min-height: 46vh;
@@ -943,7 +965,7 @@ h1 {
   color: #fff;
 }
 
-.formLogin > a {
+.formLogin>a {
   color: #FF740F;
   font-weight: bold;
   font-size: 12px;
@@ -1186,68 +1208,75 @@ video {
 
 /* Slides */
 /* Estilos para o componente ProconCarousel */
+.ProconCarrosel {
+  width: 60%;
+}
 
 .procon-carousel-container {
-    padding: 0px 0px;
-    margin: 30px auto 10px auto;
-    width: 100%;
-    text-align: center;
+  padding: 0px 0px;
+  margin: 30px auto;
+  width: 100%;
+  text-align: center;
 }
 
 .procon-carousel-title {
-    font-size: 15px !important;
-    color: #2c3e50;
-    margin-bottom: 10px;
-    line-height: 1.4;
-    font-weight: bold;
-    width: 60%;
-    margin: 0 auto;
+  font-size: 15px !important;
+  color: #2c3e50;
+  margin-bottom: 10px;
+  line-height: 1.4;
+  font-weight: bold;
+  width: 60%;
+  margin: 0 auto;
 }
 
-.procon-carousel-link{
+.procon-carousel-link {
   font-size: 15px;
   color: #0056b3;
 }
 
 /* Estilos para o Splide */
 .procon-splide .splide__track {
-    padding: 10px 0; /* Espaçamento para as sombras dos slides */
+  padding: 10px 0;
+  /* Espaçamento para as sombras dos slides */
 }
 
 .procon-splide-slide {
-    padding: 15px;
-    box-sizing: border-box;
+  padding: 15px;
+  box-sizing: border-box;
 }
 
 .slide-content {
-  border: 1px solid #ffb776; /* Borda sutil */
-    border-radius: 10px;
-    padding: 25px;
-    min-height: 80px; /* Altura mínima para os slides */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start; /* Alinha o texto à esquerda */
-    text-align: left;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #ffb776;
+  /* Borda sutil */
+  border-radius: 10px;
+  padding: 25px;
+  min-height: 80px;
+  /* Altura mínima para os slides */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  /* Alinha o texto à esquerda */
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .slide-content:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
 }
 
 .slide-number {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #f47632; 
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #f47632;
 }
 
 .slide-text {
-    font-size: 15px !important;
-    color: #333;
-    line-height: 1.6;
-    text-transform: uppercase ;
+  font-size: 15px !important;
+  color: #333;
+  line-height: 1.6;
+  text-transform: uppercase;
 }
 
 
@@ -1422,7 +1451,7 @@ video {
 
 .splide__arrow--next {
   top: 9em !important;
-  left: 67.5% ;
+  left: 67.5%;
   margin-left: 61%;
   z-index: 1;
   /* Ajusta a posição da seta direita */
@@ -1430,6 +1459,18 @@ video {
 
 /* --- Responsividade --- */
 @media (max-width: 768px) {
+
+  .ProconCarrosel {
+    width: 100% !important;
+  }
+
+  .splide__track--loop{
+    margin-left: 0px !important;
+  }
+  .splide__arrows--ltr{
+    display: none !important;
+  }
+
   .splide-container {
     max-width: 95%;
     /* Ocupa mais largura em telas menores */
@@ -3669,7 +3710,7 @@ footer>p {
     width: 115%;
   }
 
-  
+
 
 
 

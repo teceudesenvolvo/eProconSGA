@@ -28,7 +28,7 @@ const ProconCarousel = () => {
           perPage: 1, // 1 item por página
           perMove: 1, // Move 1 item por vez
           autoplay: true, // Auto-play
-          interval: 3000, // Intervalo de 3 segundos
+          interval: 5000, // Intervalo de 5 segundos
           pauseOnHover: true, // Pausa no hover
           arrows: true, // Mostrar setas de navegação
           pagination: true, // Mostrar paginação (bolinhas)

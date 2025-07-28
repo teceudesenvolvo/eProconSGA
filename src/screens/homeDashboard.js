@@ -43,7 +43,8 @@ function HomeDashboard() {
                         <img src={imgHeader} alt="Médico sorrindo" className="header-image" />
                     </div>
                     <div className="header-text">
-                        <h1>Acessar o PROCON agora é online, é fácil</h1>
+                        <h1>Câmara Municipal de São Gonçalo do Amarante - CE</h1>
+                        <h2>Bem vindo ao PROCON</h2>
                         <p>Seja atendido fácilemente no portal online.</p>
                         {/* Botões de Login/Cadastro (mantidos) */}
                         <div className='btnsHome'>

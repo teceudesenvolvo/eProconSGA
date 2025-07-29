@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import { doc, getDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../../firebase';
+import React, { Component } from "react";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db, auth } from "../../firebase";
 
 // Componente
-import MenuDashboard from '../../componets/menuDashboard'
+import MenuDashboard from '../../componets/menuDashboard';
 
 class ReclamacaoDetalhes extends Component {
     constructor(props) {
@@ -14,17 +14,36 @@ class ReclamacaoDetalhes extends Component {
             loading: true,
             error: null,
             comentarios: [],
-            situacao: '',
-            pdfBase64: null,
-            novoComentario: '', // Adiciona o estado para o novo comentário
+            situacao: "",
+            novoComentario: "",
+            fileToUpload: null,
+            uploadedFileName: "",
         };
     }
 
     componentDidMount() {
-        this.fetchReclamacao();
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user) {
+                this.setState({ userData: user, loading: false }, () => {
+                    this.fetchReclamacao();
+                });
+            } else {
+                console.error("Usuário não logado.");
+                this.setState({ loading: false, error: "Usuário não autenticado." });
+            }
+        });
+
+        this.unsubscribeAuth = unsubscribe;
+    }
+
+    componentWillUnmount() {
+        if (this.unsubscribeAuth) {
+            this.unsubscribeAuth();
+        }
     }
 
     async fetchReclamacao() {
+        this.setState({ loading: true });
         try {
             const reclamacaoId = localStorage.getItem('reclamacaoId');
 
@@ -38,13 +57,27 @@ class ReclamacaoDetalhes extends Component {
             const reclamacaoSnap = await getDoc(reclamacaoRef);
 
             if (reclamacaoSnap.exists()) {
+                const reclamacaoData = reclamacaoSnap.data();
+                const comentariosData = reclamacaoData.comentarios || [];
+
+                const formattedComentarios = comentariosData.map(comentario => {
+                    if (typeof comentario === 'string') {
+                        return {
+                            text: comentario,
+                            type: 'text',
+                            timestamp: new Date().toISOString(),
+                            author: 'admin@cmsga.ce.gov.br',
+                            authorType: 'admin'
+                        };
+                    }
+                    return comentario;
+                });
+
                 this.setState({
-                    reclamacao: reclamacaoSnap.data(),
+                    reclamacao: reclamacaoData,
                     loading: false,
-                    comentarios: reclamacaoSnap.data().comentarios || [], // Garante que é um array
-                    situacao: reclamacaoSnap.data().situacao || 'EM ANALISE',
-                }, () => {
-                    this.fetchUserData(); // Chama fetchUsuario após carregar a reclamação
+                    comentarios: formattedComentarios,
+                    situacao: reclamacaoData.situacao || 'EM ANALISE',
                 });
             } else {
                 console.error('Reclamação não encontrada.');
@@ -56,44 +89,6 @@ class ReclamacaoDetalhes extends Component {
         }
     }
 
-    async fetchUserData() {
-        this.setState({ loading: true, error: null });
-
-        try {
-            const userId = this.state.reclamacao.userId;
-            console.log('UserID da reclamação:', userId);
-
-            if (userId) {
-                const usersCollection = collection(db, 'users');
-                const q = query(usersCollection, where('uid', '==', userId));
-                const querySnapshot = await getDocs(q);
-
-                if (!querySnapshot.empty) {
-                    const userDoc = querySnapshot.docs[0];
-                    console.log('Dados do Firestore:', userDoc.data());
-                    this.setState({ userData: userDoc.data() });
-                } else {
-                    this.setState({ error: 'Dados do usuário não encontrados.' });
-                }
-            } else {
-                this.setState({ error: 'userId não encontrado na reclamação.' });
-            }
-        } catch (err) {
-            this.setState({ error: 'Erro ao buscar dados do usuário. Tente novamente.' });
-            console.error('Erro ao buscar dados do usuário:', err);
-            console.error('Código do erro:', err.code);
-            console.error('Mensagem do erro:', err.message);
-        } finally {
-            this.setState({ loading: false });
-        }
-    }
-
-    handleComentariosChange = (event) => {
-        this.setState({
-            comentarios: [...this.state.comentarios, event.target.value]
-        });
-    };
-
     handleSituacaoChange = (event) => {
         this.setState({ situacao: event.target.value });
     };
@@ -101,12 +96,9 @@ class ReclamacaoDetalhes extends Component {
     handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const base64 = e.target.result;
-                this.setState({ pdfBase64: base64 });
-            };
-            reader.readAsDataURL(file);
+            this.setState({ fileToUpload: file, uploadedFileName: file.name });
+        } else {
+            this.setState({ fileToUpload: null, uploadedFileName: "" });
         }
     };
 
@@ -116,40 +108,94 @@ class ReclamacaoDetalhes extends Component {
             const reclamacaoRef = doc(db, 'reclamacoes', reclamacaoId);
 
             await updateDoc(reclamacaoRef, {
-                comentarios: this.state.comentarios,
                 situacao: this.state.situacao,
-                pdfBase64: this.state.pdfBase64, // Adiciona o Base64 do PDF ao documento
             });
 
-            console.log('Atualizações salvas com sucesso!');
+            console.log('Situação da reclamação atualizada com sucesso!');
         } catch (error) {
-            console.error('Erro ao salvar atualizações:', error);
+            console.error('Erro ao salvar situação:', error);
         }
     };
 
     adicionarComentario = async () => {
-        if (this.state.novoComentario) {
-            const novoComentario = this.state.novoComentario;
-            const reclamacaoId = localStorage.getItem('reclamacaoId');
-            const reclamacaoRef = doc(db, 'reclamacoes', reclamacaoId);
+        const { novoComentario, fileToUpload, comentarios, userData } = this.state;
+        const reclamacaoId = localStorage.getItem('reclamacaoId');
+        const reclamacaoRef = doc(db, 'reclamacoes', reclamacaoId);
 
-            try {
-                // Atualiza o array de comentários no Firestore
-                await updateDoc(reclamacaoRef, {
-                    comentarios: [...this.state.comentarios, novoComentario],
-                });
-
-                // Atualiza o estado local
-                this.setState(prevState => ({
-                    comentarios: [...prevState.comentarios, novoComentario],
-                    novoComentario: '',
-                }));
-
-                console.log('Comentário adicionado com sucesso!');
-            } catch (error) {
-                console.error('Erro ao adicionar comentário:', error);
-            }
+        if (!novoComentario && !fileToUpload) {
+            alert("Por favor, digite uma mensagem ou selecione um arquivo.");
+            return;
         }
+
+        let newComentarios = [...comentarios];
+        const currentTimestamp = new Date().toISOString();
+        const authorName = userData.displayName || userData.email || 'Usuário Desconhecido';
+        const authorType = 'user';
+
+        try {
+            if (fileToUpload) {
+                const reader = new FileReader();
+                reader.readAsDataURL(fileToUpload);
+                await new Promise((resolve, reject) => {
+                    reader.onload = (e) => {
+                        const base64Content = e.target.result;
+                        newComentarios.push({
+                            text: `Arquivo anexado: ${fileToUpload.name}`,
+                            type: 'file',
+                            content: base64Content,
+                            fileName: fileToUpload.name,
+                            timestamp: currentTimestamp,
+                            author: authorName,
+                            authorType: authorType,
+                        });
+                        resolve();
+                    };
+                    reader.onerror = error => reject(error);
+                });
+            }
+
+            if (novoComentario) {
+                newComentarios.push({
+                    text: novoComentario,
+                    type: 'text',
+                    timestamp: currentTimestamp,
+                    author: authorName,
+                    authorType: authorType,
+                });
+            }
+
+            await updateDoc(reclamacaoRef, {
+                comentarios: newComentarios,
+            });
+
+            this.setState({
+                comentarios: newComentarios,
+                novoComentario: '',
+                fileToUpload: null,
+                uploadedFileName: '',
+            });
+
+            console.log('Comentário(s) e/ou arquivo(s) adicionados com sucesso!');
+
+        } catch (error) {
+            console.error('Erro ao adicionar comentário e/ou arquivo:', error);
+            alert("Erro ao adicionar comentário/arquivo.");
+        }
+    };
+
+    formatarDataHoraChat = (isoString) => {
+        if (!isoString) return '';
+        const date = new Date(isoString);
+        const options = {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        };
+        return date.toLocaleString('pt-BR', options);
     };
 
     formatarData = (dataString) => {
@@ -166,14 +212,28 @@ class ReclamacaoDetalhes extends Component {
     };
 
     render() {
-        const { reclamacao, loading } = this.state;
+        const { reclamacao, loading, uploadedFileName } = this.state;
 
         if (loading) {
-            return <div>Carregando...</div>;
+            return (
+                <div className="App-header">
+                    <div className="loading-message">
+                        <h1>Carregando...</h1>
+                        <p>Por favor, aguarde.</p>
+                    </div>
+                </div>
+            );
         }
 
         if (!reclamacao) {
-            return <div>Reclamação não encontrada.</div>;
+            return (
+                <div className="App-header">
+                    <div className="not-found-message">
+                        <h1>Reclamação não encontrada.</h1>
+                        <p>Não foi possível carregar os detalhes da reclamação.</p>
+                    </div>
+                </div>
+            );
         }
 
         return (
@@ -183,34 +243,79 @@ class ReclamacaoDetalhes extends Component {
                     <div className='infosGeral'>
                         <div className='atualizeData'>
                             <h3>Atualizações sobre a reclamação</h3>
-                            <label htmlFor="comentarios">Atualizações:</label><br/>
-                            {Array.isArray(this.state.comentarios) && ( // Verifica se é um array
-                                <ol>
-                                    {this.state.comentarios.map((comentario, index) => (
-                                        <li className='comentarioChat' key={index}>{comentario}</li>
-                                    ))}
-                                </ol>
-                            )}
-
-                            {/* <label htmlFor="comentarios">Enviar Mensagem</label><br/>
-                            <textarea
-                                id="comentarios"
-                                value={this.state.novoComentario || ''} // Usar um estado temporário para o novo comentário
-                                onChange={(event) => this.setState({ novoComentario: event.target.value })}
-                                placeholder='Escreva uma mensagem ao requerente...'
-                            /><br/>
-                            <button onClick={this.adicionarComentario} className='buttonLogin btnComentario'>Enviar</button><br/> */}
+                            {/* Início da Seção de Chat */}
+                            <div className="chat-container">
+                                {Array.isArray(this.state.comentarios) && this.state.comentarios.map((comentario, index) => (
+                                    // Aplica classe condicional baseada no authorType E no email do autor
+                                    <div
+                                        key={index}
+                                        className={`chat-message ${comentario.author === 'admin@cmsga.ce.gov.br'
+                                            ? (comentario.author === 'admin@cmsga.ce.gov.br' ? 'admin-message mensage-admin-chat' : 'admin-message')
+                                            : 'user-message'
+                                            }`}
+                                    >
+                                        {(comentario.author) && (
+                                            <p className={`chat-message-meta-client`}>
+                                                {comentario.author}
+                                            </p>
+                                        )}
+                                        {comentario.type === 'text' && <p>{comentario.text}</p>}
+                                        {comentario.type === 'file' && (
+                                            <div>
+                                                <p><strong>Arquivo anexado:</strong> <a href={comentario.content} target="_blank" rel="noopener noreferrer">{comentario.fileName}</a></p>
+                                            </div>
+                                        )}
+                                        {/* Informações de data, hora e autor */}
+                                        {(comentario.timestamp) && (
+                                            <p className={`chat-message-meta-client`}>
+                                                {comentario.timestamp && (
+                                                    <span> {this.formatarDataHoraChat(comentario.timestamp)}</span>
+                                                )}
+                                            </p>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
-                            <div className='atualizeData'>
-                            <label  htmlFor="situacao">Envie um arquivo</label><br/>
-                            <input className='buttonLogin btnUpload' type="file" accept="application/pdf" onChange={this.handleFileChange} /><br/>
-                        <button className='buttonLogin btnComentario btnSend' onClick={this.salvarAtualizacoes}>Enviar Anexo</button>
+                            {/* Fim da Seção de Chat */}
+
+                            {/* Área de Input do Chat, incluindo o anexo */}
+                            <div className="chat-input-area">
+                                <div className="chat-input-comentario-textarea-client">
+                                    <textarea
+                                        id="novoComentario"
+                                        value={this.state.novoComentario || ''}
+                                        onChange={(event) => this.setState({ novoComentario: event.target.value })}
+                                        placeholder='Escreva uma mensagem...'
+                                        className="chat-textarea"
+                                    /><br />
+                                </div>
+                                <div className="chat-input-file-upload-send">
+                                    <input
+                                        id="file-upload"
+                                        type="file"
+                                        accept="application/pdf"
+                                        onChange={this.handleFileChange}
+                                    /><br />
+                                    {uploadedFileName && (
+                                        <p className="file-attached-message">Arquivo selecionado: {uploadedFileName}</p>
+                                    )}
+                                </div>
+
+                                <button onClick={this.adicionarComentario} className="buttonLogin btnComentario">Enviar</button><br />
+                            </div>
+                            {/* Fim da Área de Input do Chat */}
+                        </div>
+
+                        <div className='atualizeData'>
+                            <label htmlFor="situacao">Situação Atual:</label><br />
+                            <p className="current-situacao">{reclamacao.situacao}</p>
                         </div>
 
                         {this.state.userData && (
                             <div className='userData'>
-                                <h2>Dados do Fornecedor</h2>
-                                <p><strong>Nome:</strong> {this.state.userData.nome}</p>
+                                <h2>Seus Dados</h2>
+                                <p><strong>Nome:</strong> {this.state.userData.displayName || this.state.userData.email}</p>
+                                <p><strong>Email:</strong> {this.state.userData.email}</p>
                             </div>
                         )}
 
@@ -232,19 +337,14 @@ class ReclamacaoDetalhes extends Component {
                             <p><strong>Data Negativa:</strong> {this.formatarData(reclamacao.dataNegativa)}</p>
                             <p><strong>Forma Pagamento:</strong> {reclamacao.formaPagamento}</p>
                             <p><strong>Valor Compra:</strong> {reclamacao.valorCompra}</p>
-                            <p><strong>Detalhes Reclamação:</strong> {reclamacao.detalhesReclamacao}</p>
+                            <p><strong>Detalhes Reclamacao:</strong> {reclamacao.detalhesReclamacao}</p>
                             <p><strong>Pedido Consumidor:</strong> {reclamacao.pedidoConsumidor}</p>
                             <p><strong>Situação</strong> {reclamacao.situacao}</p>
                         </div>
-
-
-
                     </div>
-
-                    {/* {this.state.pdfBase64 && (
+                    {this.state.pdfBase64 && (
                         <iframe src={this.state.pdfBase64} width="100%" height="500px" title="Visualização do PDF" />
-                    )} */}
-
+                    )}
                 </div>
             </div>
         );

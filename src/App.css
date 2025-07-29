@@ -1866,6 +1866,11 @@ video {
   text-align: right;
 }
 
+.chat-message-meta-client{
+  font-size: 10px;
+  text-align: left;
+}
+
 /* Estilos para o container do chat */
 .chat-container {
   border: 1px solid #e0e0e0;
@@ -1912,6 +1917,10 @@ video {
 .chat-input-comentario-textarea{
   width: 40%;
 }
+
+.chat-input-comentario-textarea-client{
+  width: 70%;
+}
 .chat-textarea {
   width: calc(100% - 20px);
   /* Ajusta a largura com padding */
@@ -1940,7 +1949,8 @@ video {
   border: 1px solid #a2a2a2;
   border-radius: 10px;
   margin-right: 20px;
-  height: 80px;
+  height: 70px;
+  padding: 5px;
 }
 .btnUploadFileChat {
   width: 100%;
@@ -2028,6 +2038,93 @@ video {
   width: 100%;
   background-color: #105394;
   height: 42px;
+}
+
+
+/* ... (seus estilos existentes para chat-container, chat-message, etc.) ... */
+
+/* Estilo para mensagens enviadas pelo ADMINISTRADOR (já existia 'admin-message') */
+.admin-message {
+    background-color: #c5e2ff; 
+    align-self: flex-start; /* Alinha à esquerda */
+    color: #333;
+}
+
+
+
+/* Estilo para mensagens enviadas pelo USUÁRIO */
+.user-message {
+    background-color: #ffe6d8; /* Um azul claro para mensagens do usuário */
+    align-self: flex-end; /* Alinha à direita */
+    color: #333;
+}
+
+/* Estilo para metadados de mensagens (data, hora, autor) */
+.chat-message-meta {
+    font-size: 0.75em; /* Fonte menor para metadados */
+    color: #888; /* Cor mais suave */
+    margin-top: 5px;
+    display: block; /* Garante que ocupe sua própria linha */
+}
+
+/* Alinhamento dos metadados para mensagens do administrador */
+.admin-message-meta {
+    text-align: left;
+}
+
+/* Alinhamento dos metadados para mensagens do usuário */
+.user-message-meta {
+    text-align: right;
+}
+
+/* Estilo para o campo de texto do chat */
+.chat-textarea {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    resize: vertical;
+    min-height: 60px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.chat-input-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Estilo para o input de arquivo no chat */
+.btnUploadFileChat {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+}
+
+.btnUploadFileChat:hover {
+    background-color: #e0e0e0;
+}
+
+.file-attached-message {
+    font-size: 12px;
+    color: #5cb85c;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.current-situacao {
+    font-weight: bold;
+    color: #0056b3;
+    font-size: 1.1em;
+    margin-top: 5px;
 }
 
 .formLogin {

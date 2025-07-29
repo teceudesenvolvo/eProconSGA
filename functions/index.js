@@ -16,9 +16,6 @@ const EMAILJS_USER_ID = functions.config().emailjs.user_id;
 const EMAILJS_SEND_URL = "https://api.emailjs.com/api/v1.0/email/send";
 
 exports.sendEmail = functions.https.onRequest(async (req, res) => {
-  // Configurar CORS para permitir requisições do seu frontend
-  // ATENÇÃO: Substitua "http://localhost:3000" pelo domínio do seu site
-  // em produção!
   res.set("Access-Control-Allow-Origin", "https://procon.cmsga.ce.gov.br");
   res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.set("Access-Control-Allow-Headers", "Content-Type");

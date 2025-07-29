@@ -350,6 +350,7 @@ class ReclamacaoDetalhes extends Component {
                                 placeholder='Escreva uma mensagem ao requerente...'
                             /><br/>
                             <button onClick={this.adicionarComentario} className='buttonLogin btnComentario'>Enviar</button><br/>
+                            <p>O requerente será informado por email.</p>
                             {/* Aplica a classe CSS dinâmica aqui */}
                             {emailStatus && <p className={`email-status-message ${emailStatusClass}`}>{emailStatus}</p>}
                             </div>

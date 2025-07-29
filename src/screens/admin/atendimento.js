@@ -424,7 +424,7 @@ class ReclamacaoDetalhes extends Component {
                                     <select id="situacao" value={situacao} onChange={this.handleSituacaoChange}>
                                         <option value="">{reclamacao.situacao}</option>
                                         <option value="Em Analise">Em Análise</option>
-                                        <option value="Em Negociação com a empresa">Em Negociação</option>
+                                        <option value="Em Negociação">Em Negociação</option>
                                         <option value="Finalizada">Finalizada</option>
                                         <option value="Pendente">Pendente</option>
                                     </select><br />

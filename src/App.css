@@ -1861,6 +1861,11 @@ video {
   padding: 15px;
 }
 
+.chat-message-meta{
+  font-size: 10px;
+  text-align: right;
+}
+
 /* Estilos para o container do chat */
 .chat-container {
   border: 1px solid #e0e0e0;
@@ -2014,6 +2019,8 @@ video {
   border-radius: 5px;
   margin-top: 10px;
   margin-bottom: 20px;
+  background-color: #fff;
+  border: 1px solid #c6c6c6;
 }
 .btnSend {
   margin-top: -8px;

@@ -20,14 +20,13 @@ class ReclamacaoDetalhes extends Component {
             isLoadingData: true,
             isLoadingAuth: true,
             error: null,
-            comentarios: [], // Comentários agora podem ser objetos { text: string, type: 'text' | 'file', content: string (base64 if file), fileName?: string }
+            comentarios: [], // Agora armazena objetos { text, type, timestamp, author, content(optional), fileName(optional) }
             situacao: "",
-            // pdfBase64: null, // Não precisamos mais disso como estado separado, ele vai para os comentários
             novoComentario: "",
             fileToUpload: null, // Guarda o arquivo selecionado temporariamente
             uploadedFileName: "", // Guarda o nome do arquivo para exibição
             isAuthorized: false,
-            emailStatus: "O usuário será notificado por email.", // Removido texto inicial para ser mais dinâmico
+            emailStatus: "", // Feedback do envio de email
             emailStatusType: "",
         };
         this.navigate = props.navigate;
@@ -77,13 +76,18 @@ class ReclamacaoDetalhes extends Component {
             const reclamacaoRef = doc(db, "reclamacoes", reclamacaoId);
             const reclamacaoSnap = await getDoc(reclamacaoRef);
             if (reclamacaoSnap.exists()) {
-                // Ao carregar, verifique se os comentários são strings antigas ou objetos novos
                 const comentariosData = reclamacaoSnap.data().comentarios || [];
+                // Garante que comentários antigos (strings) sejam formatados para o novo objeto
                 const formattedComentarios = comentariosData.map(comentario => {
                     if (typeof comentario === 'string') {
-                        return { text: comentario, type: 'text' };
+                        return {
+                            text: comentario,
+                            type: 'text',
+                            timestamp: new Date().toISOString(), // Usa data atual para comentários antigos sem timestamp
+                            author: 'admin@cmsga.ce.gov.br' // Assume admin para comentários antigos sem autor
+                        };
                     }
-                    return comentario; // Já é um objeto, use como está
+                    return comentario; // Já é um objeto, usa como está
                 });
 
                 this.setState({
@@ -134,7 +138,6 @@ class ReclamacaoDetalhes extends Component {
     handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
-            // Guardar o arquivo completo e o nome para exibir
             this.setState({ fileToUpload: file, uploadedFileName: file.name });
         } else {
             this.setState({ fileToUpload: null, uploadedFileName: "" });
@@ -145,10 +148,8 @@ class ReclamacaoDetalhes extends Component {
         try {
             const reclamacaoId = localStorage.getItem("reclamacaoId");
             const reclamacaoRef = doc(db, "reclamacoes", reclamacaoId);
-            // Salva apenas a situação, os comentários e arquivos são tratados em adicionarComentario
             await updateDoc(reclamacaoRef, {
                 situacao: this.state.situacao,
-                // Não precisa mais de pdfBase64 aqui, pois ele vai dentro dos comentários agora
             });
             console.log("Atualizações salvas com sucesso!");
             this.setState({ emailStatus: "Situação salva com sucesso!", emailStatusType: "success" });
@@ -160,7 +161,6 @@ class ReclamacaoDetalhes extends Component {
         }
     };
 
-    // Função para enviar e-mail usando axios e EmailJS
     async sendEmailWithEmailJS(recipientEmail, message, protocolo, nomeConsumidor, fileAttachmentName = null) {
         if (!recipientEmail) {
             return { success: false, error: "E-mail do destinatário não informado." };
@@ -183,7 +183,7 @@ class ReclamacaoDetalhes extends Component {
                     to_email: recipientEmail,
                     subject: `Atualização da sua Reclamação PROCON CMSGA - Protocolo: ${protocolo}`,
                     protocolo: protocolo,
-                    mensagem: emailMessage, // Passa a mensagem que pode incluir o nome do arquivo
+                    mensagem: emailMessage,
                     nomeConsumidor: nomeConsumidor || "Consumidor",
                 },
             });
@@ -217,9 +217,10 @@ class ReclamacaoDetalhes extends Component {
         let newComentarios = [...comentarios];
         let messageForEmail = novoComentario;
         let fileAttachmentNameForEmail = null;
+        const currentTimestamp = new Date().toISOString(); // Timestamp para a mensagem
+        const authorEmail = auth.currentUser ? auth.currentUser.email : 'admin@cmsga.ce.gov.br'; // Autor da mensagem
 
         try {
-            // Lidar com o arquivo primeiro, se houver
             if (fileToUpload) {
                 const reader = new FileReader();
                 reader.readAsDataURL(fileToUpload);
@@ -229,8 +230,10 @@ class ReclamacaoDetalhes extends Component {
                         newComentarios.push({
                             text: `Arquivo anexado: ${fileToUpload.name}`,
                             type: 'file',
-                            content: base64Content, // Salva o base64 no Firebase
+                            content: base64Content,
                             fileName: fileToUpload.name,
+                            timestamp: currentTimestamp,
+                            author: authorEmail,
                         });
                         fileAttachmentNameForEmail = fileToUpload.name;
                         resolve();
@@ -239,20 +242,19 @@ class ReclamacaoDetalhes extends Component {
                 });
             }
 
-            // Adicionar o comentário de texto, se houver
             if (novoComentario) {
                 newComentarios.push({
                     text: novoComentario,
                     type: 'text',
+                    timestamp: currentTimestamp,
+                    author: authorEmail,
                 });
             }
 
-            // Atualizar no Firebase
             await updateDoc(reclamacaoRef, {
                 comentarios: newComentarios,
             });
 
-            // Atualizar o estado local
             this.setState({
                 comentarios: newComentarios,
                 novoComentario: "",
@@ -261,14 +263,13 @@ class ReclamacaoDetalhes extends Component {
             });
             console.log("Comentário(s) e/ou arquivo(s) adicionados com sucesso!");
 
-            // Enviar e-mail, se o usuário e a reclamação existirem
             if (userData && userData.email && reclamacao) {
                 const resultado = await this.sendEmailWithEmailJS(
                     userData.email,
-                    messageForEmail, // Mensagem de texto
+                    messageForEmail,
                     reclamacao.protocolo,
                     userData.nome,
-                    fileAttachmentNameForEmail // Nome do arquivo para menção no e-mail
+                    fileAttachmentNameForEmail
                 );
 
                 if (resultado.success) {
@@ -289,6 +290,21 @@ class ReclamacaoDetalhes extends Component {
         }
     };
 
+    // Nova função para formatar data e hora para exibição no chat
+    formatarDataHoraChat = (isoString) => {
+        if (!isoString) return '';
+        const date = new Date(isoString);
+        const options = {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false // Formato 24 horas
+        };
+        return date.toLocaleString('pt-BR', options);
+    };
 
     formatarData = (dataString) => {
         if (!dataString) {
@@ -363,12 +379,23 @@ class ReclamacaoDetalhes extends Component {
                             <div className="chat-container">
                                 {Array.isArray(this.state.comentarios) && this.state.comentarios.map((comentario, index) => (
                                     <div key={index} className="chat-message admin-message">
+                                        {/* Informações de data, hora e autor */}
+                                        {(comentario.author) && (
+                                            <p className="chat-message-meta">
+                                                {comentario.author && <span>{comentario.author}</span>}
+                                            </p>
+                                        )}  
                                         {comentario.type === 'text' && <p>{comentario.text}</p>}
                                         {comentario.type === 'file' && (
                                             <div>
                                                 <p><strong>Arquivo anexado:</strong> <a href={comentario.content} target="_blank" rel="noopener noreferrer">{comentario.fileName}</a></p>
-                                                {/* Opcional: Miniatura ou ícone para PDF */}
                                             </div>
+                                        )}
+
+                                        {(comentario.timestamp) && (
+                                            <p className="chat-message-meta">
+                                                {this.formatarDataHoraChat(comentario.timestamp)}
+                                            </p>
                                         )}
                                     </div>
                                 ))}
@@ -390,7 +417,6 @@ class ReclamacaoDetalhes extends Component {
                                     <button className="buttonLogin btnComentario btnSend" onClick={this.salvarAtualizacoes}>Salvar Atualização</button>
                                 </div>
                                 <div className="chat-input-comentario-textarea">
-                                    {/* <label htmlFor="novoComentario" className="chat-input-label">Enviar Mensagem</label><br /> */}
                                     <textarea
                                         id="novoComentario"
                                         value={this.state.novoComentario || ""}
@@ -405,25 +431,18 @@ class ReclamacaoDetalhes extends Component {
                                     <input
                                         id="file-upload"
                                         type="file"
-                                        className="btnUploadFileChat" // Removida a estilização inline, use CSS
+                                        className="btnUploadFileChat"
                                         accept="application/pdf"
                                         onChange={this.handleFileChange}
                                     /><br />
                                     {uploadedFileName && (
                                         <p className="file-attached-message">Arquivo selecionado: {uploadedFileName}</p>
                                     )}
-
-
                                 </div>
                                 <button onClick={this.adicionarComentario} className="buttonLogin btnComentario">Enviar</button><br />
-
-
-
                             </div>
                             {/* Fim da Área de Input do Chat */}
                         </div>
-
-
 
                         {this.state.userData && (
                             <div className="userData">
@@ -465,10 +484,6 @@ class ReclamacaoDetalhes extends Component {
                             <p><strong>Situacao</strong> {reclamacao.situacao}</p>
                         </div>
                     </div>
-                    {/* O iframe agora exibe o PDF se ele estiver no estado (vindo do Firebase, se for um arquivo antigo) */}
-                    {/* Para exibir PDFs enviados via chat, você precisará iterar sobre os comentários do tipo 'file' */}
-                    {/* Ou, se a lógica for exibir o último PDF anexado, pode ajustar isso. */}
-                    {/* Por enquanto, ele apenas mostra o que for atribuído diretamente a this.state.pdfBase64 */}
                     {this.state.pdfBase64 && (
                         <iframe src={this.state.pdfBase64} width="100%" height="500px" title="Visualização do PDF" />
                     )}

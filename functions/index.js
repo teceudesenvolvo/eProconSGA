@@ -16,7 +16,7 @@ const EMAILJS_USER_ID = functions.config().emailjs.user_id;
 const EMAILJS_SEND_URL = "https://api.emailjs.com/api/v1.0/email/send";
 
 exports.sendEmail = functions.https.onRequest(async (req, res) => {
-  res.set("Access-Control-Allow-Origin", "https://procon.cmsga.ce.gov.br");
+  res.set("Access-Control-Allow-Origin", "https://procon.cmsga.ce.gov.br/");
   res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.set("Access-Control-Allow-Headers", "Content-Type");
 
@@ -63,12 +63,11 @@ exports.sendEmail = functions.https.onRequest(async (req, res) => {
   try {
     // Os dados abaixo serão passados como `template_params` para o EmailJS.
     const templateParams = {
-      to_email: to, // Nome do parâmetro no seu template EmailJS
-      subject: subject, // Nome do parâmetro no seu template EmailJS
+      to_email: to,
+      subject: subject,
       protocolo: protocolo,
       mensagem: mensagem,
       nomeConsumidor: nomeConsumidor,
-      // Adicione outros parâmetros que seu template EmailJS espera
     };
 
     const emailjsPayload = {

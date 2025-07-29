@@ -306,11 +306,6 @@ class ReclamacaoDetalhes extends Component {
                             {/* Fim da Área de Input do Chat */}
                         </div>
 
-                        <div className='atualizeData'>
-                            <label htmlFor="situacao">Situação Atual:</label><br />
-                            <p className="current-situacao">{reclamacao.situacao}</p>
-                        </div>
-
                         {this.state.userData && (
                             <div className='userData'>
                                 <h2>Seus Dados</h2>

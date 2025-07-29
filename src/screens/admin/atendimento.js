@@ -20,12 +20,14 @@ class ReclamacaoDetalhes extends Component {
             isLoadingData: true,
             isLoadingAuth: true,
             error: null,
-            comentarios: [],
+            comentarios: [], // Comentários agora podem ser objetos { text: string, type: 'text' | 'file', content: string (base64 if file), fileName?: string }
             situacao: "",
-            pdfBase64: null,
+            // pdfBase64: null, // Não precisamos mais disso como estado separado, ele vai para os comentários
             novoComentario: "",
+            fileToUpload: null, // Guarda o arquivo selecionado temporariamente
+            uploadedFileName: "", // Guarda o nome do arquivo para exibição
             isAuthorized: false,
-            emailStatus: "O requerente será informado por email.",
+            emailStatus: "O usuário será notificado por email.", // Removido texto inicial para ser mais dinâmico
             emailStatusType: "",
         };
         this.navigate = props.navigate;
@@ -75,10 +77,19 @@ class ReclamacaoDetalhes extends Component {
             const reclamacaoRef = doc(db, "reclamacoes", reclamacaoId);
             const reclamacaoSnap = await getDoc(reclamacaoRef);
             if (reclamacaoSnap.exists()) {
+                // Ao carregar, verifique se os comentários são strings antigas ou objetos novos
+                const comentariosData = reclamacaoSnap.data().comentarios || [];
+                const formattedComentarios = comentariosData.map(comentario => {
+                    if (typeof comentario === 'string') {
+                        return { text: comentario, type: 'text' };
+                    }
+                    return comentario; // Já é um objeto, use como está
+                });
+
                 this.setState({
                     reclamacao: reclamacaoSnap.data(),
                     isLoadingData: false,
-                    comentarios: reclamacaoSnap.data().comentarios || [],
+                    comentarios: formattedComentarios,
                     situacao: reclamacaoSnap.data().situacao || "EM ANALISE",
                 }, () => {
                     this.fetchUserData();
@@ -116,12 +127,6 @@ class ReclamacaoDetalhes extends Component {
         }
     }
 
-    handleComentariosChange = (event) => {
-        this.setState({
-            comentarios: [...this.state.comentarios, event.target.value],
-        });
-    };
-
     handleSituacaoChange = (event) => {
         this.setState({ situacao: event.target.value });
     };
@@ -129,12 +134,10 @@ class ReclamacaoDetalhes extends Component {
     handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const base64 = e.target.result;
-                this.setState({ pdfBase64: base64 });
-            };
-            reader.readAsDataURL(file);
+            // Guardar o arquivo completo e o nome para exibir
+            this.setState({ fileToUpload: file, uploadedFileName: file.name });
+        } else {
+            this.setState({ fileToUpload: null, uploadedFileName: "" });
         }
     };
 
@@ -142,25 +145,35 @@ class ReclamacaoDetalhes extends Component {
         try {
             const reclamacaoId = localStorage.getItem("reclamacaoId");
             const reclamacaoRef = doc(db, "reclamacoes", reclamacaoId);
+            // Salva apenas a situação, os comentários e arquivos são tratados em adicionarComentario
             await updateDoc(reclamacaoRef, {
-                comentarios: this.state.comentarios,
                 situacao: this.state.situacao,
-                pdfBase64: this.state.pdfBase64,
+                // Não precisa mais de pdfBase64 aqui, pois ele vai dentro dos comentários agora
             });
             console.log("Atualizações salvas com sucesso!");
+            this.setState({ emailStatus: "Situação salva com sucesso!", emailStatusType: "success" });
+            setTimeout(() => this.setState({ emailStatus: "", emailStatusType: "" }), 5000);
         } catch (error) {
             console.error("Erro ao salvar atualizações:", error);
+            this.setState({ emailStatus: "Erro ao salvar situação.", emailStatusType: "error" });
+            setTimeout(() => this.setState({ emailStatus: "", emailStatusType: "" }), 5000);
         }
     };
 
     // Função para enviar e-mail usando axios e EmailJS
-    async sendEmailWithEmailJS(recipientEmail, message, protocolo, nomeConsumidor) {
+    async sendEmailWithEmailJS(recipientEmail, message, protocolo, nomeConsumidor, fileAttachmentName = null) {
         if (!recipientEmail) {
             return { success: false, error: "E-mail do destinatário não informado." };
         }
-        if (!message) {
-            return { success: false, error: "Mensagem não informada." };
+        if (!message && !fileAttachmentName) {
+            return { success: false, error: "Mensagem ou arquivo não informado para envio de e-mail." };
         }
+
+        let emailMessage = message;
+        if (fileAttachmentName) {
+            emailMessage += `\n\nFoi anexado um arquivo: ${fileAttachmentName}`;
+        }
+
         try {
             const response = await axios.post(EMAILJS_SEND_URL, {
                 service_id: EMAILJS_SERVICE_ID,
@@ -170,7 +183,7 @@ class ReclamacaoDetalhes extends Component {
                     to_email: recipientEmail,
                     subject: `Atualização da sua Reclamação PROCON CMSGA - Protocolo: ${protocolo}`,
                     protocolo: protocolo,
-                    mensagem: message,
+                    mensagem: emailMessage, // Passa a mensagem que pode incluir o nome do arquivo
                     nomeConsumidor: nomeConsumidor || "Consumidor",
                 },
             });
@@ -191,44 +204,91 @@ class ReclamacaoDetalhes extends Component {
     }
 
     adicionarComentario = async () => {
-        if (this.state.novoComentario) {
-            const novoComentario = this.state.novoComentario;
-            const reclamacaoId = localStorage.getItem("reclamacaoId");
-            const reclamacaoRef = doc(db, "reclamacoes", reclamacaoId);
-            try {
-                await updateDoc(reclamacaoRef, {
-                    comentarios: [...this.state.comentarios, novoComentario],
+        const { novoComentario, fileToUpload, comentarios, reclamacao, userData } = this.state;
+        const reclamacaoId = localStorage.getItem("reclamacaoId");
+        const reclamacaoRef = doc(db, "reclamacoes", reclamacaoId);
+
+        if (!novoComentario && !fileToUpload) {
+            this.setState({ emailStatus: "Por favor, digite uma mensagem ou selecione um arquivo.", emailStatusType: "error" });
+            setTimeout(() => this.setState({ emailStatus: "", emailStatusType: "" }), 3000);
+            return;
+        }
+
+        let newComentarios = [...comentarios];
+        let messageForEmail = novoComentario;
+        let fileAttachmentNameForEmail = null;
+
+        try {
+            // Lidar com o arquivo primeiro, se houver
+            if (fileToUpload) {
+                const reader = new FileReader();
+                reader.readAsDataURL(fileToUpload);
+                await new Promise((resolve, reject) => {
+                    reader.onload = (e) => {
+                        const base64Content = e.target.result;
+                        newComentarios.push({
+                            text: `Arquivo anexado: ${fileToUpload.name}`,
+                            type: 'file',
+                            content: base64Content, // Salva o base64 no Firebase
+                            fileName: fileToUpload.name,
+                        });
+                        fileAttachmentNameForEmail = fileToUpload.name;
+                        resolve();
+                    };
+                    reader.onerror = error => reject(error);
                 });
-                this.setState((prevState) => ({
-                    comentarios: [...prevState.comentarios, novoComentario],
-                    novoComentario: "",
-                }));
-                console.log("Comentário adicionado com sucesso!");
-                // Envia o e-mail após adicionar o comentário
-                if (this.state.userData && this.state.userData.email) {
-                    const resultado = await this.sendEmailWithEmailJS(
-                        this.state.userData.email,
-                        novoComentario,
-                        this.state.reclamacao.protocolo,
-                        this.state.userData.nome
-                    );
-                    if (resultado.success) {
-                        this.setState({ emailStatus: "E-mail enviado com sucesso!", emailStatusType: "success" });
-                    } else {
-                        this.setState({ emailStatus: `Erro ao enviar e-mail: ${resultado.error}`, emailStatusType: "error" });
-                    }
-                    setTimeout(() => this.setState({ emailStatus: "", emailStatusType: "" }), 5000);
+            }
+
+            // Adicionar o comentário de texto, se houver
+            if (novoComentario) {
+                newComentarios.push({
+                    text: novoComentario,
+                    type: 'text',
+                });
+            }
+
+            // Atualizar no Firebase
+            await updateDoc(reclamacaoRef, {
+                comentarios: newComentarios,
+            });
+
+            // Atualizar o estado local
+            this.setState({
+                comentarios: newComentarios,
+                novoComentario: "",
+                fileToUpload: null,
+                uploadedFileName: "",
+            });
+            console.log("Comentário(s) e/ou arquivo(s) adicionados com sucesso!");
+
+            // Enviar e-mail, se o usuário e a reclamação existirem
+            if (userData && userData.email && reclamacao) {
+                const resultado = await this.sendEmailWithEmailJS(
+                    userData.email,
+                    messageForEmail, // Mensagem de texto
+                    reclamacao.protocolo,
+                    userData.nome,
+                    fileAttachmentNameForEmail // Nome do arquivo para menção no e-mail
+                );
+
+                if (resultado.success) {
+                    this.setState({ emailStatus: "Mensagem e/ou arquivo enviados e e-mail enviado com sucesso!", emailStatusType: "success" });
                 } else {
-                    this.setState({ emailStatus: "Erro: E-mail do requerente não disponível para envio.", emailStatusType: "error" });
-                    setTimeout(() => this.setState({ emailStatus: "", emailStatusType: "" }), 5000);
+                    this.setState({ emailStatus: `Erro ao enviar e-mail: ${resultado.error}`, emailStatusType: "error" });
                 }
-            } catch (error) {
-                console.error("Erro ao adicionar comentário:", error);
-                this.setState({ emailStatus: "Erro ao adicionar comentário e/ou enviar e-mail.", emailStatusType: "error" });
+                setTimeout(() => this.setState({ emailStatus: "", emailStatusType: "" }), 5000);
+            } else {
+                this.setState({ emailStatus: "Erro: E-mail do requerente não disponível para envio.", emailStatusType: "error" });
                 setTimeout(() => this.setState({ emailStatus: "", emailStatusType: "" }), 5000);
             }
+
+        } catch (error) {
+            console.error("Erro ao adicionar comentário e/ou arquivo:", error);
+            this.setState({ emailStatus: "Erro ao adicionar comentário/arquivo e/ou enviar e-mail.", emailStatusType: "error" });
+            setTimeout(() => this.setState({ emailStatus: "", emailStatusType: "" }), 5000);
         }
     };
+
 
     formatarData = (dataString) => {
         if (!dataString) {
@@ -242,7 +302,7 @@ class ReclamacaoDetalhes extends Component {
     };
 
     render() {
-        const { reclamacao, isLoadingData, situacao, isAuthorized, isLoadingAuth, emailStatus, emailStatusType } = this.state;
+        const { reclamacao, isLoadingData, situacao, isAuthorized, isLoadingAuth, emailStatus, emailStatusType, uploadedFileName } = this.state;
         const emailStatusClass = emailStatusType === "success" ? "email-status-success" :
             emailStatusType === "error" ? "email-status-error" : "";
 
@@ -297,38 +357,73 @@ class ReclamacaoDetalhes extends Component {
                 <div className="favoritos agendarConsulta">
                     <div className="infosGeral">
                         <div className="atualizeData">
-                            <h3>Atualize o Requerente</h3>
-                            <label htmlFor="comentarios">Atualizações:</label><br />
-                            {Array.isArray(this.state.comentarios) && (
-                                <ol>
-                                    {this.state.comentarios.map((comentario, index) => (
-                                        <li className="comentarioChat" key={index}>{comentario}</li>
-                                    ))}
-                                </ol>
-                            )}
 
-                            <label htmlFor="comentarios">Enviar Mensagem</label><br />
-                            <textarea
-                                id="comentarios"
-                                value={this.state.novoComentario || ""}
-                                onChange={(event) => this.setState({ novoComentario: event.target.value })}
-                                placeholder="Escreva uma mensagem ao requerente..."
-                            /><br />
-                            <button onClick={this.adicionarComentario} className="buttonLogin btnComentario">Enviar</button><br />
-                            {emailStatus && <p className={`email-status-message ${emailStatusClass}`}>{emailStatus}</p>}
+                            <h3>Atualize o Requerente</h3>
+                            {/* Início da Seção de Chat */}
+                            <div className="chat-container">
+                                {Array.isArray(this.state.comentarios) && this.state.comentarios.map((comentario, index) => (
+                                    <div key={index} className="chat-message admin-message">
+                                        {comentario.type === 'text' && <p>{comentario.text}</p>}
+                                        {comentario.type === 'file' && (
+                                            <div>
+                                                <p><strong>Arquivo anexado:</strong> <a href={comentario.content} target="_blank" rel="noopener noreferrer">{comentario.fileName}</a></p>
+                                                {/* Opcional: Miniatura ou ícone para PDF */}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                            {/* Fim da Seção de Chat */}
+
+                            {/* Área de Input do Chat, incluindo o anexo */}
+
+                            <div className="chat-input-area">
+                                <div className="chat-input-situacao">
+                                    <label htmlFor="situacao">Situação:</label><br />
+                                    <select id="situacao" value={situacao} onChange={this.handleSituacaoChange}>
+                                        <option value="">{reclamacao.situacao}</option>
+                                        <option value="Em Analise">Em Análise</option>
+                                        <option value="Em Negociação com a empresa">Em Negociação</option>
+                                        <option value="Finalizada">Finalizada</option>
+                                        <option value="Pendente">Pendente</option>
+                                    </select><br />
+                                    <button className="buttonLogin btnComentario btnSend" onClick={this.salvarAtualizacoes}>Salvar Atualização</button>
+                                </div>
+                                <div className="chat-input-comentario-textarea">
+                                    {/* <label htmlFor="novoComentario" className="chat-input-label">Enviar Mensagem</label><br /> */}
+                                    <textarea
+                                        id="novoComentario"
+                                        value={this.state.novoComentario || ""}
+                                        onChange={(event) => this.setState({ novoComentario: event.target.value })}
+                                        placeholder="Escreva uma mensagem ao requerente..."
+                                        className="chat-textarea"
+                                    /><br />
+                                    {emailStatus && <p className={`email-status-message ${emailStatusClass}`}>{emailStatus}</p>}
+
+                                </div>
+                                <div className="chat-input-file-upload-send">
+                                    <input
+                                        id="file-upload"
+                                        type="file"
+                                        className="btnUploadFileChat" // Removida a estilização inline, use CSS
+                                        accept="application/pdf"
+                                        onChange={this.handleFileChange}
+                                    /><br />
+                                    {uploadedFileName && (
+                                        <p className="file-attached-message">Arquivo selecionado: {uploadedFileName}</p>
+                                    )}
+
+
+                                </div>
+                                <button onClick={this.adicionarComentario} className="buttonLogin btnComentario">Enviar</button><br />
+
+
+
+                            </div>
+                            {/* Fim da Área de Input do Chat */}
                         </div>
-                        <div className="atualizeData">
-                            <label htmlFor="situacao">Situação:</label><br />
-                            <select id="situacao" value={situacao} onChange={this.handleSituacaoChange}>
-                                <option value="">{reclamacao.situacao}</option>
-                                <option value="Em Analise">Em Análise</option>
-                                <option value="Em Negociação com a empresa">Em Negociação</option>
-                                <option value="Finalizada">Finalizada</option>
-                            </select><br />
-                            <label htmlFor="situacao">Envie um arquivo</label><br />
-                            <input className="buttonLogin btnUpload" type="file" accept="application/pdf" onChange={this.handleFileChange} /><br />
-                            <button className="buttonLogin btnComentario btnSend" onClick={this.salvarAtualizacoes}>Salvar Atualizações</button>
-                        </div>
+
+
 
                         {this.state.userData && (
                             <div className="userData">
@@ -367,9 +462,13 @@ class ReclamacaoDetalhes extends Component {
                             <p><strong>Valor Compra:</strong> {reclamacao.valorCompra}</p>
                             <p><strong>Detalhes Reclamacao:</strong> {reclamacao.detalhesReclamacao}</p>
                             <p><strong>Pedido Consumidor:</strong> {reclamacao.pedidoConsumidor}</p>
-                            <p><strong>Situação</strong> {reclamacao.situacao}</p>
+                            <p><strong>Situacao</strong> {reclamacao.situacao}</p>
                         </div>
                     </div>
+                    {/* O iframe agora exibe o PDF se ele estiver no estado (vindo do Firebase, se for um arquivo antigo) */}
+                    {/* Para exibir PDFs enviados via chat, você precisará iterar sobre os comentários do tipo 'file' */}
+                    {/* Ou, se a lógica for exibir o último PDF anexado, pode ajustar isso. */}
+                    {/* Por enquanto, ele apenas mostra o que for atribuído diretamente a this.state.pdfBase64 */}
                     {this.state.pdfBase64 && (
                         <iframe src={this.state.pdfBase64} width="100%" height="500px" title="Visualização do PDF" />
                     )}

@@ -11,6 +11,12 @@ const fetch = require("node-fetch");
 const EMAILJS_SERVICE_ID = functions.config().emailjs.service_id;
 const EMAILJS_TEMPLATE_ID = functions.config().emailjs.template_id;
 const EMAILJS_USER_ID = functions.config().emailjs.user_id;
+const app = require("express")();
+const port = process.env.PORT || 8774;
+
+app.listen(port, () => {
+  console.log(port);
+});
 
 // Endpoint da API do EmailJS
 const EMAILJS_SEND_URL = "https://api.emailjs.com/api/v1.0/email/send";

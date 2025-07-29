@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
-import { doc, getDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
-import { db, auth } from '../../firebase'; // Importe 'auth'
-import { useNavigate } from 'react-router-dom'; // Importe useNavigate
+import React, { Component } from "react";
+import { doc, getDoc, updateDoc, collection, query, where, getDocs } from "firebase/firestore";
+import { db, auth } from "../../firebase";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import MenuAdmin from "../../componets/menuAdmin";
 
-// Componente
-import MenuAdmin from '../../componets/menuAdmin'
-
-// URL da sua Firebase Function para envio de e-mail
-// Substitua esta URL pela URL real da sua função após o deploy
-const SEND_EMAIL_FUNCTION_URL = 'https://us-central1-procon-cmsga.cloudfunctions.net/sendEmail';
-
+// Dados do EmailJS
+const EMAILJS_SERVICE_ID = "service_z4k1d0m";
+const EMAILJS_TEMPLATE_ID = "template_0zdsxiw";
+const EMAILJS_USER_ID = "TtE0io7wrvJ8m5Wqq";
+const EMAILJS_SEND_URL = "https://api.emailjs.com/api/v1.0/email/send";
 
 class ReclamacaoDetalhes extends Component {
     constructor(props) {
@@ -17,50 +17,43 @@ class ReclamacaoDetalhes extends Component {
         this.state = {
             reclamacao: null,
             userData: null,
-            isLoadingData: true, // Renomeado de 'loading' para ser mais específico sobre o carregamento de dados
-            isLoadingAuth: true, // NOVO ESTADO: Para indicar se a verificação de autenticação está em andamento
+            isLoadingData: true,
+            isLoadingAuth: true,
             error: null,
             comentarios: [],
-            situacao: '',
+            situacao: "",
             pdfBase64: null,
-            novoComentario: '',
-            isAuthorized: false, // Novo estado para controlar a autorização
-            emailStatus: 'O requerente será informado por email.', // NOVO ESTADO: Para feedback do envio de email
-            emailStatusType: '', // NOVO ESTADO: 'success' ou 'error'
+            novoComentario: "",
+            isAuthorized: false,
+            emailStatus: "O requerente será informado por email.",
+            emailStatusType: "",
         };
-        this.navigate = props.navigate; // Recebe navigate via props
+        this.navigate = props.navigate;
     }
 
     componentDidMount() {
-        // Verifica o estado de autenticação do usuário
         const unsubscribe = auth.onAuthStateChanged((user) => {
-            // Verifica se o usuário existe e se o email existe
             if (user && user.email) {
-                // Se o usuário existe e o email é o admin
-                if (user.email === 'admin@cmsga.ce.gov.br') {
+                if (user.email === "admin@cmsga.ce.gov.br") {
                     this.setState({ isAuthorized: true, isLoadingAuth: false });
-                    this.fetchReclamacao(); // Busca a reclamação apenas se autorizado
+                    this.fetchReclamacao();
                 } else {
-                    // Se o usuário existe, tem um email, mas NÃO é o email do admin
                     this.setState({
-                        isAuthorized: false, // Não autorizado para esta página específica
+                        isAuthorized: false,
                         isLoadingAuth: false,
-                        isLoadingData: false // Não há dados para carregar para esta página
+                        isLoadingData: false,
                     });
-                    this.navigate('/registrar-reclamacao'); // Redireciona para /registrar-reclamacao
+                    this.navigate("/registrar-reclamacao");
                 }
             } else {
-                // Se o usuário não existe (não logado) ou não tem email
                 this.setState({
                     isAuthorized: false,
                     isLoadingAuth: false,
-                    isLoadingData: false
+                    isLoadingData: false,
                 });
-                this.navigate('/login'); // Redireciona para a página de login
+                this.navigate("/login");
             }
         });
-
-        // Limpa o listener ao desmontar o componente
         this.unsubscribeAuth = unsubscribe;
     }
 
@@ -71,71 +64,61 @@ class ReclamacaoDetalhes extends Component {
     }
 
     async fetchReclamacao() {
-        this.setState({ isLoadingData: true }); // Inicia o carregamento dos dados
+        this.setState({ isLoadingData: true });
         try {
-            const reclamacaoId = localStorage.getItem('reclamacaoId');
-
+            const reclamacaoId = localStorage.getItem("reclamacaoId");
             if (!reclamacaoId) {
-                console.error('ID da reclamação não encontrado no localStorage.');
+                console.error("ID da reclamação não encontrado no localStorage.");
                 this.setState({ isLoadingData: false });
                 return;
             }
-
-            const reclamacaoRef = doc(db, 'reclamacoes', reclamacaoId);
+            const reclamacaoRef = doc(db, "reclamacoes", reclamacaoId);
             const reclamacaoSnap = await getDoc(reclamacaoRef);
-
             if (reclamacaoSnap.exists()) {
                 this.setState({
                     reclamacao: reclamacaoSnap.data(),
                     isLoadingData: false,
                     comentarios: reclamacaoSnap.data().comentarios || [],
-                    situacao: reclamacaoSnap.data().situacao || 'EM ANALISE',
+                    situacao: reclamacaoSnap.data().situacao || "EM ANALISE",
                 }, () => {
-                    this.fetchUserData(); // Chama fetchUsuario após carregar a reclamação
+                    this.fetchUserData();
                 });
             } else {
-                console.error('Reclamação não encontrada.');
+                console.error("Reclamação não encontrada.");
                 this.setState({ isLoadingData: false });
             }
         } catch (error) {
-            console.error('Erro ao buscar reclamação:', error);
+            console.error("Erro ao buscar reclamação:", error);
             this.setState({ isLoadingData: false });
         }
     }
 
     async fetchUserData() {
         this.setState({ error: null });
-
         try {
             const userId = this.state.reclamacao.userId;
-            console.log('UserID da reclamação:', userId);
-
             if (userId) {
-                const usersCollection = collection(db, 'users');
-                const q = query(usersCollection, where('uid', '==', userId));
+                const usersCollection = collection(db, "users");
+                const q = query(usersCollection, where("uid", "==", userId));
                 const querySnapshot = await getDocs(q);
-
                 if (!querySnapshot.empty) {
                     const userDoc = querySnapshot.docs[0];
-                    console.log('Dados do Firestore:', userDoc.data());
                     this.setState({ userData: userDoc.data() });
                 } else {
-                    this.setState({ error: 'Dados do usuário não encontrados.' });
+                    this.setState({ error: "Dados do usuário não encontrados." });
                 }
             } else {
-                this.setState({ error: 'userId não encontrado na reclamação.' });
+                this.setState({ error: "userId não encontrado na reclamação." });
             }
         } catch (err) {
-            this.setState({ error: 'Erro ao buscar dados do usuário. Tente novamente.' });
-            console.error('Erro ao buscar dados do usuário:', err);
-            console.error('Código do erro:', err.code);
-            console.error('Mensagem do erro:', err.message);
+            this.setState({ error: "Erro ao buscar dados do usuário. Tente novamente." });
+            console.error("Erro ao buscar dados do usuário:", err);
         }
     }
 
     handleComentariosChange = (event) => {
         this.setState({
-            comentarios: [...this.state.comentarios, event.target.value]
+            comentarios: [...this.state.comentarios, event.target.value],
         });
     };
 
@@ -157,127 +140,112 @@ class ReclamacaoDetalhes extends Component {
 
     salvarAtualizacoes = async () => {
         try {
-            const reclamacaoId = localStorage.getItem('reclamacaoId');
-            const reclamacaoRef = doc(db, 'reclamacoes', reclamacaoId);
-
+            const reclamacaoId = localStorage.getItem("reclamacaoId");
+            const reclamacaoRef = doc(db, "reclamacoes", reclamacaoId);
             await updateDoc(reclamacaoRef, {
                 comentarios: this.state.comentarios,
                 situacao: this.state.situacao,
                 pdfBase64: this.state.pdfBase64,
             });
-
-            console.log('Atualizações salvas com sucesso!');
+            console.log("Atualizações salvas com sucesso!");
         } catch (error) {
-            console.error('Erro ao salvar atualizações:', error);
+            console.error("Erro ao salvar atualizações:", error);
         }
     };
 
-    // FUNÇÃO ATUALIZADA: Envia e-mail via Firebase Function, passando os dados para renderização
-    sendEmailToUser = async (recipientEmail, message) => {
-        // A URL da função agora está definida corretamente no topo do arquivo
+    // Função para enviar e-mail usando axios e EmailJS
+    async sendEmailWithEmailJS(recipientEmail, message, protocolo, nomeConsumidor) {
         if (!recipientEmail) {
-            this.setState({ emailStatus: 'Erro: E-mail do requerente não encontrado.', emailStatusType: 'error' });
-            console.error('Erro: E-mail do requerente não encontrado para envio.');
-            setTimeout(() => this.setState({ emailStatus: '', emailStatusType: '' }), 5000);
-            return;
+            return { success: false, error: "E-mail do destinatário não informado." };
         }
         if (!message) {
-            this.setState({ emailStatus: 'Erro: Mensagem vazia para envio de e-mail.', emailStatusType: 'error' });
-            console.warn('Aviso: Tentativa de enviar e-mail com mensagem vazia.');
-            setTimeout(() => this.setState({ emailStatus: '', emailStatusType: '' }), 5000);
-            return;
+            return { success: false, error: "Mensagem não informada." };
         }
-
-        this.setState({ emailStatus: 'Enviando e-mail...', emailStatusType: '' }); // Limpa o tipo ao enviar
         try {
-            const response = await fetch(SEND_EMAIL_FUNCTION_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    to: recipientEmail,
-                    subject: `Atualização da sua Reclamação PROCON CMSGA - Protocolo: ${this.state.reclamacao.protocolo}`,
-                    // Não enviamos mais o HTML aqui. Enviamos os dados para a função renderizar.
-                    protocolo: this.state.reclamacao.protocolo,
+            const response = await axios.post(EMAILJS_SEND_URL, {
+                service_id: EMAILJS_SERVICE_ID,
+                template_id: EMAILJS_TEMPLATE_ID,
+                user_id: EMAILJS_USER_ID,
+                template_params: {
+                    to_email: recipientEmail,
+                    subject: `Atualização da sua Reclamação PROCON CMSGA - Protocolo: ${protocolo}`,
+                    protocolo: protocolo,
                     mensagem: message,
-                    nomeConsumidor: this.state.userData ? this.state.userData.nome : 'Consumidor',
-                }),
+                    nomeConsumidor: nomeConsumidor || "Consumidor",
+                },
             });
-
-            if (response.ok) {
-                this.setState({ emailStatus: 'E-mail enviado com sucesso!', emailStatusType: 'success' });
+            if (response.status === 200) {
+                return { success: true };
             } else {
-                const errorData = await response.json();
-                this.setState({
-                    emailStatus: `Erro ao enviar e-mail: ${errorData.message || response.statusText}`,
-                    emailStatusType: 'error'
-                });
-                console.error('Erro na resposta da Firebase Function:', errorData);
+                return { success: false, error: response.statusText };
             }
         } catch (error) {
-            this.setState({ emailStatus: 'Erro ao enviar e-mail. Verifique a conexão.', emailStatusType: 'error' });
-            console.error('Erro ao chamar a Firebase Function:', error);
-        } finally {
-            setTimeout(() => this.setState({ emailStatus: '', emailStatusType: '' }), 5000);
+            let errorMsg = "Erro ao enviar e-mail.";
+            if (error.response && error.response.data) {
+                errorMsg = error.response.data;
+            } else if (error.message) {
+                errorMsg = error.message;
+            }
+            return { success: false, error: errorMsg };
         }
-    };
+    }
 
     adicionarComentario = async () => {
         if (this.state.novoComentario) {
             const novoComentario = this.state.novoComentario;
-            const reclamacaoId = localStorage.getItem('reclamacaoId');
-            const reclamacaoRef = doc(db, 'reclamacoes', reclamacaoId);
-
+            const reclamacaoId = localStorage.getItem("reclamacaoId");
+            const reclamacaoRef = doc(db, "reclamacoes", reclamacaoId);
             try {
                 await updateDoc(reclamacaoRef, {
                     comentarios: [...this.state.comentarios, novoComentario],
                 });
-
-                this.setState(prevState => ({
+                this.setState((prevState) => ({
                     comentarios: [...prevState.comentarios, novoComentario],
-                    novoComentario: '',
+                    novoComentario: "",
                 }));
-
-                console.log('Comentário adicionado com sucesso!');
-
-                // NOVO: Envia o e-mail após adicionar o comentário
+                console.log("Comentário adicionado com sucesso!");
+                // Envia o e-mail após adicionar o comentário
                 if (this.state.userData && this.state.userData.email) {
-                    this.sendEmailToUser(this.state.userData.email, novoComentario);
+                    const resultado = await this.sendEmailWithEmailJS(
+                        this.state.userData.email,
+                        novoComentario,
+                        this.state.reclamacao.protocolo,
+                        this.state.userData.nome
+                    );
+                    if (resultado.success) {
+                        this.setState({ emailStatus: "E-mail enviado com sucesso!", emailStatusType: "success" });
+                    } else {
+                        this.setState({ emailStatus: `Erro ao enviar e-mail: ${resultado.error}`, emailStatusType: "error" });
+                    }
+                    setTimeout(() => this.setState({ emailStatus: "", emailStatusType: "" }), 5000);
                 } else {
-                    this.setState({ emailStatus: 'Erro: E-mail do requerente não disponível para envio.', emailStatusType: 'error' });
-                    setTimeout(() => this.setState({ emailStatus: '', emailStatusType: '' }), 5000);
+                    this.setState({ emailStatus: "Erro: E-mail do requerente não disponível para envio.", emailStatusType: "error" });
+                    setTimeout(() => this.setState({ emailStatus: "", emailStatusType: "" }), 5000);
                 }
-
             } catch (error) {
-                console.error('Erro ao adicionar comentário:', error);
-                this.setState({ emailStatus: 'Erro ao adicionar comentário e/ou enviar e-mail.', emailStatusType: 'error' });
-                setTimeout(() => this.setState({ emailStatus: '', emailStatusType: '' }), 5000);
+                console.error("Erro ao adicionar comentário:", error);
+                this.setState({ emailStatus: "Erro ao adicionar comentário e/ou enviar e-mail.", emailStatusType: "error" });
+                setTimeout(() => this.setState({ emailStatus: "", emailStatusType: "" }), 5000);
             }
         }
     };
 
     formatarData = (dataString) => {
         if (!dataString) {
-            return '';
+            return "";
         }
-
         const data = new Date(dataString);
-        const dia = String(data.getDate()).padStart(2, '0');
-        const mes = String(data.getMonth() + 1).padStart(2, '0');
+        const dia = String(data.getDate()).padStart(2, "0");
+        const mes = String(data.getMonth() + 1).padStart(2, "0");
         const ano = data.getFullYear();
-
         return `${dia}-${mes}-${ano}`;
     };
 
     render() {
         const { reclamacao, isLoadingData, situacao, isAuthorized, isLoadingAuth, emailStatus, emailStatusType } = this.state;
+        const emailStatusClass = emailStatusType === "success" ? "email-status-success" :
+            emailStatusType === "error" ? "email-status-error" : "";
 
-        // Define a classe CSS baseada no tipo de status
-        const emailStatusClass = emailStatusType === 'success' ? 'email-status-success' :
-                                 emailStatusType === 'error' ? 'email-status-error' : '';
-
-        // 1. Exibe "Carregando autenticação..." enquanto o estado de autenticação não foi verificado
         if (isLoadingAuth) {
             return (
                 <div className="App-header">
@@ -289,20 +257,18 @@ class ReclamacaoDetalhes extends Component {
             );
         }
 
-        // 2. Se a autenticação foi verificada e o usuário não está autorizado
         if (!isAuthorized) {
             return (
                 <div className="App-header">
                     <div className="unauthorized-message">
                         <h1>Acesso Não Autorizado</h1>
                         <p>Você não tem permissão para visualizar esta página. Por favor, faça login com uma conta de administrador.</p>
-                        <button onClick={() => this.navigate('/login')} className="go-to-login-button">Ir para Login</button>
+                        <button onClick={() => this.navigate("/login")} className="go-to-login-button">Ir para Login</button>
                     </div>
                 </div>
             );
         }
 
-        // 3. Se o usuário está autorizado, mas os dados da reclamação ainda estão carregando
         if (isLoadingData) {
             return (
                 <div className="App-header">
@@ -314,7 +280,6 @@ class ReclamacaoDetalhes extends Component {
             );
         }
 
-        // 4. Se os dados não estão carregando e a reclamação não foi encontrada (após autorizado e carregamento concluído)
         if (!reclamacao) {
             return (
                 <div className="App-header">
@@ -330,44 +295,43 @@ class ReclamacaoDetalhes extends Component {
             <div className="App-header">
                 <MenuAdmin />
                 <div className="favoritos agendarConsulta">
-                    <div className='infosGeral'>
-                        <div className='atualizeData'>
+                    <div className="infosGeral">
+                        <div className="atualizeData">
                             <h3>Atualize o Requerente</h3>
-                            <label htmlFor="comentarios">Atualizações:</label><br/>
+                            <label htmlFor="comentarios">Atualizações:</label><br />
                             {Array.isArray(this.state.comentarios) && (
                                 <ol>
                                     {this.state.comentarios.map((comentario, index) => (
-                                        <li className='comentarioChat' key={index}>{comentario}</li>
+                                        <li className="comentarioChat" key={index}>{comentario}</li>
                                     ))}
                                 </ol>
                             )}
 
-                            <label htmlFor="comentarios">Enviar Mensagem</label><br/>
+                            <label htmlFor="comentarios">Enviar Mensagem</label><br />
                             <textarea
                                 id="comentarios"
-                                value={this.state.novoComentario || ''}
+                                value={this.state.novoComentario || ""}
                                 onChange={(event) => this.setState({ novoComentario: event.target.value })}
-                                placeholder='Escreva uma mensagem ao requerente...'
-                            /><br/>
-                            <button onClick={this.adicionarComentario} className='buttonLogin btnComentario'>Enviar</button><br/>
-                            {/* Aplica a classe CSS dinâmica aqui */}
+                                placeholder="Escreva uma mensagem ao requerente..."
+                            /><br />
+                            <button onClick={this.adicionarComentario} className="buttonLogin btnComentario">Enviar</button><br />
                             {emailStatus && <p className={`email-status-message ${emailStatusClass}`}>{emailStatus}</p>}
-                            </div>
-                            <div className='atualizeData'>
-                            <label htmlFor="situacao">Situação:</label><br/>
+                        </div>
+                        <div className="atualizeData">
+                            <label htmlFor="situacao">Situação:</label><br />
                             <select id="situacao" value={situacao} onChange={this.handleSituacaoChange}>
                                 <option value="">{reclamacao.situacao}</option>
                                 <option value="Em Analise">Em Análise</option>
                                 <option value="Em Negociação com a empresa">Em Negociação</option>
                                 <option value="Finalizada">Finalizada</option>
-                            </select><br/>
-                            <label  htmlFor="situacao">Envie um arquivo</label><br/>
-                            <input className='buttonLogin btnUpload' type="file" accept="application/pdf" onChange={this.handleFileChange} /><br/>
-                        <button className='buttonLogin btnComentario btnSend' onClick={this.salvarAtualizacoes}>Salvar Atualizações</button>
+                            </select><br />
+                            <label htmlFor="situacao">Envie um arquivo</label><br />
+                            <input className="buttonLogin btnUpload" type="file" accept="application/pdf" onChange={this.handleFileChange} /><br />
+                            <button className="buttonLogin btnComentario btnSend" onClick={this.salvarAtualizacoes}>Salvar Atualizações</button>
                         </div>
 
                         {this.state.userData && (
-                            <div className='userData'>
+                            <div className="userData">
                                 <h2>Dados do requerente</h2>
                                 <p><strong>Nome:</strong> {this.state.userData.nome}</p>
                                 <p><strong>Email:</strong> {this.state.userData.email}</p>
@@ -383,7 +347,7 @@ class ReclamacaoDetalhes extends Component {
                             </div>
                         )}
 
-                        <div className='infoData'>
+                        <div className="infoData">
                             <h2>Dados da Reclamação</h2>
                             <p><strong>Protocolo:</strong> {reclamacao.protocolo}</p>
                             <p><strong>Tipo Reclamação:</strong> {reclamacao.tipoReclamacao}</p>
@@ -405,25 +369,19 @@ class ReclamacaoDetalhes extends Component {
                             <p><strong>Pedido Consumidor:</strong> {reclamacao.pedidoConsumidor}</p>
                             <p><strong>Situação</strong> {reclamacao.situacao}</p>
                         </div>
-
-
-
                     </div>
-
                     {this.state.pdfBase64 && (
                         <iframe src={this.state.pdfBase64} width="100%" height="500px" title="Visualização do PDF" />
                     )}
-
                 </div>
             </div>
         );
     }
 }
 
-// Wrapper para injetar o hook useNavigate
 function WithNavigate(props) {
     let navigate = useNavigate();
-    return <ReclamacaoDetalhes {...props} navigate={navigate} />
+    return <ReclamacaoDetalhes {...props} navigate={navigate} />;
 }
 
 export default WithNavigate;

@@ -25,7 +25,7 @@ class ReclamacaoDetalhes extends Component {
             pdfBase64: null,
             novoComentario: '',
             isAuthorized: false, // Novo estado para controlar a autorização
-            emailStatus: '', // NOVO ESTADO: Para feedback do envio de email
+            emailStatus: 'O requerente será informado por email.', // NOVO ESTADO: Para feedback do envio de email
             emailStatusType: '', // NOVO ESTADO: 'success' ou 'error'
         };
         this.navigate = props.navigate; // Recebe navigate via props
@@ -350,7 +350,6 @@ class ReclamacaoDetalhes extends Component {
                                 placeholder='Escreva uma mensagem ao requerente...'
                             /><br/>
                             <button onClick={this.adicionarComentario} className='buttonLogin btnComentario'>Enviar</button><br/>
-                            <p>O requerente será informado por email.</p>
                             {/* Aplica a classe CSS dinâmica aqui */}
                             {emailStatus && <p className={`email-status-message ${emailStatusClass}`}>{emailStatus}</p>}
                             </div>

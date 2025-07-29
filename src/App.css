@@ -1896,6 +1896,11 @@ video {
   /* Garante que o texto quebre linhas longas */
 }
 
+.chat-message > div > p > a{
+  color: #4a3dff;
+  font-weight: 400;
+}
+
 /* Estilo para mensagens do administrador (PROCON) */
 .admin-message {
   background-color: #f8e7c6;

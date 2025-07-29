@@ -84,7 +84,8 @@ class ReclamacaoDetalhes extends Component {
                             text: comentario,
                             type: 'text',
                             timestamp: new Date().toISOString(), // Usa data atual para comentários antigos sem timestamp
-                            author: 'admin@cmsga.ce.gov.br' // Assume admin para comentários antigos sem autor
+                            author: 'admin@cmsga.ce.gov.br', // Assume admin para comentários antigos sem autor
+                            authorType: 'admin' // Adiciona authorType para compatibilidade
                         };
                     }
                     return comentario; // Já é um objeto, usa como está
@@ -215,10 +216,13 @@ class ReclamacaoDetalhes extends Component {
         }
 
         let newComentarios = [...comentarios];
-        let messageForEmail = novoComentario;
-        let fileAttachmentNameForEmail = null;
         const currentTimestamp = new Date().toISOString(); // Timestamp para a mensagem
         const authorEmail = auth.currentUser ? auth.currentUser.email : 'admin@cmsga.ce.gov.br'; // Autor da mensagem
+        const authorType = 'admin'; // Mensagens desta página são sempre do admin
+
+        // Declare messageForEmail e fileAttachmentNameForEmail aqui
+        let messageForEmail = novoComentario;
+        let fileAttachmentNameForEmail = null;
 
         try {
             if (fileToUpload) {
@@ -234,8 +238,9 @@ class ReclamacaoDetalhes extends Component {
                             fileName: fileToUpload.name,
                             timestamp: currentTimestamp,
                             author: authorEmail,
+                            authorType: authorType, // Adiciona authorType
                         });
-                        fileAttachmentNameForEmail = fileToUpload.name;
+                        fileAttachmentNameForEmail = fileToUpload.name; // Atribui aqui
                         resolve();
                     };
                     reader.onerror = error => reject(error);
@@ -248,6 +253,7 @@ class ReclamacaoDetalhes extends Component {
                     type: 'text',
                     timestamp: currentTimestamp,
                     author: authorEmail,
+                    authorType: authorType, // Adiciona authorType
                 });
             }
 
@@ -378,10 +384,18 @@ class ReclamacaoDetalhes extends Component {
                             {/* Início da Seção de Chat */}
                             <div className="chat-container">
                                 {Array.isArray(this.state.comentarios) && this.state.comentarios.map((comentario, index) => (
-                                    <div key={index} className="chat-message admin-message">
+                                    // Aplica classe condicional baseada no email do autor
+                                    <div
+                                        key={index}
+                                        className={`chat-message ${
+                                            comentario.author === 'admin@cmsga.ce.gov.br'
+                                                ? 'admin-message mensage-admin-chat'
+                                                : 'user-message' // Assumimos que qualquer outro autor é um usuário nesta página
+                                        }`}
+                                    >
                                         {/* Informações de data, hora e autor */}
                                         {(comentario.author) && (
-                                            <p className="chat-message-meta">
+                                            <p className={`chat-message-meta ${comentario.author === 'admin@cmsga.ce.gov.br' ? 'admin-message-meta' : 'user-message-meta'}`}>
                                                 {comentario.author && <span>{comentario.author}</span>}
                                             </p>
                                         )}  
@@ -393,7 +407,7 @@ class ReclamacaoDetalhes extends Component {
                                         )}
 
                                         {(comentario.timestamp) && (
-                                            <p className="chat-message-meta">
+                                            <p className={`chat-message-meta ${comentario.author === 'admin@cmsga.ce.gov.br' ? 'admin-message-meta' : 'user-message-meta'}`}>
                                                 {this.formatarDataHoraChat(comentario.timestamp)}
                                             </p>
                                         )}
@@ -431,7 +445,6 @@ class ReclamacaoDetalhes extends Component {
                                     <input
                                         id="file-upload"
                                         type="file"
-                                        className="btnUploadFileChat"
                                         accept="application/pdf"
                                         onChange={this.handleFileChange}
                                     /><br />

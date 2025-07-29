@@ -26,6 +26,7 @@ class ReclamacaoDetalhes extends Component {
             novoComentario: '',
             isAuthorized: false, // Novo estado para controlar a autorização
             emailStatus: '', // NOVO ESTADO: Para feedback do envio de email
+            emailStatusType: '', // NOVO ESTADO: 'success' ou 'error'
         };
         this.navigate = props.navigate; // Recebe navigate via props
     }
@@ -175,19 +176,19 @@ class ReclamacaoDetalhes extends Component {
     sendEmailToUser = async (recipientEmail, message) => {
         // A URL da função agora está definida corretamente no topo do arquivo
         if (!recipientEmail) {
-            this.setState({ emailStatus: 'Erro: E-mail do requerente não encontrado.' });
+            this.setState({ emailStatus: 'Erro: E-mail do requerente não encontrado.', emailStatusType: 'error' });
             console.error('Erro: E-mail do requerente não encontrado para envio.');
-            setTimeout(() => this.setState({ emailStatus: '' }), 5000);
+            setTimeout(() => this.setState({ emailStatus: '', emailStatusType: '' }), 5000);
             return;
         }
         if (!message) {
-            this.setState({ emailStatus: 'Erro: Mensagem vazia para envio de e-mail.' });
+            this.setState({ emailStatus: 'Erro: Mensagem vazia para envio de e-mail.', emailStatusType: 'error' });
             console.warn('Aviso: Tentativa de enviar e-mail com mensagem vazia.');
-            setTimeout(() => this.setState({ emailStatus: '' }), 5000);
+            setTimeout(() => this.setState({ emailStatus: '', emailStatusType: '' }), 5000);
             return;
         }
 
-        this.setState({ emailStatus: 'Enviando e-mail...' });
+        this.setState({ emailStatus: 'Enviando e-mail...', emailStatusType: '' }); // Limpa o tipo ao enviar
         try {
             const response = await fetch(SEND_EMAIL_FUNCTION_URL, {
                 method: 'POST',
@@ -205,17 +206,20 @@ class ReclamacaoDetalhes extends Component {
             });
 
             if (response.ok) {
-                this.setState({ emailStatus: 'E-mail enviado com sucesso!' });
+                this.setState({ emailStatus: 'E-mail enviado com sucesso!', emailStatusType: 'success' });
             } else {
                 const errorData = await response.json();
-                this.setState({ emailStatus: `Erro ao enviar e-mail: ${errorData.message || response.statusText}` });
+                this.setState({
+                    emailStatus: `Erro ao enviar e-mail: ${errorData.message || response.statusText}`,
+                    emailStatusType: 'error'
+                });
                 console.error('Erro na resposta da Firebase Function:', errorData);
             }
         } catch (error) {
-            this.setState({ emailStatus: 'Erro ao enviar e-mail. Verifique a conexão.' });
+            this.setState({ emailStatus: 'Erro ao enviar e-mail. Verifique a conexão.', emailStatusType: 'error' });
             console.error('Erro ao chamar a Firebase Function:', error);
         } finally {
-            setTimeout(() => this.setState({ emailStatus: '' }), 5000);
+            setTimeout(() => this.setState({ emailStatus: '', emailStatusType: '' }), 5000);
         }
     };
 
@@ -241,14 +245,14 @@ class ReclamacaoDetalhes extends Component {
                 if (this.state.userData && this.state.userData.email) {
                     this.sendEmailToUser(this.state.userData.email, novoComentario);
                 } else {
-                    this.setState({ emailStatus: 'Erro: E-mail do requerente não disponível para envio.' });
-                    setTimeout(() => this.setState({ emailStatus: '' }), 5000);
+                    this.setState({ emailStatus: 'Erro: E-mail do requerente não disponível para envio.', emailStatusType: 'error' });
+                    setTimeout(() => this.setState({ emailStatus: '', emailStatusType: '' }), 5000);
                 }
 
             } catch (error) {
                 console.error('Erro ao adicionar comentário:', error);
-                this.setState({ emailStatus: 'Erro ao adicionar comentário e/ou enviar e-mail.' });
-                setTimeout(() => this.setState({ emailStatus: '' }), 5000);
+                this.setState({ emailStatus: 'Erro ao adicionar comentário e/ou enviar e-mail.', emailStatusType: 'error' });
+                setTimeout(() => this.setState({ emailStatus: '', emailStatusType: '' }), 5000);
             }
         }
     };
@@ -267,7 +271,11 @@ class ReclamacaoDetalhes extends Component {
     };
 
     render() {
-        const { reclamacao, isLoadingData, situacao, isAuthorized, isLoadingAuth, emailStatus } = this.state;
+        const { reclamacao, isLoadingData, situacao, isAuthorized, isLoadingAuth, emailStatus, emailStatusType } = this.state;
+
+        // Define a classe CSS baseada no tipo de status
+        const emailStatusClass = emailStatusType === 'success' ? 'email-status-success' :
+                                 emailStatusType === 'error' ? 'email-status-error' : '';
 
         // 1. Exibe "Carregando autenticação..." enquanto o estado de autenticação não foi verificado
         if (isLoadingAuth) {
@@ -342,7 +350,8 @@ class ReclamacaoDetalhes extends Component {
                                 placeholder='Escreva uma mensagem ao requerente...'
                             /><br/>
                             <button onClick={this.adicionarComentario} className='buttonLogin btnComentario'>Enviar</button><br/>
-                            {emailStatus && <p className="email-status-message">{emailStatus}</p>} {/* Exibe o status do email */}
+                            {/* Aplica a classe CSS dinâmica aqui */}
+                            {emailStatus && <p className={`email-status-message ${emailStatusClass}`}>{emailStatus}</p>}
                             </div>
                             <div className='atualizeData'>
                             <label htmlFor="situacao">Situação:</label><br/>

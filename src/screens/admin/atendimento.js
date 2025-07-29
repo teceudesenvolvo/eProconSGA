@@ -6,6 +6,11 @@ import { useNavigate } from 'react-router-dom'; // Importe useNavigate
 // Componente
 import MenuAdmin from '../../componets/menuAdmin'
 
+// URL da sua Firebase Function para envio de e-mail
+// Substitua esta URL pela URL real da sua função após o deploy
+const SEND_EMAIL_FUNCTION_URL = 'https://us-central1-procon-cmsga.cloudfunctions.net/sendEmail';
+
+
 class ReclamacaoDetalhes extends Component {
     constructor(props) {
         super(props);
@@ -20,6 +25,7 @@ class ReclamacaoDetalhes extends Component {
             pdfBase64: null,
             novoComentario: '',
             isAuthorized: false, // Novo estado para controlar a autorização
+            emailStatus: '', // NOVO ESTADO: Para feedback do envio de email
         };
         this.navigate = props.navigate; // Recebe navigate via props
     }
@@ -97,8 +103,6 @@ class ReclamacaoDetalhes extends Component {
     }
 
     async fetchUserData() {
-        // Este método não precisa gerenciar o isLoadingData, pois fetchReclamacao já o faz.
-        // Ele apenas lida com o estado de erro específico para os dados do usuário, se houver.
         this.setState({ error: null });
 
         try {
@@ -126,7 +130,6 @@ class ReclamacaoDetalhes extends Component {
             console.error('Código do erro:', err.code);
             console.error('Mensagem do erro:', err.message);
         }
-        // Não há 'finally' aqui para isLoadingData, pois fetchReclamacao já o gerencia.
     }
 
     handleComentariosChange = (event) => {
@@ -168,6 +171,54 @@ class ReclamacaoDetalhes extends Component {
         }
     };
 
+    // FUNÇÃO ATUALIZADA: Envia e-mail via Firebase Function, passando os dados para renderização
+    sendEmailToUser = async (recipientEmail, message) => {
+        // A URL da função agora está definida corretamente no topo do arquivo
+        if (!recipientEmail) {
+            this.setState({ emailStatus: 'Erro: E-mail do requerente não encontrado.' });
+            console.error('Erro: E-mail do requerente não encontrado para envio.');
+            setTimeout(() => this.setState({ emailStatus: '' }), 5000);
+            return;
+        }
+        if (!message) {
+            this.setState({ emailStatus: 'Erro: Mensagem vazia para envio de e-mail.' });
+            console.warn('Aviso: Tentativa de enviar e-mail com mensagem vazia.');
+            setTimeout(() => this.setState({ emailStatus: '' }), 5000);
+            return;
+        }
+
+        this.setState({ emailStatus: 'Enviando e-mail...' });
+        try {
+            const response = await fetch(SEND_EMAIL_FUNCTION_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    to: recipientEmail,
+                    subject: `Atualização da sua Reclamação PROCON CMSGA - Protocolo: ${this.state.reclamacao.protocolo}`,
+                    // Não enviamos mais o HTML aqui. Enviamos os dados para a função renderizar.
+                    protocolo: this.state.reclamacao.protocolo,
+                    mensagem: message,
+                    nomeConsumidor: this.state.userData ? this.state.userData.nome : 'Consumidor',
+                }),
+            });
+
+            if (response.ok) {
+                this.setState({ emailStatus: 'E-mail enviado com sucesso!' });
+            } else {
+                const errorData = await response.json();
+                this.setState({ emailStatus: `Erro ao enviar e-mail: ${errorData.message || response.statusText}` });
+                console.error('Erro na resposta da Firebase Function:', errorData);
+            }
+        } catch (error) {
+            this.setState({ emailStatus: 'Erro ao enviar e-mail. Verifique a conexão.' });
+            console.error('Erro ao chamar a Firebase Function:', error);
+        } finally {
+            setTimeout(() => this.setState({ emailStatus: '' }), 5000);
+        }
+    };
+
     adicionarComentario = async () => {
         if (this.state.novoComentario) {
             const novoComentario = this.state.novoComentario;
@@ -185,8 +236,19 @@ class ReclamacaoDetalhes extends Component {
                 }));
 
                 console.log('Comentário adicionado com sucesso!');
+
+                // NOVO: Envia o e-mail após adicionar o comentário
+                if (this.state.userData && this.state.userData.email) {
+                    this.sendEmailToUser(this.state.userData.email, novoComentario);
+                } else {
+                    this.setState({ emailStatus: 'Erro: E-mail do requerente não disponível para envio.' });
+                    setTimeout(() => this.setState({ emailStatus: '' }), 5000);
+                }
+
             } catch (error) {
                 console.error('Erro ao adicionar comentário:', error);
+                this.setState({ emailStatus: 'Erro ao adicionar comentário e/ou enviar e-mail.' });
+                setTimeout(() => this.setState({ emailStatus: '' }), 5000);
             }
         }
     };
@@ -205,7 +267,7 @@ class ReclamacaoDetalhes extends Component {
     };
 
     render() {
-        const { reclamacao, isLoadingData, situacao, isAuthorized, isLoadingAuth } = this.state;
+        const { reclamacao, isLoadingData, situacao, isAuthorized, isLoadingAuth, emailStatus } = this.state;
 
         // 1. Exibe "Carregando autenticação..." enquanto o estado de autenticação não foi verificado
         if (isLoadingAuth) {
@@ -280,6 +342,7 @@ class ReclamacaoDetalhes extends Component {
                                 placeholder='Escreva uma mensagem ao requerente...'
                             /><br/>
                             <button onClick={this.adicionarComentario} className='buttonLogin btnComentario'>Enviar</button><br/>
+                            {emailStatus && <p className="email-status-message">{emailStatus}</p>} {/* Exibe o status do email */}
                             </div>
                             <div className='atualizeData'>
                             <label htmlFor="situacao">Situação:</label><br/>
@@ -325,7 +388,7 @@ class ReclamacaoDetalhes extends Component {
                             <p><strong>Detalhe Serviço:</strong> {reclamacao.detalheServico}</p>
                             <p><strong>Tipo Documento:</strong> {reclamacao.tipoDocumento}</p>
                             <p><strong>Número Documento:</strong> {reclamacao.numeroDoc}</p>
-                            <p><strong>Data Ocorrência:</strong> {this.formatarData(reclamacao.dataOcorrencia)}</p>
+                            <p><strong>Data Ocorrência:</strong> {this.formatarData(reclamacao.dataOcorrência)}</p>
                             <p><strong>Data Negativa:</strong> {this.formatarData(reclamacao.dataNegativa)}</p>
                             <p><strong>Forma Pagamento:</strong> {reclamacao.formaPagamento}</p>
                             <p><strong>Valor Compra:</strong> {reclamacao.valorCompra}</p>

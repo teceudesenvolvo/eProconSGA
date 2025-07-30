@@ -2003,7 +2003,7 @@ video {
   width: 80%;
   /* Largura máxima similar à imagem */
   margin: 40px auto;
-  background-color: #f8f9fa;
+  background-color: #fff;
   /* Fundo levemente cinza */
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);

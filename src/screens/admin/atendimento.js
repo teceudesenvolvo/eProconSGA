@@ -76,7 +76,8 @@ class ReclamacaoDetalhes extends Component {
             const reclamacaoRef = doc(db, "reclamacoes", reclamacaoId);
             const reclamacaoSnap = await getDoc(reclamacaoRef);
             if (reclamacaoSnap.exists()) {
-                const comentariosData = reclamacaoSnap.data().comentarios || [];
+                const reclamacaoData = reclamacaoSnap.data();
+                const comentariosData = reclamacaoData.comentarios || [];
                 // Garante que comentários antigos (strings) sejam formatados para o novo objeto
                 const formattedComentarios = comentariosData.map(comentario => {
                     if (typeof comentario === 'string') {
@@ -92,12 +93,12 @@ class ReclamacaoDetalhes extends Component {
                 });
 
                 this.setState({
-                    reclamacao: reclamacaoSnap.data(),
+                    reclamacao: reclamacaoData,
                     isLoadingData: false,
                     comentarios: formattedComentarios,
-                    situacao: reclamacaoSnap.data().situacao || "EM ANALISE",
+                    situacao: reclamacaoData.situacao || "EM ANALISE",
                 }, () => {
-                    this.fetchUserData();
+                    this.fetchUserData(reclamacaoData); // Passa os dados da reclamação para fetchUserData
                 });
             } else {
                 console.error("Reclamação não encontrada.");
@@ -109,10 +110,32 @@ class ReclamacaoDetalhes extends Component {
         }
     }
 
-    async fetchUserData() {
+    async fetchUserData(reclamacaoData) {
         this.setState({ error: null });
         try {
-            const userId = this.state.reclamacao.userId;
+            // Prioriza os dados do usuário aninhados na reclamação
+            if (reclamacaoData.userDataAtTimeOfComplaint) {
+                this.setState({ userData: reclamacaoData.userDataAtTimeOfComplaint });
+                return;
+            }
+
+            // Se não houver dados aninhados, tenta buscar por userEmail
+            const userEmail = reclamacaoData.userEmail;
+            if (userEmail) {
+                const usersCollection = collection(db, "users");
+                const q = query(usersCollection, where("email", "==", userEmail));
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                    const userDoc = querySnapshot.docs[0];
+                    this.setState({ userData: userDoc.data() });
+                } else {
+                    this.setState({ error: "Dados do usuário não encontrados para este e-mail." });
+                }
+                return; // Sai da função após tentar buscar por e-mail
+            }
+
+            // Fallback para userId (UID do Firebase Auth) se userEmail não estiver presente
+            const userId = reclamacaoData.userId;
             if (userId) {
                 const usersCollection = collection(db, "users");
                 const q = query(usersCollection, where("uid", "==", userId));
@@ -121,10 +144,10 @@ class ReclamacaoDetalhes extends Component {
                     const userDoc = querySnapshot.docs[0];
                     this.setState({ userData: userDoc.data() });
                 } else {
-                    this.setState({ error: "Dados do usuário não encontrados." });
+                    this.setState({ error: "Dados do usuário não encontrados para este UID." });
                 }
             } else {
-                this.setState({ error: "userId não encontrado na reclamação." });
+                this.setState({ error: "Nenhum identificador de usuário (email ou UID) encontrado na reclamação." });
             }
         } catch (err) {
             this.setState({ error: "Erro ao buscar dados do usuário. Tente novamente." });
@@ -238,9 +261,9 @@ class ReclamacaoDetalhes extends Component {
                             fileName: fileToUpload.name,
                             timestamp: currentTimestamp,
                             author: authorEmail,
-                            authorType: authorType, // Adiciona authorType
+                            authorType: authorType,
                         });
-                        fileAttachmentNameForEmail = fileToUpload.name; // Atribui aqui
+                        fileAttachmentNameForEmail = fileToUpload.name;
                         resolve();
                     };
                     reader.onerror = error => reject(error);
@@ -253,7 +276,7 @@ class ReclamacaoDetalhes extends Component {
                     type: 'text',
                     timestamp: currentTimestamp,
                     author: authorEmail,
-                    authorType: authorType, // Adiciona authorType
+                    authorType: authorType,
                 });
             }
 
@@ -269,12 +292,15 @@ class ReclamacaoDetalhes extends Component {
             });
             console.log("Comentário(s) e/ou arquivo(s) adicionados com sucesso!");
 
-            if (userData && userData.email && reclamacao) {
+            // Determina o e-mail do destinatário: prioriza userEmail da reclamação, depois userData.email
+            const recipientEmail = reclamacao.userEmail || userData?.email;
+
+            if (recipientEmail && reclamacao) {
                 const resultado = await this.sendEmailWithEmailJS(
-                    userData.email,
+                    recipientEmail, // Usa o e-mail da reclamação ou do userData
                     messageForEmail,
                     reclamacao.protocolo,
-                    userData.nome,
+                    userData?.nome || reclamacao.userDataAtTimeOfComplaint?.nome || "Consumidor", // Pega o nome de várias fontes
                     fileAttachmentNameForEmail
                 );
 
@@ -324,7 +350,7 @@ class ReclamacaoDetalhes extends Component {
     };
 
     render() {
-        const { reclamacao, isLoadingData, situacao, isAuthorized, isLoadingAuth, emailStatus, emailStatusType, uploadedFileName } = this.state;
+        const { reclamacao, isLoadingData, situacao, isAuthorized, isLoadingAuth, emailStatus, emailStatusType, uploadedFileName, userData } = this.state;
         const emailStatusClass = emailStatusType === "success" ? "email-status-success" :
             emailStatusType === "error" ? "email-status-error" : "";
 
@@ -457,20 +483,21 @@ class ReclamacaoDetalhes extends Component {
                             {/* Fim da Área de Input do Chat */}
                         </div>
 
-                        {this.state.userData && (
+                        {/* Alterado para usar userData.email ou userData.uid */}
+                        {userData && (
                             <div className="userData">
                                 <h2>Dados do requerente</h2>
-                                <p><strong>Nome:</strong> {this.state.userData.nome}</p>
-                                <p><strong>Email:</strong> {this.state.userData.email}</p>
-                                <p><strong>CPF:</strong> {this.state.userData.cpf}</p>
-                                <p><strong>Telefone:</strong> {this.state.userData.telefone}</p>
-                                <p><strong>CEP:</strong> {this.state.userData.cep}</p>
-                                <p><strong>Endereço:</strong> {this.state.userData.endereco}</p>
-                                <p><strong>Número:</strong> {this.state.userData.numero}</p>
-                                <p><strong>Complemento:</strong> {this.state.userData.complemento}</p>
-                                <p><strong>Bairro:</strong> {this.state.userData.bairro}</p>
-                                <p><strong>Cidade:</strong> {this.state.userData.cidade}</p>
-                                <p><strong>UF:</strong> {this.state.userData.ufEmissor}</p>
+                                <p><strong>Nome:</strong> {userData.nome}</p>
+                                <p><strong>Email:</strong> {userData.email}</p>
+                                <p><strong>CPF:</strong> {userData.cpf}</p>
+                                <p><strong>Telefone:</strong> {userData.telefone}</p>
+                                <p><strong>CEP:</strong> {userData.cep}</p>
+                                <p><strong>Endereço:</strong> {userData.endereco}</p>
+                                <p><strong>Número:</strong> {userData.numero}</p>
+                                <p><strong>Complemento:</strong> {userData.complemento}</p>
+                                <p><strong>Bairro:</strong> {userData.bairro}</p>
+                                <p><strong>Cidade:</strong> {userData.municipio || userData.cidade}</p> {/* Usa municipio ou cidade */}
+                                <p><strong>UF:</strong> {userData.ufEmissor}</p>
                             </div>
                         )}
 
@@ -488,7 +515,7 @@ class ReclamacaoDetalhes extends Component {
                             <p><strong>Detalhe Serviço:</strong> {reclamacao.detalheServico}</p>
                             <p><strong>Tipo Documento:</strong> {reclamacao.tipoDocumento}</p>
                             <p><strong>Número Documento:</strong> {reclamacao.numeroDoc}</p>
-                            <p><strong>Data Ocorrência:</strong> {this.formatarData(reclamacao.dataOcorrência)}</p>
+                            <p><strong>Data Ocorrência:</strong> {this.formatarData(reclamacao.dataOcorrencia)}</p> {/* Corrigido de dataOcorrência para dataOcorrencia */}
                             <p><strong>Data Negativa:</strong> {this.formatarData(reclamacao.dataNegativa)}</p>
                             <p><strong>Forma Pagamento:</strong> {reclamacao.formaPagamento}</p>
                             <p><strong>Valor Compra:</strong> {reclamacao.valorCompra}</p>

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db, auth } from '../../firebase'; // Importe 'auth' para pegar o userId do usuário logado
-// Removidos os imports de @mui/material/Table, etc.
 import { useNavigate, useLocation } from 'react-router-dom';
 
 // Componente
@@ -29,7 +28,8 @@ class LoginDashboard extends Component {
             if (user) {
                 // Se o usuário está logado, armazena seus dados e busca as reclamações
                 this.setState({ userData: user, loading: true }); // Define loading como true novamente para a busca de reclamações
-                this.fetchReclamacoes(user.uid); // Passa o UID do usuário logado
+                // Passa o UID e o email do usuário logado
+                this.fetchReclamacoes(user.uid, user.email); 
             } else {
                 // Se não há usuário logado, redireciona para o login
                 localStorage.setItem('paginaAnterior', this.location.pathname);
@@ -48,22 +48,40 @@ class LoginDashboard extends Component {
         }
     }
 
-    async fetchReclamacoes(userId) { // Recebe userId como parâmetro
+    async fetchReclamacoes(userId, userEmail) { // Recebe userId E userEmail como parâmetros
         try {
-            if (!userId) {
-                console.error('Usuário não autenticado. UID não disponível.');
+            if (!userId && !userEmail) {
+                console.error('Nenhum identificador de usuário (UID ou Email) disponível.');
                 this.setState({ loading: false });
                 return;
             }
 
             const reclamacoesRef = collection(db, 'reclamacoes');
-            const q = query(reclamacoesRef, where('userId', '==', userId));
-            const querySnapshot = await getDocs(q);
+            let reclamacoesData = [];
 
-            const reclamacoesData = querySnapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
+            // 1. Tenta buscar por userEmail (prioridade para novas reclamações)
+            if (userEmail) {
+                const qByEmail = query(reclamacoesRef, where('userEmail', '==', userEmail));
+                const querySnapshotByEmail = await getDocs(qByEmail);
+                reclamacoesData = querySnapshotByEmail.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+            }
+
+            // 2. Se não encontrou por e-mail, ou se a reclamação não tem o campo userEmail (para compatibilidade),
+            // tenta buscar por userId (UID do Firebase Auth)
+            if (reclamacoesData.length === 0 && userId) {
+                const qByUserId = query(reclamacoesRef, where('userId', '==', userId));
+                const querySnapshotByUserId = await getDocs(qByUserId);
+                // Adiciona as reclamações encontradas por userId, evitando duplicatas se já houver por email
+                querySnapshotByUserId.docs.forEach((doc) => {
+                    const data = { id: doc.id, ...doc.data() };
+                    if (!reclamacoesData.some(item => item.id === data.id)) {
+                        reclamacoesData.push(data);
+                    }
+                });
+            }
 
             this.setState({ reclamacoes: reclamacoesData, loading: false });
         } catch (error) {
@@ -124,24 +142,31 @@ class LoginDashboard extends Component {
                     </div>
 
                     {/* Mapeia as reclamações do usuário para renderizar os cards */}
-                    {reclamacoes.map((reclamacao) => (
-                        <div key={reclamacao.id} className="card complaint-card" onClick={() => this.handleProtocoloClick(reclamacao.id)}>
-                            <div className="card-header">
-                                <h2 className="card-title">Protocolo: {reclamacao.protocolo}</h2>
-                                <span className="card-status">{reclamacao.situacao || 'N/A'}</span>
+                    {reclamacoes.length > 0 ? (
+                        reclamacoes.map((reclamacao) => (
+                            <div key={reclamacao.id} className="card complaint-card" onClick={() => this.handleProtocoloClick(reclamacao.id)}>
+                                <div className="card-header">
+                                    <h2 className="card-title">Protocolo: {reclamacao.protocolo}</h2>
+                                    <span className="card-status">{reclamacao.situacao || 'N/A'}</span>
+                                </div>
+                                <div className="card-body">
+                                    <p className="card-detail"><strong>Classificação:</strong> {reclamacao.classificacao}</p>
+                                    <p className="card-detail"><strong>Assunto:</strong> {reclamacao.assuntoDenuncia}</p>
+                                    <p className="card-detail"><strong>Serviço:</strong> {reclamacao.nomeServico}</p>
+                                    <p className="card-detail"><strong>Data Contratação:</strong> {this.formatarData(reclamacao.dataContratacao)}</p>
+                                    <p className="card-detail"><strong>Valor Compra:</strong> R$ {reclamacao.valorCompra},00</p>
+                                </div>
+                                <div className="card-footer">
+                                    <span className="card-footer-text">Clique para ver detalhes e chat</span>
+                                </div>
                             </div>
-                            <div className="card-body">
-                                <p className="card-detail"><strong>Classificação:</strong> {reclamacao.classificacao}</p>
-                                <p className="card-detail"><strong>Assunto:</strong> {reclamacao.assuntoDenuncia}</p>
-                                <p className="card-detail"><strong>Serviço:</strong> {reclamacao.nomeServico}</p>
-                                <p className="card-detail"><strong>Data Contratação:</strong> {this.formatarData(reclamacao.dataContratacao)}</p>
-                                <p className="card-detail"><strong>Valor Compra:</strong> R$ {reclamacao.valorCompra},00</p>
-                            </div>
-                            <div className="card-footer">
-                                <span className="card-footer-text">Clique para ver detalhes e chat</span>
-                            </div>
+                        ))
+                    ) : (
+                        <div className="no-reclamations-message">
+                            <p>Você ainda não tem reclamações registradas.</p>
+                            <p>Clique em "Nova Reclamação" para começar!</p>
                         </div>
-                    ))}
+                    )}
                 </div>
             </div>
         );

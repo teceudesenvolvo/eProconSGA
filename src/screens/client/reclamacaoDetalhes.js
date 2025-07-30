@@ -25,6 +25,7 @@ class ReclamacaoDetalhes extends Component {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (user) {
                 this.setState({ userData: user, loading: false }, () => {
+                    console.log(this.state.userData);
                     this.fetchReclamacao();
                 });
             } else {
@@ -306,13 +307,13 @@ class ReclamacaoDetalhes extends Component {
                             {/* Fim da Área de Input do Chat */}
                         </div>
 
-                        {this.state.userData && (
+                        {/* {this.state.userData && (
                             <div className='userData'>
                                 <h2>Seus Dados</h2>
-                                <p><strong>Nome:</strong> {this.state.userData.displayName || this.state.userData.email}</p>
+                                <p><strong>Nome:</strong> {this.state.userData.displayName || this.state.userData.displayName}</p>
                                 <p><strong>Email:</strong> {this.state.userData.email}</p>
                             </div>
-                        )}
+                        )} */}
 
                         <div className='infoData'>
                             <h2>Dados da Reclamação</h2>

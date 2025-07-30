@@ -37,7 +37,7 @@ class MenuDashboard extends Component { // Renomeado para MenuDashboard para con
 
     btnHome = () => {
         switch (this.state.window) {
-            case `/meus-atendimentos`:
+            case `/atendimentos-sga-hyo6d27`:
                 return this.setState({ linkMenu: 'aDesktop link-desktop-active' })
             case `/agendar-atendimento`:
                 return this.setState({ linkMenu1: 'aDesktop link-desktop-active' })

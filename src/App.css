@@ -1658,6 +1658,183 @@ video {
   background-color: #FF7A00;
 }
 
+
+/* Container principal para os cards */
+.cards-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  /* Colunas responsivas */
+  gap: 20px;
+  /* Espaçamento entre os cards */
+  padding: 20px;
+  width: 100%;
+  height: 245px;
+  max-width: 1200px;
+  /* Limita a largura máxima do grid */
+  margin: 20px auto;
+  /* Centraliza o grid */
+}
+
+/* Estilo base para todos os cards */
+.card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  /* Sombra mais suave */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  min-height: 200px;
+  /* Altura mínima para os cards */
+  border: 1px solid #e0e0e0;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  /* Efeito de elevação no hover */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  /* Sombra mais pronunciada */
+}
+
+.card-description {
+  font-size: 12px;
+}
+
+/* Estilo específico para o card de "Criar Novo Chamado" */
+.create-new-card {
+  background-color: #e6f7ff;
+  /* Um azul claro para o card de criação */
+  border: 2px dashed #91d5ff;
+  /* Borda tracejada para indicar "novo" */
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  color: #0056b3;
+  font-weight: bold;
+}
+
+.create-new-card:hover {
+  background-color: #d6eaff;
+}
+
+.card-icon-large {
+  margin-bottom: 15px;
+  color: #007bff;
+  /* Cor do ícone */
+}
+
+/* Estilos para o cabeçalho do card (Protocolo e Status) */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.card-title {
+  font-size: 12px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.card-status {
+  background-color: #f0f0f0;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #555;
+}
+
+/* Estilos para o corpo do card (detalhes da reclamação) */
+.card-body {
+  flex-grow: 1;
+  /* Permite que o corpo ocupe o espaço disponível */
+  text-align: left;
+}
+
+.card-detail {
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 5px;
+  line-height: 0.9;
+  max-width: 500px; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+
+
+}
+
+.card-detail strong {
+  color: #333;
+}
+
+/* Estilos para o rodapé do card */
+.card-footer {
+  text-align: right;
+  margin-top: 5px;
+  border-top: 1px solid #eee;
+  text-align: center;
+}
+
+.card-footer-text {
+  margin-top: -5px;
+  font-size: 12px;
+  color: #888;
+}
+
+/* Estilos para a área de filtros */
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  /* Permite que os inputs quebrem linha em telas menores */
+  gap: 10px;
+  /* Espaçamento entre os inputs */
+  padding: 20px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  margin: 20px auto;
+  max-width: 1200px;
+  justify-content: center;
+  /* Centraliza os inputs */
+}
+
+.filter-input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 12px;
+  flex: 1;
+  /* Permite que os inputs cresçam e encolham */
+  min-width: 150px;
+  /* Largura mínima para inputs */
+}
+
+/* Media Queries para Responsividade (ajuste conforme necessário) */
+@media (max-width: 768px) {
+  .cards-grid-container {
+    grid-template-columns: 1fr;
+    /* Uma coluna em telas menores */
+    padding: 15px;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  .filters-container {
+    flex-direction: column;
+    /* Inputs empilhados em telas menores */
+    padding: 15px;
+  }
+}
+
 /*  Minhas Consultas */
 .agendarConsulta {
   width: 100%;
@@ -1861,12 +2038,12 @@ video {
   padding: 15px;
 }
 
-.chat-message-meta{
+.chat-message-meta {
   font-size: 10px;
   text-align: right;
 }
 
-.chat-message-meta-client{
+.chat-message-meta-client {
   font-size: 10px;
   text-align: left;
 }
@@ -1896,7 +2073,7 @@ video {
   /* Garante que o texto quebre linhas longas */
 }
 
-.chat-message > div > p > a{
+.chat-message>div>p>a {
   color: #4a3dff;
   font-weight: 400;
 }
@@ -1919,13 +2096,14 @@ video {
 }
 
 /* Estilo para o campo de texto do chat */
-.chat-input-comentario-textarea{
+.chat-input-comentario-textarea {
   width: 40%;
 }
 
-.chat-input-comentario-textarea-client{
+.chat-input-comentario-textarea-client {
   width: 70%;
 }
+
 .chat-textarea {
   width: calc(100% - 20px);
   /* Ajusta a largura com padding */
@@ -1946,7 +2124,7 @@ video {
 }
 
 /* Estilo para o botão de upload de arquivo */
-.chat-input-file-upload-send{
+.chat-input-file-upload-send {
   display: block;
   margin-top: 5px;
   margin-left: 20px;
@@ -1957,6 +2135,7 @@ video {
   height: 70px;
   padding: 5px;
 }
+
 .btnUploadFileChat {
   width: 100%;
   height: 20px;
@@ -1966,6 +2145,7 @@ video {
   margin-bottom: 0px;
   padding: 5px;
 }
+
 .file-attached-message {
   font-size: 12px;
   color: #5cb85c;
@@ -2022,12 +2202,13 @@ video {
 
 
 /* Atualizar status */
-.chat-input-situacao{
+.chat-input-situacao {
   width: 25%;
   margin-right: 30px;
   padding-right: 20px;
   border-right: 1px solid #a2a2a2;
 }
+
 #situacao {
   width: 100%;
   height: 40px;
@@ -2037,6 +2218,7 @@ video {
   background-color: #fff;
   border: 1px solid #c6c6c6;
 }
+
 .btnSend {
   margin-top: -8px;
   font-weight: bold;
@@ -2050,86 +2232,92 @@ video {
 
 /* Estilo para mensagens enviadas pelo ADMINISTRADOR (já existia 'admin-message') */
 .admin-message {
-    background-color: #c5e2ff; 
-    align-self: flex-start; /* Alinha à esquerda */
-    color: #333;
+  background-color: #c5e2ff;
+  align-self: flex-start;
+  /* Alinha à esquerda */
+  color: #333;
 }
 
 
 
 /* Estilo para mensagens enviadas pelo USUÁRIO */
 .user-message {
-    background-color: #ffe6d8; /* Um azul claro para mensagens do usuário */
-    align-self: flex-end; /* Alinha à direita */
-    color: #333;
+  background-color: #ffe6d8;
+  /* Um azul claro para mensagens do usuário */
+  align-self: flex-end;
+  /* Alinha à direita */
+  color: #333;
 }
 
 /* Estilo para metadados de mensagens (data, hora, autor) */
 .chat-message-meta {
-    font-size: 0.75em; /* Fonte menor para metadados */
-    color: #888; /* Cor mais suave */
-    margin-top: 5px;
-    display: block; /* Garante que ocupe sua própria linha */
+  font-size: 0.75em;
+  /* Fonte menor para metadados */
+  color: #888;
+  /* Cor mais suave */
+  margin-top: 5px;
+  display: block;
+  /* Garante que ocupe sua própria linha */
 }
 
 /* Alinhamento dos metadados para mensagens do administrador */
 .admin-message-meta {
-    text-align: left;
+  text-align: left;
 }
 
 /* Alinhamento dos metadados para mensagens do usuário */
 .user-message-meta {
-    text-align: right;
+  text-align: right;
 }
 
 /* Estilo para o campo de texto do chat */
 .chat-textarea {
-    width: calc(100% - 20px);
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    resize: vertical;
-    min-height: 60px;
-    margin-top: 5px;
-    margin-bottom: 10px;
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  resize: vertical;
+  min-height: 60px;
+  margin-top: 5px;
+  margin-bottom: 10px;
 }
 
 .chat-input-label {
-    font-weight: bold;
-    margin-bottom: 5px;
-    display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
 }
 
 /* Estilo para o input de arquivo no chat */
 .btnUploadFileChat {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f0f0f0;
-    cursor: pointer;
-    font-size: 14px;
-    color: #333;
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
 }
 
 .btnUploadFileChat:hover {
-    background-color: #e0e0e0;
+  background-color: #e0e0e0;
 }
 
 .file-attached-message {
-    font-size: 12px;
-    color: #5cb85c;
-    margin-top: 5px;
-    margin-bottom: 10px;
+  font-size: 12px;
+  color: #5cb85c;
+  margin-top: 5px;
+  margin-bottom: 10px;
 }
 
 .current-situacao {
-    font-weight: bold;
-    color: #0056b3;
-    font-size: 1.1em;
-    margin-top: 5px;
+  font-weight: bold;
+  color: #0056b3;
+  font-size: 1.1em;
+  margin-top: 5px;
 }
 
 .formLogin {

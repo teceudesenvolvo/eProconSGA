@@ -120,7 +120,7 @@ class Notificacoes extends Component {
     };
 
     render() {
-        const { reclamacoes, isLoadingData, isAuthorized, isLoadingAuth, filtroProtocolo, filtroTipoReclamacao, filtroClassificacao, filtroAssuntoDenuncia, filtroProcurouFornecedor, filtroFormaAquisicao, filtroTipoContratacao, filtroNomeServico, filtroCPF } = this.state;
+        const { reclamacoes, isLoadingData, isAuthorized, isLoadingAuth, filtroProtocolo, filtroAssuntoDenuncia, filtroNomeServico } = this.state;
 
         // 1. Exibe "Carregando autenticação..." enquanto o estado de autenticação não foi verificado
         if (isLoadingAuth) {
@@ -162,15 +162,8 @@ class Notificacoes extends Component {
         const reclamacoesFiltradas = reclamacoes.filter((reclamacao) => {
             return (
                 reclamacao.protocolo.toLowerCase().includes(filtroProtocolo.toLowerCase()) &&
-                reclamacao.tipoReclamacao.toLowerCase().includes(filtroTipoReclamacao.toLowerCase()) &&
-                reclamacao.classificacao.toLowerCase().includes(filtroClassificacao.toLowerCase()) &&
                 reclamacao.assuntoDenuncia.toLowerCase().includes(filtroAssuntoDenuncia.toLowerCase()) &&
-                reclamacao.procurouFornecedor.toLowerCase().includes(filtroProcurouFornecedor.toLowerCase()) &&
-                reclamacao.formaAquisicao.toLowerCase().includes(filtroFormaAquisicao.toLowerCase()) &&
-                reclamacao.tipoContratacao.toLowerCase().includes(filtroTipoContratacao.toLowerCase()) &&
-                // reclamacao.dataContratacao.toLowerCase().includes(filtroDataContratacao.toLowerCase()) && // Removido filtro de data para simplificar
-                reclamacao.nomeServico.toLowerCase().includes(filtroNomeServico.toLowerCase()) &&
-                reclamacao.cpf.toLowerCase().includes(filtroCPF.toLowerCase())
+                reclamacao.nomeServico.toLowerCase().includes(filtroNomeServico.toLowerCase()) 
             );
         });
 
@@ -181,13 +174,7 @@ class Notificacoes extends Component {
                     {/* Área de Filtros */}
                     <div className="filters-container">
                         <input type="text" placeholder="Protocolo" value={filtroProtocolo} onChange={(e) => this.setState({ filtroProtocolo: e.target.value })} className="filter-input" />
-                        <input type="text" placeholder="CPF" value={filtroCPF} onChange={(e) => this.setState({ filtroCPF: e.target.value })} className="filter-input" />
-                        <input type="text" placeholder="Tipo Reclamação" value={filtroTipoReclamacao} onChange={(e) => this.setState({ filtroTipoReclamacao: e.target.value })} className="filter-input" />
-                        <input type="text" placeholder="Classificação" value={filtroClassificacao} onChange={(e) => this.setState({ filtroClassificacao: e.target.value })} className="filter-input" />
                         <input type="text" placeholder="Assunto Denúncia" value={filtroAssuntoDenuncia} onChange={(e) => this.setState({ filtroAssuntoDenuncia: e.target.value })} className="filter-input" />
-                        <input type="text" placeholder="Procurou Fornecedor" value={filtroProcurouFornecedor} onChange={(e) => this.setState({ filtroProcurouFornecedor: e.target.value })} className="filter-input" />
-                        <input type="text" placeholder="Forma Aquisição" value={filtroFormaAquisicao} onChange={(e) => this.setState({ filtroFormaAquisicao: e.target.value })} className="filter-input" />
-                        <input type="text" placeholder="Tipo Contratação" value={filtroTipoContratacao} onChange={(e) => this.setState({ filtroTipoContratacao: e.target.value })} className="filter-input" />
                         <input type="text" placeholder="Nome Serviço" value={filtroNomeServico} onChange={(e) => this.setState({ filtroNomeServico: e.target.value })} className="filter-input" />
                     </div>
 

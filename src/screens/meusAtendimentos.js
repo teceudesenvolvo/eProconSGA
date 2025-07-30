@@ -1,15 +1,11 @@
 import React, { Component } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../firebase';
-import MenuDashboard from '../componets/menuDashboard';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
+import { db, auth } from '../firebase'; // Importe 'auth' para pegar o userId do usuário logado
+// Removidos os imports de @mui/material/Table, etc.
 import { useNavigate, useLocation } from 'react-router-dom';
+
+// Componente
+import MenuDashboard from '../componets/menuDashboard';
 
 class LoginDashboard extends Component {
     constructor(props) {
@@ -17,6 +13,7 @@ class LoginDashboard extends Component {
         this.state = {
             reclamacoes: [],
             loading: true,
+            userData: null, // Para armazenar os dados do usuário logado
         };
         this.navigate = this.props.navigate;
         this.location = this.props.location;
@@ -27,20 +24,34 @@ class LoginDashboard extends Component {
     }
 
     async checkAuthAndFetch() {
-        const userId = localStorage.getItem('userId');
-        if (!userId) {
-            localStorage.setItem('paginaAnterior', this.location.pathname);
-            this.navigate('/login');
-            return;
-        }
-        this.fetchReclamacoes();
+        // Usa onAuthStateChanged para obter o userId de forma reativa e segura
+        const unsubscribe = auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                // Se o usuário está logado, armazena seus dados e busca as reclamações
+                this.setState({ userData: user, loading: true }); // Define loading como true novamente para a busca de reclamações
+                this.fetchReclamacoes(user.uid); // Passa o UID do usuário logado
+            } else {
+                // Se não há usuário logado, redireciona para o login
+                localStorage.setItem('paginaAnterior', this.location.pathname);
+                this.navigate('/login');
+                this.setState({ loading: false }); // Garante que o loading seja false
+            }
+        });
+        // Armazena a função de unsubscribe para limpar no componentWillUnmount
+        this.unsubscribeAuth = unsubscribe;
     }
 
-    async fetchReclamacoes() {
+    componentWillUnmount() {
+        // Limpa o listener de autenticação ao desmontar o componente
+        if (this.unsubscribeAuth) {
+            this.unsubscribeAuth();
+        }
+    }
+
+    async fetchReclamacoes(userId) { // Recebe userId como parâmetro
         try {
-            const userId = localStorage.getItem('userId');
             if (!userId) {
-                console.error('Usuário não autenticado.');
+                console.error('Usuário não autenticado. UID não disponível.');
                 this.setState({ loading: false });
                 return;
             }
@@ -61,77 +72,78 @@ class LoginDashboard extends Component {
         }
     }
 
+    formatarData = (dataString) => {
+        if (!dataString) {
+            return '';
+        }
+
+        const data = new Date(dataString);
+        const dia = String(data.getDate()).padStart(2, '0');
+        const mes = String(data.getMonth() + 1).padStart(2, '0');
+        const ano = data.getFullYear();
+
+        return `${dia}-${mes}-${ano}`;
+    };
+
     handleProtocoloClick = (reclamacaoId) => {
         localStorage.setItem('reclamacaoId', reclamacaoId);
-        this.navigate('/reclamacao-detalhes');
+        this.navigate('/reclamacao-detalhes'); // URL da página de detalhes do usuário
+    };
+
+    handleCreateNewCall = () => {
+        this.navigate('/registrar-reclamacao'); // URL para a página de criação de nova reclamação
     };
 
     render() {
         const { reclamacoes, loading } = this.state;
 
         if (loading) {
-            return <div>Carregando...</div>;
+            return (
+                <div className="App-header">
+                    <div className="loading-message">
+                        <h1>Carregando suas reclamações...</h1>
+                        <p>Por favor, aguarde.</p>
+                    </div>
+                </div>
+            );
         }
 
         return (
             <div className="App-header">
                 <MenuDashboard />
-                <a href='/registrar-reclamacao' className='buttonLogin btnNewReclam'>Nova Reclamação</a>
-                <TableContainer component={Paper} className="tabela-design">
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                        <TableHead className="tabela-header">
-                            <TableRow>
-                                <TableCell align="center">Protocolo</TableCell>
-                                <TableCell align="center">Tipo Reclamação</TableCell>
-                                <TableCell align="center">Classificação</TableCell>
-                                <TableCell align="center">Assunto Denúncia</TableCell>
-                                <TableCell align="center">Procurou Fornecedor</TableCell>
-                                <TableCell align="center">Forma Aquisição</TableCell>
-                                <TableCell align="center">Tipo Contratação</TableCell>
-                                <TableCell align="center">Data Contratação</TableCell>
-                                <TableCell align="center">Nome Serviço</TableCell>
-                                <TableCell align="center">Tipo Documento</TableCell>
-                                <TableCell align="center">Número Documento</TableCell>
-                                <TableCell align="center">Data Ocorrência</TableCell>
-                                <TableCell align="center">Data Negativa</TableCell>
-                                <TableCell align="center">Forma Pagamento</TableCell>
-                                <TableCell align="center">Valor Compra</TableCell>
-                                <TableCell align="center">Situação</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {reclamacoes.map((reclamacao) => (
-                                <TableRow
-                                    key={reclamacao.id}
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                >
-                                    <TableCell
-                                        align="center"
-                                        style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}
-                                        onClick={() => this.handleProtocoloClick(reclamacao.id)}
-                                    >
-                                        {reclamacao.protocolo}
-                                    </TableCell>
-                                    <TableCell align="center">{reclamacao.tipoReclamacao}</TableCell>
-                                    <TableCell align="center">{reclamacao.classificacao}</TableCell>
-                                    <TableCell align="center">{reclamacao.assuntoDenuncia}</TableCell>
-                                    <TableCell align="center">{reclamacao.procurouFornecedor}</TableCell>
-                                    <TableCell align="center">{reclamacao.formaAquisicao}</TableCell>
-                                    <TableCell align="center">{reclamacao.tipoContratacao}</TableCell>
-                                    <TableCell align="center">{reclamacao.dataContratacao}</TableCell>
-                                    <TableCell align="center">{reclamacao.nomeServico}</TableCell>
-                                    <TableCell align="center">{reclamacao.tipoDocumento}</TableCell>
-                                    <TableCell align="center">{reclamacao.numeroDoc}</TableCell>
-                                    <TableCell align="center">{reclamacao.dataOcorrencia}</TableCell>
-                                    <TableCell align="center">{reclamacao.dataNegativa}</TableCell>
-                                    <TableCell align="center">{reclamacao.formaPagamento}</TableCell>
-                                    <TableCell align="center">R$ {reclamacao.valorCompra},00</TableCell>
-                                    <TableCell align="center">{reclamacao.situacao}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                {/* Container dos Cards */}
+                <div className="cards-grid-container">
+                    {/* Card para Criar Nova Reclamação */}
+                    <div className="card create-new-card" onClick={this.handleCreateNewCall}>
+                        <div className="card-icon-large">
+                            {/* Ícone de mais ou similar */}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus-circle"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                        </div>
+                        <h2 className="card-title">Nova Reclamação</h2>
+                        <p className="card-description">Registre uma nova reclamação ou solicitação.</p>
+                    </div>
+
+                    {/* Mapeia as reclamações do usuário para renderizar os cards */}
+                    {reclamacoes.map((reclamacao) => (
+                        <div key={reclamacao.id} className="card complaint-card" onClick={() => this.handleProtocoloClick(reclamacao.id)}>
+                            <div className="card-header">
+                                <h2 className="card-title">Protocolo: {reclamacao.protocolo}</h2>
+                                <span className="card-status">{reclamacao.situacao || 'N/A'}</span>
+                            </div>
+                            <div className="card-body">
+                                <p className="card-detail"><strong>Tipo:</strong> {reclamacao.tipoReclamacao}</p>
+                                <p className="card-detail"><strong>Classificação:</strong> {reclamacao.classificacao}</p>
+                                <p className="card-detail"><strong>Assunto:</strong> {reclamacao.assuntoDenuncia}</p>
+                                <p className="card-detail"><strong>Serviço:</strong> {reclamacao.nomeServico}</p>
+                                <p className="card-detail"><strong>Data Contratação:</strong> {this.formatarData(reclamacao.dataContratacao)}</p>
+                                <p className="card-detail"><strong>Valor Compra:</strong> R$ {reclamacao.valorCompra},00</p>
+                            </div>
+                            <div className="card-footer">
+                                <span className="card-footer-text">Clique para ver detalhes e chat</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         );
     }

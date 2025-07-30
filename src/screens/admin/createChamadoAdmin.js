@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import MenuDashboard from '../../componets/menuDashboard';
 import { collection, addDoc} from 'firebase/firestore'; // setDoc e doc podem ser removidos se não forem usados em outro lugar
 import { db } from '../../firebase'; // Removido 'auth'
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { useNavigate, useLocation } from 'react-router-dom';
+import MenuAdmin from '../../componets/menuAdmin'; 
 // Removido 'axios' e imports de 'firebase/auth' (createUserWithEmailAndPassword, signOut)
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
+
 
 // Removidos dados do EmailJS pois não enviaremos e-mail de acesso daqui
 
@@ -357,7 +359,7 @@ const AddProducts = () => {
 
     return (
         <div className="App-header">
-            <MenuDashboard />
+            <MenuAdmin/>
             <div className="form-container-tabs">
                 <div className="tabs-header">
                     <button className={`tab-button ${activeTab === 1 ? 'active' : ''}`} onClick={() => setActiveTab(1)}>

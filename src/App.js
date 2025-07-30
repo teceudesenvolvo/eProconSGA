@@ -20,10 +20,10 @@ import Atendimentos from '../src/screens/admin/atendimentosTodos'; // Caminho co
 import Atendimento from '../src/screens/admin/atendimento'; // Caminho corrigido
 
 // Usuário Logado
-import MeusAgendamentos from '../src/screens/meusAtendimentos'; // Caminho corrigido
+import MeusAgendamentos from '../src/screens/client/meusAtendimentos'; // Caminho corrigido
 import ReclamacaoDetalhes from '../src/screens/client/reclamacaoDetalhes'; // Caminho corrigido
 import Perfil from '../src/screens/client/Perfil'; // Caminho corrigido
-import RealizarReclamacao from '../src/screens/realizarReclamacao'; // Caminho corrigido
+import RealizarReclamacao from '../src/screens/client/realizarReclamacao'; // Caminho corrigido
 
 
 function App() {

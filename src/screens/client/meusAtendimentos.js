@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db, auth } from '../firebase'; // Importe 'auth' para pegar o userId do usuário logado
+import { db, auth } from '../../firebase'; // Importe 'auth' para pegar o userId do usuário logado
 // Removidos os imports de @mui/material/Table, etc.
 import { useNavigate, useLocation } from 'react-router-dom';
 
 // Componente
-import MenuDashboard from '../componets/menuDashboard';
+import MenuDashboard from '../../componets/menuDashboard';
 
 class LoginDashboard extends Component {
     constructor(props) {
@@ -131,7 +131,6 @@ class LoginDashboard extends Component {
                                 <span className="card-status">{reclamacao.situacao || 'N/A'}</span>
                             </div>
                             <div className="card-body">
-                                <p className="card-detail"><strong>Tipo:</strong> {reclamacao.tipoReclamacao}</p>
                                 <p className="card-detail"><strong>Classificação:</strong> {reclamacao.classificacao}</p>
                                 <p className="card-detail"><strong>Assunto:</strong> {reclamacao.assuntoDenuncia}</p>
                                 <p className="card-detail"><strong>Serviço:</strong> {reclamacao.nomeServico}</p>

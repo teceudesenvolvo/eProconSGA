@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import MenuDashboard from '../componets/menuDashboard';
+import MenuDashboard from '../../componets/menuDashboard';
 import { collection, addDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db } from '../../firebase';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { useNavigate, useLocation } from 'react-router-dom';

@@ -172,11 +172,26 @@ const Perfil = () => {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="estadoCivil">Estado Civil:</label>
-                                    <input type="text" id="estadoCivil" name="estadoCivil" value={editedData.estadoCivil || ''} onChange={handleInputChange} className="profile-input" />
+                                    <select id="estadoCivil" name="estadoCivil" value={editedData.estadoCivil || ''} onChange={handleInputChange} className="profile-input" >
+                                        <option value="">Selecione o Estado Civil</option>
+                                        <option value="solteiro">Solteiro</option>
+                                        <option value="casado">Casado</option>
+                                        <option value="divorciado">Divorciado</option>
+                                        <option value="viuvo">Viúvo</option>
+                                    </select>
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="sexo">Sexo:</label>
-                                    <input type="text" id="sexo" name="sexo" value={editedData.sexo || ''} onChange={handleInputChange} className="profile-input" />
+                                    <select name="sexo" id="sexo" value={editedData.sexo || ''} onChange={handleInputChange} className="profile-input">
+                                        <option value="">Selecione o sexo</option>
+                                        <option value="masculino">Masculino</option>
+                                        <option value="feminino">Feminino</option>
+                                        <option value="outros">Outros</option>
+                                    </select>
+
+
+
+
                                 </div>
                             </>
                         ) : (

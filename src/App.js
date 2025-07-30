@@ -15,9 +15,10 @@ import Cdc from './screens/CodigoDefesaConsumidor'; // Caminho corrigido
 import Register from '../src/screens/register'; // Caminho corrigido
 import Login from '../src/screens/login'; // Caminho corrigido
 
-// Controle Interno
+// Controle Admin
 import Atendimentos from '../src/screens/admin/atendimentosTodos'; // Caminho corrigido
 import Atendimento from '../src/screens/admin/atendimento'; // Caminho corrigido
+import CriarChamado from '../src/screens/admin/createChamadoAdmin'; // Caminho corrigido
 
 // Usuário Logado
 import MeusAgendamentos from '../src/screens/client/meusAtendimentos'; // Caminho corrigido
@@ -46,9 +47,10 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* Controle Interno */}
+          {/* Controle Admin */}
           <Route path="/atendimentos-sga-hyo6d27" element={<Atendimentos />} />
           <Route path="/atendimento-sga-ppi6g59" element={<Atendimento />} />
+          <Route path="/criar-chamado" element={<CriarChamado />} />
 
           {/* Páginas Usuário Logado */}
           <Route path="/meus-atendimentos" element={<MeusAgendamentos />} />

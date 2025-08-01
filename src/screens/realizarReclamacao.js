@@ -139,26 +139,57 @@ const AddProducts = () => {
         return protocolo;
     };
 
-    const gerarPDF = (protocolo, formData) => {
+    const gerarPDF = (protocolo, formData, arquivosBase64) => {
+        const content = [
+            { text: 'Protocolo: ' + protocolo, style: 'header' },
+            { text: 'Tipo de Reclamação: ' + formData.tipoReclamacao },
+            { text: 'Classificação: ' + formData.classificacao },
+            { text: 'Assunto da Denúncia: ' + formData.assuntoDenuncia },
+            { text: 'CNPJ da Empresa: ' + formData.cnpj },
+            { text: 'Nome da Empresa: ' + (empresaInfo?.razao_social || 'Não Informado') },
+            { text: 'Procurou o Fornecedor? ' + formData.procurouFornecedor },
+            { text: 'Forma de Aquisição: ' + formData.formaAquisicao },
+            { text: 'Tipo de Contratação: ' + formData.tipoContratacao },
+            { text: 'Data da Contratação: ' + formData.dataContratacao },
+            { text: 'Nome do Serviço/Plano: ' + formData.nomeServico },
+            { text: 'Detalhes do Serviço/Plano: ' + formData.detalheServico },
+            { text: 'Tipo de Documento: ' + formData.tipoDocumento },
+            { text: 'Número do Documento: ' + formData.numeroDoc },
+            { text: 'Data da Ocorrência: ' + formData.dataOcorrencia },
+            { text: 'Data de Cancelamento/Desistência/Negativa: ' + formData.dataNegativa },
+            { text: 'Forma de Pagamento: ' + formData.formaPagamento },
+            { text: 'Valor da Compra: ' + formData.valorCompra },
+            { text: 'Detalhes da Reclamação: ' + formData.detalhesReclamacao },
+            { text: 'Pedido do Consumidor: ' + formData.pedidoConsumidor },
+            // Adicione outros campos conforme necessário
+            { text: '\nAnexos:', style: 'subheader' },
+        ];
+
+        arquivosBase64.forEach(arquivo => {
+            content.push({ text: arquivo.name, style: 'italics' });
+            if (arquivo.type.startsWith('image/')) {
+                content.push({ image: arquivo.data, width: 200 });
+            } else if (arquivo.type === 'application/pdf') {
+                content.push({ text: '[Arquivo PDF anexado]', style: 'italics' });
+                // Em PDFMake, geralmente não se incorpora o PDF diretamente como imagem.
+                // Você pode adicionar um link ou apenas indicar que um PDF foi anexado.
+            }
+            content.push({ text: '\n' });
+        });
+
         const documentDefinition = {
-            content: [
-                { text: 'Protocolo: ' + protocolo, style: 'header' },
-                { text: 'Tipo de Reclamação: ' + formData.tipoReclamacao },
-                { text: 'Classificação: ' + formData.classificacao },
-                { text: 'Assunto da Denúncia: ' + formData.assuntoDenuncia },
-                { text: 'CNPJ da Empresa: ' + formData.cnpj },
-                { text: 'Nome da Empresa: ' + (empresaInfo?.razao_social || 'Não Informado') },
-                // Adicione outros campos do formulário aqui
-            ],
+            content: content,
             styles: {
-                header: { fontSize: 18, bold: true },
+                header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
+                subheader: { fontSize: 14, bold: true, margin: [0, 10, 0, 5] },
+                italics: { italics: true },
             },
         };
 
         pdfMake.createPdf(documentDefinition).download('reclamacao_' + protocolo + '.pdf');
     };
 
-    const enviarReclamacaoParaFirebase = async (data, protocolo) => {
+    const enviarReclamacaoParaFirebase = async (data, protocolo, arquivos) => {
         try {
             const userId = localStorage.getItem('userId');
 
@@ -174,6 +205,7 @@ const AddProducts = () => {
                 timestamp: new Date(),
                 protocolo: protocolo,
                 nomeEmpresaReclamada: empresaInfo?.razao_social || '',
+                arquivos: arquivos.map(file => ({ name: file.name, type: file.type })), // Salva apenas metadados dos arquivos no Firestore
             };
 
             const docRef = await addDoc(collection(db, 'reclamacoes'), reclamacaoData);
@@ -187,8 +219,8 @@ const AddProducts = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const protocolo = gerarProtocolo();
-        await enviarReclamacaoParaFirebase(formData, protocolo);
-        gerarPDF(protocolo, formData);
+        await enviarReclamacaoParaFirebase(formData, protocolo, formData.arquivos);
+        gerarPDF(protocolo, formData, formData.arquivos);
         console.log(formData);
         window.location.pathname = '/meus-atendimentos';
     };

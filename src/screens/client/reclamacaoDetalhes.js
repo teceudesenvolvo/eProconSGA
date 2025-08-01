@@ -5,6 +5,9 @@ import { db } from '../../firebase';
 // Componente
 import MenuDashboard from '../../componets/menuDashboard'
 
+// Define o tamanho máximo do arquivo (em bytes) - Exemplo: 5MB
+const MAX_FILE_SIZE = 1048576;
+
 class ReclamacaoDetalhes extends Component {
     constructor(props) {
         super(props);
@@ -15,8 +18,8 @@ class ReclamacaoDetalhes extends Component {
             error: null,
             comentarios: [],
             situacao: '',
-            pdfBase64: null,
-            novoComentario: '', // Adiciona o estado para o novo comentário
+            novoAnexo: null,
+            anexoError: null, // Novo estado para exibir erro de tamanho do arquivo
         };
     }
 
@@ -41,10 +44,10 @@ class ReclamacaoDetalhes extends Component {
                 this.setState({
                     reclamacao: reclamacaoSnap.data(),
                     loading: false,
-                    comentarios: reclamacaoSnap.data().comentarios || [], // Garante que é um array
+                    comentarios: reclamacaoSnap.data().comentarios || [],
                     situacao: reclamacaoSnap.data().situacao || 'EM ANALISE',
                 }, () => {
-                    this.fetchUserData(); // Chama fetchUsuario após carregar a reclamação
+                    this.fetchUserData(reclamacaoSnap.data().userId);
                 });
             } else {
                 console.error('Reclamação não encontrada.');
@@ -55,6 +58,7 @@ class ReclamacaoDetalhes extends Component {
             this.setState({ loading: false });
         }
     }
+
 
     async fetchUserData() {
         this.setState({ loading: true, error: null });
@@ -88,26 +92,68 @@ class ReclamacaoDetalhes extends Component {
         }
     }
 
-    handleComentariosChange = (event) => {
-        this.setState({
-            comentarios: [...this.state.comentarios, event.target.value]
-        });
-    };
-
     handleSituacaoChange = (event) => {
         this.setState({ situacao: event.target.value });
     };
 
-    handleFileChange = (event) => {
+    handleAnexoChange = (event) => {
         const file = event.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const base64 = e.target.result;
-                this.setState({ pdfBase64: base64 });
-            };
-            reader.readAsDataURL(file);
+            if (file.size > MAX_FILE_SIZE) {
+                this.setState({ anexoError: `O arquivo é muito grande. O tamanho máximo permitido é ${MAX_FILE_SIZE / (1024 * 1024)}MB.` });
+                // Limpa o input de arquivo para o usuário selecionar outro
+                event.target.value = null;
+                this.setState({ novoAnexo: null });
+                return;
+            }
+            this.setState({ novoAnexo: file, anexoError: null });
         }
+    };
+
+    adicionarAnexoComentario = async () => {
+        const { novoAnexo, comentarios } = this.state;
+
+        if (!novoAnexo) {
+            alert('Por favor, selecione um arquivo para anexar.');
+            return;
+        }
+
+        if (this.state.anexoError) {
+            alert(this.state.anexoError);
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const base64 = e.target.result;
+            const nomeArquivo = novoAnexo.name;
+            const novoComentario = {
+                texto: `Anexo: ${nomeArquivo}`,
+                anexo: {
+                    nome: nomeArquivo,
+                    base64: base64,
+                },
+            };
+
+            const reclamacaoId = localStorage.getItem('reclamacaoId');
+            const reclamacaoRef = doc(db, 'reclamacoes', reclamacaoId);
+
+            try {
+                await updateDoc(reclamacaoRef, {
+                    comentarios: [...comentarios, novoComentario],
+                });
+
+                this.setState(prevState => ({
+                    comentarios: [...prevState.comentarios, novoComentario],
+                    novoAnexo: null,
+                }));
+
+                console.log('Anexo adicionado ao comentário com sucesso!');
+            } catch (error) {
+                console.error('Erro ao adicionar anexo ao comentário:', error);
+            }
+        };
+        reader.readAsDataURL(novoAnexo);
     };
 
     salvarAtualizacoes = async () => {
@@ -118,37 +164,11 @@ class ReclamacaoDetalhes extends Component {
             await updateDoc(reclamacaoRef, {
                 comentarios: this.state.comentarios,
                 situacao: this.state.situacao,
-                pdfBase64: this.state.pdfBase64, // Adiciona o Base64 do PDF ao documento
             });
 
             console.log('Atualizações salvas com sucesso!');
         } catch (error) {
             console.error('Erro ao salvar atualizações:', error);
-        }
-    };
-
-    adicionarComentario = async () => {
-        if (this.state.novoComentario) {
-            const novoComentario = this.state.novoComentario;
-            const reclamacaoId = localStorage.getItem('reclamacaoId');
-            const reclamacaoRef = doc(db, 'reclamacoes', reclamacaoId);
-
-            try {
-                // Atualiza o array de comentários no Firestore
-                await updateDoc(reclamacaoRef, {
-                    comentarios: [...this.state.comentarios, novoComentario],
-                });
-
-                // Atualiza o estado local
-                this.setState(prevState => ({
-                    comentarios: [...prevState.comentarios, novoComentario],
-                    novoComentario: '',
-                }));
-
-                console.log('Comentário adicionado com sucesso!');
-            } catch (error) {
-                console.error('Erro ao adicionar comentário:', error);
-            }
         }
     };
 
@@ -165,8 +185,21 @@ class ReclamacaoDetalhes extends Component {
         return `${dia}-${mes}-${ano}`;
     };
 
+    handleDownload = (anexo) => {
+        if (anexo && anexo.base64 && anexo.nome) {
+            const link = document.createElement('a');
+            link.href = anexo.base64;
+            link.download = anexo.nome;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            console.error('Dados do anexo inválidos para download.');
+        }
+    };
+
     render() {
-        const { reclamacao, loading } = this.state;
+        const { reclamacao, loading, comentarios, userData, anexoError } = this.state;
 
         if (loading) {
             return <div>Carregando...</div>;
@@ -183,34 +216,35 @@ class ReclamacaoDetalhes extends Component {
                     <div className='infosGeral'>
                         <div className='atualizeData'>
                             <h3>Atualizações sobre a reclamação</h3>
-                            <label htmlFor="comentarios">Atualizações:</label><br/>
-                            {Array.isArray(this.state.comentarios) && ( // Verifica se é um array
+                            <label htmlFor="comentarios">Histórico de Atualizações:</label><br />
+                            {Array.isArray(comentarios) && (
                                 <ol>
-                                    {this.state.comentarios.map((comentario, index) => (
-                                        <li className='comentarioChat' key={index}>{comentario}</li>
+                                    {comentarios.map((comentario, index) => (
+                                        <li className='comentarioChat' key={index}>
+                                            {comentario}
+                                            {comentario.anexo && comentario.anexo.nome && (
+                                                <p>
+                                                    Anexo: <button onClick={() => this.handleDownload(comentario.anexo)}>
+                                                        {comentario.anexo.nome}
+                                                    </button>
+                                                </p>
+                                            )}
+                                        </li>
                                     ))}
                                 </ol>
                             )}
-
-                            {/* <label htmlFor="comentarios">Enviar Mensagem</label><br/>
-                            <textarea
-                                id="comentarios"
-                                value={this.state.novoComentario || ''} // Usar um estado temporário para o novo comentário
-                                onChange={(event) => this.setState({ novoComentario: event.target.value })}
-                                placeholder='Escreva uma mensagem ao requerente...'
-                            /><br/>
-                            <button onClick={this.adicionarComentario} className='buttonLogin btnComentario'>Enviar</button><br/> */}
-                            </div>
-                            <div className='atualizeData'>
-                            <label  htmlFor="situacao">Envie um arquivo</label><br/>
-                            <input className='buttonLogin btnUpload' type="file" accept="application/pdf" onChange={this.handleFileChange} /><br/>
-                        <button className='buttonLogin btnComentario btnSend' onClick={this.salvarAtualizacoes}>Enviar Anexo</button>
+                        </div>
+                        <div className='atualizeData'>
+                            <label htmlFor="anexo">Enviar Anexo</label><br />
+                            <input className='buttonLogin btnUpload' type="file" onChange={this.handleAnexoChange} /><br />
+                            {anexoError && <p className="error-message">{anexoError}</p>} {/* Exibe a mensagem de erro */}
+                            <button className='buttonLogin btnComentario btnSend' onClick={this.adicionarAnexoComentario} disabled={!!anexoError || !this.state.novoAnexo}>Adicionar Anexo</button>
                         </div>
 
-                        {this.state.userData && (
+                        {userData && (
                             <div className='userData'>
                                 <h2>Dados do Fornecedor</h2>
-                                <p><strong>Nome:</strong> {this.state.userData.nome}</p>
+                                <p><strong>Nome:</strong> {userData.nome}</p>
                             </div>
                         )}
 
@@ -234,17 +268,9 @@ class ReclamacaoDetalhes extends Component {
                             <p><strong>Valor Compra:</strong> {reclamacao.valorCompra}</p>
                             <p><strong>Detalhes Reclamação:</strong> {reclamacao.detalhesReclamacao}</p>
                             <p><strong>Pedido Consumidor:</strong> {reclamacao.pedidoConsumidor}</p>
-                            <p><strong>Situação</strong> {reclamacao.situacao}</p>
+                            <p><strong>Situação:</strong> {reclamacao.situacao}</p>
                         </div>
-
-
-
                     </div>
-
-                    {/* {this.state.pdfBase64 && (
-                        <iframe src={this.state.pdfBase64} width="100%" height="500px" title="Visualização do PDF" />
-                    )} */}
-
                 </div>
             </div>
         );
@@ -252,3 +278,8 @@ class ReclamacaoDetalhes extends Component {
 }
 
 export default ReclamacaoDetalhes;
+
+
+
+
+

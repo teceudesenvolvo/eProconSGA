@@ -1,12 +1,9 @@
 import React, { Component } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, auth } from "../../firebase";
-
-// Componente
 import MenuDashboard from '../../componets/menuDashboard';
 
-// Define o tamanho máximo do arquivo (em bytes) - Exemplo: 5MB
-const MAX_FILE_SIZE = 1048576;
+const MAX_FILE_SIZE = 1048576; // 1MB
 
 class ReclamacaoDetalhes extends Component {
     constructor(props) {
@@ -17,16 +14,10 @@ class ReclamacaoDetalhes extends Component {
             loading: true,
             error: null,
             comentarios: [],
-<<<<<<< HEAD
-            situacao: '',
-            novoAnexo: null,
-            anexoError: null, // Novo estado para exibir erro de tamanho do arquivo
-=======
             situacao: "",
             novoComentario: "",
             fileToUpload: null,
             uploadedFileName: "",
->>>>>>> b65cdf3c88724a1023fd0a5450cf8b903b38e5b1
         };
     }
 
@@ -34,15 +25,12 @@ class ReclamacaoDetalhes extends Component {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (user) {
                 this.setState({ userData: user, loading: false }, () => {
-                    console.log(this.state.userData);
                     this.fetchReclamacao();
                 });
             } else {
-                console.error("Usuário não logado.");
                 this.setState({ loading: false, error: "Usuário não autenticado." });
             }
         });
-
         this.unsubscribeAuth = unsubscribe;
     }
 
@@ -56,20 +44,16 @@ class ReclamacaoDetalhes extends Component {
         this.setState({ loading: true });
         try {
             const reclamacaoId = localStorage.getItem('reclamacaoId');
-
             if (!reclamacaoId) {
-                console.error('ID da reclamação não encontrado no localStorage.');
                 this.setState({ loading: false });
                 return;
             }
-
             const reclamacaoRef = doc(db, 'reclamacoes', reclamacaoId);
             const reclamacaoSnap = await getDoc(reclamacaoRef);
 
             if (reclamacaoSnap.exists()) {
                 const reclamacaoData = reclamacaoSnap.data();
                 const comentariosData = reclamacaoData.comentarios || [];
-
                 const formattedComentarios = comentariosData.map(comentario => {
                     if (typeof comentario === 'string') {
                         return {
@@ -86,149 +70,36 @@ class ReclamacaoDetalhes extends Component {
                 this.setState({
                     reclamacao: reclamacaoData,
                     loading: false,
-<<<<<<< HEAD
-                    comentarios: reclamacaoSnap.data().comentarios || [],
-                    situacao: reclamacaoSnap.data().situacao || 'EM ANALISE',
-                }, () => {
-                    this.fetchUserData(reclamacaoSnap.data().userId);
-=======
                     comentarios: formattedComentarios,
                     situacao: reclamacaoData.situacao || 'EM ANALISE',
->>>>>>> b65cdf3c88724a1023fd0a5450cf8b903b38e5b1
                 });
             } else {
-                console.error('Reclamação não encontrada.');
                 this.setState({ loading: false });
             }
         } catch (error) {
-            console.error('Erro ao buscar reclamação:', error);
             this.setState({ loading: false });
         }
     }
 
-<<<<<<< HEAD
-
-    async fetchUserData() {
-        this.setState({ loading: true, error: null });
-
-        try {
-            const userId = this.state.reclamacao.userId;
-            console.log('UserID da reclamação:', userId);
-
-            if (userId) {
-                const usersCollection = collection(db, 'users');
-                const q = query(usersCollection, where('uid', '==', userId));
-                const querySnapshot = await getDocs(q);
-
-                if (!querySnapshot.empty) {
-                    const userDoc = querySnapshot.docs[0];
-                    console.log('Dados do Firestore:', userDoc.data());
-                    this.setState({ userData: userDoc.data() });
-                } else {
-                    this.setState({ error: 'Dados do usuário não encontrados.' });
-                }
-            } else {
-                this.setState({ error: 'userId não encontrado na reclamação.' });
-            }
-        } catch (err) {
-            this.setState({ error: 'Erro ao buscar dados do usuário. Tente novamente.' });
-            console.error('Erro ao buscar dados do usuário:', err);
-            console.error('Código do erro:', err.code);
-            console.error('Mensagem do erro:', err.message);
-        } finally {
-            this.setState({ loading: false });
-        }
-    }
-
-=======
->>>>>>> b65cdf3c88724a1023fd0a5450cf8b903b38e5b1
     handleSituacaoChange = (event) => {
         this.setState({ situacao: event.target.value });
     };
 
-    handleAnexoChange = (event) => {
+    handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
-<<<<<<< HEAD
             if (file.size > MAX_FILE_SIZE) {
-                this.setState({ anexoError: `O arquivo é muito grande. O tamanho máximo permitido é ${MAX_FILE_SIZE / (1024 * 1024)}MB.` });
-                // Limpa o input de arquivo para o usuário selecionar outro
+                alert(`O arquivo é muito grande. O tamanho máximo permitido é ${MAX_FILE_SIZE / (1024 * 1024)}MB.`);
                 event.target.value = null;
-                this.setState({ novoAnexo: null });
+                this.setState({ fileToUpload: null, uploadedFileName: "" });
                 return;
             }
-            this.setState({ novoAnexo: file, anexoError: null });
-=======
             this.setState({ fileToUpload: file, uploadedFileName: file.name });
         } else {
             this.setState({ fileToUpload: null, uploadedFileName: "" });
->>>>>>> b65cdf3c88724a1023fd0a5450cf8b903b38e5b1
         }
     };
 
-    adicionarAnexoComentario = async () => {
-        const { novoAnexo, comentarios } = this.state;
-
-        if (!novoAnexo) {
-            alert('Por favor, selecione um arquivo para anexar.');
-            return;
-        }
-
-        if (this.state.anexoError) {
-            alert(this.state.anexoError);
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            const base64 = e.target.result;
-            const nomeArquivo = novoAnexo.name;
-            const novoComentario = {
-                texto: `Anexo: ${nomeArquivo}`,
-                anexo: {
-                    nome: nomeArquivo,
-                    base64: base64,
-                },
-            };
-
-            const reclamacaoId = localStorage.getItem('reclamacaoId');
-            const reclamacaoRef = doc(db, 'reclamacoes', reclamacaoId);
-
-            try {
-                await updateDoc(reclamacaoRef, {
-                    comentarios: [...comentarios, novoComentario],
-                });
-
-                this.setState(prevState => ({
-                    comentarios: [...prevState.comentarios, novoComentario],
-                    novoAnexo: null,
-                }));
-
-                console.log('Anexo adicionado ao comentário com sucesso!');
-            } catch (error) {
-                console.error('Erro ao adicionar anexo ao comentário:', error);
-            }
-        };
-        reader.readAsDataURL(novoAnexo);
-    };
-
-    salvarAtualizacoes = async () => {
-        try {
-            const reclamacaoId = localStorage.getItem('reclamacaoId');
-            const reclamacaoRef = doc(db, 'reclamacoes', reclamacaoId);
-
-            await updateDoc(reclamacaoRef, {
-                situacao: this.state.situacao,
-            });
-
-            console.log('Situação da reclamação atualizada com sucesso!');
-        } catch (error) {
-            console.error('Erro ao salvar situação:', error);
-        }
-    };
-
-<<<<<<< HEAD
-=======
     adicionarComentario = async () => {
         const { novoComentario, fileToUpload, comentarios, userData } = this.state;
         const reclamacaoId = localStorage.getItem('reclamacaoId');
@@ -287,10 +158,7 @@ class ReclamacaoDetalhes extends Component {
                 uploadedFileName: '',
             });
 
-            console.log('Comentário(s) e/ou arquivo(s) adicionados com sucesso!');
-
         } catch (error) {
-            console.error('Erro ao adicionar comentário e/ou arquivo:', error);
             alert("Erro ao adicionar comentário/arquivo.");
         }
     };
@@ -310,17 +178,14 @@ class ReclamacaoDetalhes extends Component {
         return date.toLocaleString('pt-BR', options);
     };
 
->>>>>>> b65cdf3c88724a1023fd0a5450cf8b903b38e5b1
     formatarData = (dataString) => {
         if (!dataString) {
             return '';
         }
-
         const data = new Date(dataString);
         const dia = String(data.getDate()).padStart(2, '0');
         const mes = String(data.getMonth() + 1).padStart(2, '0');
         const ano = data.getFullYear();
-
         return `${dia}-${mes}-${ano}`;
     };
 
@@ -332,17 +197,11 @@ class ReclamacaoDetalhes extends Component {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        } else {
-            console.error('Dados do anexo inválidos para download.');
         }
     };
 
     render() {
-<<<<<<< HEAD
-        const { reclamacao, loading, comentarios, userData, anexoError } = this.state;
-=======
-        const { reclamacao, loading, uploadedFileName } = this.state;
->>>>>>> b65cdf3c88724a1023fd0a5450cf8b903b38e5b1
+        const { reclamacao, loading, comentarios, uploadedFileName } = this.state;
 
         if (loading) {
             return (
@@ -373,49 +232,16 @@ class ReclamacaoDetalhes extends Component {
                     <div className='infosGeral'>
                         <div className='atualizeData'>
                             <h3>Atualizações sobre a reclamação</h3>
-<<<<<<< HEAD
-                            <label htmlFor="comentarios">Histórico de Atualizações:</label><br />
-                            {Array.isArray(comentarios) && (
-                                <ol>
-                                    {comentarios.map((comentario, index) => (
-                                        <li className='comentarioChat' key={index}>
-                                            {comentario}
-                                            {comentario.anexo && comentario.anexo.nome && (
-                                                <p>
-                                                    Anexo: <button onClick={() => this.handleDownload(comentario.anexo)}>
-                                                        {comentario.anexo.nome}
-                                                    </button>
-                                                </p>
-                                            )}
-                                        </li>
-                                    ))}
-                                </ol>
-                            )}
-                        </div>
-                        <div className='atualizeData'>
-                            <label htmlFor="anexo">Enviar Anexo</label><br />
-                            <input className='buttonLogin btnUpload' type="file" onChange={this.handleAnexoChange} /><br />
-                            {anexoError && <p className="error-message">{anexoError}</p>} {/* Exibe a mensagem de erro */}
-                            <button className='buttonLogin btnComentario btnSend' onClick={this.adicionarAnexoComentario} disabled={!!anexoError || !this.state.novoAnexo}>Adicionar Anexo</button>
-                        </div>
-
-                        {userData && (
-                            <div className='userData'>
-                                <h2>Dados do Fornecedor</h2>
-                                <p><strong>Nome:</strong> {userData.nome}</p>
-=======
-                            {/* Início da Seção de Chat */}
                             <div className="chat-container">
-                                {Array.isArray(this.state.comentarios) && this.state.comentarios.map((comentario, index) => (
-                                    // Aplica classe condicional baseada no authorType E no email do autor
+                                {Array.isArray(comentarios) && comentarios.map((comentario, index) => (
                                     <div
                                         key={index}
                                         className={`chat-message ${comentario.author === 'admin@cmsga.ce.gov.br'
-                                            ? (comentario.author === 'admin@cmsga.ce.gov.br' ? 'admin-message mensage-admin-chat' : 'admin-message')
+                                            ? 'admin-message mensage-admin-chat'
                                             : 'user-message'
                                             }`}
                                     >
-                                        {(comentario.author) && (
+                                        {comentario.author && (
                                             <p className={`chat-message-meta-client`}>
                                                 {comentario.author}
                                             </p>
@@ -426,20 +252,14 @@ class ReclamacaoDetalhes extends Component {
                                                 <p><strong>Arquivo anexado:</strong> <a href={comentario.content} target="_blank" rel="noopener noreferrer">{comentario.fileName}</a></p>
                                             </div>
                                         )}
-                                        {/* Informações de data, hora e autor */}
-                                        {(comentario.timestamp) && (
+                                        {comentario.timestamp && (
                                             <p className={`chat-message-meta-client`}>
-                                                {comentario.timestamp && (
-                                                    <span> {this.formatarDataHoraChat(comentario.timestamp)}</span>
-                                                )}
+                                                <span> {this.formatarDataHoraChat(comentario.timestamp)}</span>
                                             </p>
                                         )}
                                     </div>
                                 ))}
                             </div>
-                            {/* Fim da Seção de Chat */}
-
-                            {/* Área de Input do Chat, incluindo o anexo */}
                             <div className="chat-input-area">
                                 <div className="chat-input-comentario-textarea-client">
                                     <textarea
@@ -461,21 +281,9 @@ class ReclamacaoDetalhes extends Component {
                                         <p className="file-attached-message">Arquivo selecionado: {uploadedFileName}</p>
                                     )}
                                 </div>
-
                                 <button onClick={this.adicionarComentario} className="buttonLogin btnComentario">Enviar</button><br />
                             </div>
-                            {/* Fim da Área de Input do Chat */}
                         </div>
-
-                        {/* {this.state.userData && (
-                            <div className='userData'>
-                                <h2>Seus Dados</h2>
-                                <p><strong>Nome:</strong> {this.state.userData.displayName || this.state.userData.displayName}</p>
-                                <p><strong>Email:</strong> {this.state.userData.email}</p>
->>>>>>> b65cdf3c88724a1023fd0a5450cf8b903b38e5b1
-                            </div>
-                        )} */}
-
                         <div className='infoData'>
                             <h2>Dados da Reclamação</h2>
                             <p><strong>Protocolo:</strong> {reclamacao.protocolo}</p>
@@ -499,12 +307,6 @@ class ReclamacaoDetalhes extends Component {
                             <p><strong>Situação:</strong> {reclamacao.situacao}</p>
                         </div>
                     </div>
-<<<<<<< HEAD
-=======
-                    {this.state.pdfBase64 && (
-                        <iframe src={this.state.pdfBase64} width="100%" height="500px" title="Visualização do PDF" />
-                    )}
->>>>>>> b65cdf3c88724a1023fd0a5450cf8b903b38e5b1
                 </div>
             </div>
         );

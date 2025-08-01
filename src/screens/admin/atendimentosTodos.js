@@ -16,24 +16,8 @@ class Notificacoes extends Component {
             isLoadingAuth: true,
             isAuthorized: false,
             filtroProtocolo: '',
-            filtroTipoReclamacao: '',
-            filtroClassificacao: '',
             filtroAssuntoDenuncia: '',
-            filtroProcurouFornecedor: '',
-            filtroFormaAquisicao: '',
-            filtroTipoContratacao: '',
-            filtroDataContratacao: '',
-            filtroNomeServico: '',
-            filtroDetalheServico: '',
-            filtroTipoDocumento: '',
-            filtroNumeroDocumento: '',
-            filtroDataOcorrencia: '',
-            filtroDataNegativa: '',
-            filtroFormaPagamento: '',
-            filtroValorCompra: '',
-            filtroDetalhesReclamacao: '',
-            filtroPedidoConsumidor: '',
-            filtroCPF: '',
+            filtroEmail: '',
         };
         this.navigate = this.props.navigate;
     }
@@ -120,7 +104,7 @@ class Notificacoes extends Component {
     };
 
     render() {
-        const { reclamacoes, isLoadingData, isAuthorized, isLoadingAuth, filtroProtocolo, filtroAssuntoDenuncia, filtroNomeServico } = this.state;
+        const { reclamacoes, isLoadingData, isAuthorized, isLoadingAuth, filtroProtocolo, filtroAssuntoDenuncia, filtroEmail } = this.state;
 
         // 1. Exibe "Carregando autenticação..." enquanto o estado de autenticação não foi verificado
         if (isLoadingAuth) {
@@ -163,7 +147,7 @@ class Notificacoes extends Component {
             return (
                 reclamacao.protocolo.toLowerCase().includes(filtroProtocolo.toLowerCase()) &&
                 reclamacao.assuntoDenuncia.toLowerCase().includes(filtroAssuntoDenuncia.toLowerCase()) &&
-                reclamacao.nomeServico.toLowerCase().includes(filtroNomeServico.toLowerCase()) 
+                (reclamacao.userEmail || '').toLowerCase().includes(filtroEmail.toLowerCase())
             );
         });
 
@@ -175,7 +159,7 @@ class Notificacoes extends Component {
                     <div className="filters-container">
                         <input type="text" placeholder="Protocolo" value={filtroProtocolo} onChange={(e) => this.setState({ filtroProtocolo: e.target.value })} className="filter-input" />
                         <input type="text" placeholder="Assunto Denúncia" value={filtroAssuntoDenuncia} onChange={(e) => this.setState({ filtroAssuntoDenuncia: e.target.value })} className="filter-input" />
-                        <input type="text" placeholder="Nome Serviço" value={filtroNomeServico} onChange={(e) => this.setState({ filtroNomeServico: e.target.value })} className="filter-input" />
+                        <input type="text" placeholder="email-do-usuário@exemplo.com" value={filtroEmail} onChange={(e) => this.setState({ filtroEmail: e.target.value })} className="filter-input" />
                     </div>
 
                     {/* Container dos Cards */}

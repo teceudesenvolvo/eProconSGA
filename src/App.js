@@ -1,62 +1,56 @@
-import './App.css';
+import '../src/App.css'; // Caminho corrigido para App.css
 import { Routes, Route } from 'react-router-dom';
 
 // Navigate Components
-import TopBar from '../src/componets/topBarSearch';
-import Menu from './componets/menu';
-import MenuDesktop from './componets/menuDesktop';
+import TopBar from '../src/componets/topBarSearch'; // Caminho e nome da pasta corrigidos
+import Menu from '../src/componets/menu'; // Caminho e nome da pasta corrigidos
+import MenuDesktop from '../src/componets/menuDesktop'; // Caminho e nome da pasta corrigidos
+import Footer from '../src/componets/footer'; // Caminho e nome da pasta corrigidos
 
 // Páginas Principais
-import HomeDashboard from '../src/screens/homeDashboard';
+import HomeDashboard from './screens/homePage'; // Caminho corrigido
+import Cdc from './screens/CodigoDefesaConsumidor'; // Caminho corrigido
 
 // Controle de Acesso
-import Register from './screens/client/register';
-import Login from './screens/client/login';
+import Register from '../src/screens/register'; // Caminho corrigido
+import Login from '../src/screens/login'; // Caminho corrigido
 
-// Controle Interno
-import Atendimentos from './screens/client/atendimentosTodos';
-import Relatorios from './screens/client/Relatorios';
-import Atendimento from './screens/client/atendimento';
+// Controle Admin
+import Atendimentos from '../src/screens/admin/atendimentosTodos'; // Caminho corrigido
+import Atendimento from '../src/screens/admin/atendimento'; // Caminho corrigido
+import CriarChamado from '../src/screens/admin/createChamadoAdmin'; // Caminho corrigido
 
 // Usuário Logado
-import MeusAgendamentos from './screens/meusAtendimentos';
-import ReclamacaoDetalhes from './screens/client/reclamacaoDetalhes';
-import Perfil from './screens/client/Perfil';
-import RealizarReclamacao from './screens/realizarReclamacao';
+import MeusAgendamentos from '../src/screens/client/meusAtendimentos'; // Caminho corrigido
+import ReclamacaoDetalhes from '../src/screens/client/reclamacaoDetalhes'; // Caminho corrigido
+import Perfil from '../src/screens/client/Perfil'; // Caminho corrigido
+import RealizarReclamacao from '../src/screens/client/realizarReclamacao'; // Caminho corrigido
 
-// Páginas sem uso
-import Home from '../src/screens/home';
-import Sessoes from './screens/client/Sessoes';
-import SessaoVirtual from './screens/client/SessaoVirtual';
-import NormasJuridicas from './screens/client/NormasJuridicas';
-import Mais from './screens/client/Mais';
-import Servico from './screens/client/Servico';
-import Produto from './screens/client/Produto';
-import Carrinho from './screens/client/carrinho';
-import Pesquisar from './screens/client/pesquisa';
-import RegisterDashboard from './screens/registerDashboard';
-import RegisterEndereco from './screens/registerEndereco';
-import RegisterLoja from './screens/resgisterLoja';
-import JuizoMateria from './screens/juizoMateria';
-import TesteGeneratePDF from './screens/testePage';
 
 function App() {
+
+  // Array de rotas onde o rodapé não deve ser exibido (exemplo, ajuste conforme necessário)
+  // const noFooterPaths = ['/login', '/register', '/testePage'];
+  // const shouldShowFooter = !noFooterPaths.includes(location.pathname);
+
   return (
-    <div className="App">
+    <div className="App flex flex-col min-h-screen"> {/* Adiciona flexbox para layout */}
       <TopBar />
      
+      <main className="flex-grow"> {/* Permite que o conteúdo principal ocupe o espaço restante */}
         <Routes>
           {/* Página Principal */}
           <Route path="/" element={<HomeDashboard />} />
+          <Route path="/codigo-de-defesa-do-consumidor" element={<Cdc />} />
 
           {/* Controle de Acesso */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* Controle Interno */}
+          {/* Controle Admin */}
           <Route path="/atendimentos-sga-hyo6d27" element={<Atendimentos />} />
-          <Route path="/Relatorios" element={<Relatorios />} />
           <Route path="/atendimento-sga-ppi6g59" element={<Atendimento />} />
+          <Route path="/criar-chamado" element={<CriarChamado />} />
 
           {/* Páginas Usuário Logado */}
           <Route path="/meus-atendimentos" element={<MeusAgendamentos />} />
@@ -64,28 +58,13 @@ function App() {
           <Route path="/reclamacao-detalhes" element={<ReclamacaoDetalhes />} />
           <Route path="/perfil" element={<Perfil />} />
 
-          {/* Páginas sem uso */}
-          <Route path="/registerDashboard" element={<RegisterDashboard />} />
-          <Route path="/registerEndereco" element={<RegisterEndereco />} />
-          <Route path="/juizo-materia" element={<JuizoMateria />} />
-          <Route path="/registerLoja" element={<RegisterLoja />} />
-          <Route path="/testePage" element={<TesteGeneratePDF />} />
-          <Route path="/novidades" element={<Home />} />
-          <Route path="/Servico" element={<Servico />} />
-          <Route path="/Produto" element={<Produto />} />
-          <Route path="/Carrinho" element={<Carrinho />} />
-          <Route path="/pesquisar" element={<Pesquisar />} />
-          <Route path="/Sessoes" element={<Sessoes />} />
-          <Route path="/Sessao-Virtual" element={<SessaoVirtual />} />
-          <Route path="/Normas" element={<NormasJuridicas />} />
-          <Route path="/Mais" element={<Mais />} />
+          
         </Routes>
+      </main> {/* Fim do conteúdo principal */}
      
       <Menu />
       <MenuDesktop />
-      <footer className="footer">
-        <p>Copyright &copy; 2025 - Blu Tecnologias</p>
-      </footer>
+      <Footer />
     </div>
   );
 }

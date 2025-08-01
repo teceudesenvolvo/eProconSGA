@@ -15,6 +15,32 @@
   width: 60%;
 }
 
+body {
+  font-family: 'Inter', sans-serif;
+  /* Usando a fonte Inter, conforme as instruções */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Exemplo de estilo para a classe 'App' se necessário */
+.App {
+  /* Pode ser usado para definir um fundo global, por exemplo */
+  background-color: #f0f2f5;
+  /* Um cinza claro para o fundo */
+}
+
+/*
+  Para garantir que o Tailwind CSS funcione corretamente,
+  você precisará ter o Tailwind configurado no seu projeto.
+  Isso geralmente envolve a instalação via npm/yarn e a configuração
+  do `tailwind.config.js` e a inclusão das diretivas `@tailwind`
+  como mostrado acima.
+*/
+
+
 
 
 @media (prefers-reduced-motion: no-preference) {
@@ -41,6 +67,7 @@
 
 .loginPage {
   background: #0f5294;
+  margin-bottom: -10px;
 }
 
 .heroDiv {
@@ -81,6 +108,300 @@
   margin-bottom: 5px;
 }
 
+
+
+/* Estilos para o Iframe do Código de Defesa do Consumidor */
+.cdc-embed-container {
+  position: relative;
+  padding-bottom: 75%;
+  /* Proporção de aspecto (ex: 4:3, 16:9, etc.). 75% para 4:3, 56.25% para 16:9 */
+  height: 0;
+  overflow: hidden;
+  margin: 20px auto;
+  /* Centraliza e adiciona margem */
+  max-width: 1000px;
+  /* Largura máxima para o iframe */
+  border-radius: 8px;
+  /* Cantos arredondados */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* Sombra */
+}
+
+.cdc-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  /* Remove a borda padrão do iframe */
+}
+
+/* Estilos para o layout geral da aplicação */
+.App-header {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* Garante que o layout ocupe a altura total da viewport */
+}
+
+.minhasCompras {
+  flex-grow: 1;
+  /* Permite que o conteúdo principal ocupe todo o espaço disponível */
+  padding: 20px;
+  /* Adiciona um padding para o conteúdo */
+}
+
+/* Estilos para o cabeçalho da HomeDashboard (baseado na imagem) */
+.Home-Dach {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  height: 500px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .header-content {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+}
+
+
+@media (max-width: 800px) {
+  .header-image-container {
+    margin-top: -70px !important;
+  }
+
+  .header-text {
+    margin-top: -30px !important;
+    width: 95% !important;
+  }
+
+  .btnsHome {
+    display: flex !important;
+  }
+
+  .btnLargeHome {
+    width: 210px;
+  }
+
+  .splide__arrow--prev {
+    top: 10em !important;
+    left: -15px !important;
+  }
+
+  .splide__arrow--next {
+    top: 9em !important;
+    left: 12.5% !important;
+  }
+
+  .splide__slide {
+    width: 89.4% !important;
+  }
+
+  .representative-card {
+    width: 60% !important;
+  }
+
+  .HomeDesktopCarrosel {
+    margin-bottom: -50px !important;
+  }
+}
+
+
+.header-text {
+  margin: 0 auto;
+  text-align: center;
+  height: 200px;
+  width: 50%;
+  z-index: 1;
+  margin-top: 7%;
+}
+
+.header-text>h1 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  color: #fff;
+  margin-bottom: -25px;
+}
+
+.header-text>h2 {
+  font-size: 40px;
+  margin-bottom: -10px;
+}
+
+.header-text p {
+  font-family: "Montserrat", sans-serif;
+  margin-left: 10px;
+  font-size: 15px;
+  color: #fff;
+}
+
+
+.header-buttons {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.header-button-primary {
+  background-color: #007bff;
+  /* Azul primário */
+  color: white;
+  padding: 12px 25px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.header-button-primary:hover {
+  background-color: #0056b3;
+  /* Azul mais escuro no hover */
+}
+
+.header-button-secondary {
+  background-color: #ffffff;
+  /* Fundo branco */
+  color: #007bff;
+  /* Texto azul */
+  padding: 12px 25px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  border: 1px solid #007bff;
+  /* Borda azul */
+  cursor: pointer;
+}
+
+.header-button-secondary:hover {
+  background-color: #e0f2f7;
+  /* Fundo azul claro no hover */
+  color: #0056b3;
+  border-color: #0056b3;
+}
+
+.header-image-container {
+  position: absolute;
+  background-color: #000;
+  width: 100%;
+  height: 500px;
+  margin-top: -50px;
+}
+
+.header-image {
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  z-index: 0;
+  opacity: 0.3;
+  background-color: #000;
+  object-fit: cover;
+  object-position: center 10%;
+}
+
+/* Estilos para os botões de ação abaixo do header principal */
+.btnsHome {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  /* Espaçamento do header */
+  margin-bottom: 80px !important;
+  width: 100%;
+  max-width: 1000px;
+  z-index: 1;
+  /* Ajuste conforme necessário */
+  height: auto;
+  display: ruby;
+  margin: 0 auto;
+  justify-content: center !important;
+  margin-top: 1%;
+}
+
+.btnLargeHome {
+  background-color: #0d5193;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  width: 220px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  display: inline-flex;
+  flex-direction: row;
+  color: #fff;
+  height: 79px;
+  font-size: 12px;
+  border-radius: 10px;
+  margin-right: 20px;
+  text-decoration: none;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  box-shadow: 1px 3px 10px rgba(0, 0, 0, 0.06);
+  padding: 5px;
+}
+
+@media (min-width: 768px) {
+  .btnLargeHome {
+    flex: 1 1 calc(25% - 15px);
+  }
+}
+
+.btnLargeHome:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+.btnHome {
+  background-color: #007bff;
+  color: white;
+  padding: 12px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  margin: 0 10px;
+}
+
+.btnHome:hover {
+  background-color: #0056b3;
+}
+
+.HomeDesktopCarrosel {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 30px;
+  margin-bottom: -60px;
+  /* Espaçamento inferior */
+}
 
 .btnHomeAcess {
   width: 40%;
@@ -453,9 +774,153 @@
 }
 
 /* login */
+
+
+/* Estilos da Página de Login (LoginClient.js) */
+
+.loginPage {
+  background-color: #0a1128;
+  /* Fundo azul escuro */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.loginPage .Container {
+  background-color: #1a202c;
+  /* Fundo mais claro para o formulário */
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 20%;
+  margin-top: 10%;
+  margin-bottom: 10%;
+}
+
+.container-register {
+  width: 50% !important;
+}
+
+.loginPage .logoLogin {
+  width: 300px;
+  /* Tamanho do logo */
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.loginPage .formLogin {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.loginPage .formLogin h1 {
+  color: #cbd5e0;
+  /* Cor do texto do título do formulário */
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.loginPage .inputLogin {
+  width: calc(98% - 20px) !important;
+  /* Largura total com padding */
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 1px solid #4a5568;
+  /* Borda sutil */
+  border-radius: 5px;
+  background-color: #2d3748;
+  /* Fundo dos inputs */
+  color: #e2e8f0;
+  /* Cor do texto dos inputs */
+  font-size: 1rem;
+  outline: none;
+  /* Remove o contorno ao focar */
+}
+
+.loginPage .inputLogin::placeholder {
+  color: #a0aec0;
+  /* Cor do placeholder */
+}
+
+.loginPage .linkLogin {
+  color: #63b3ed;
+  /* Azul claro para links */
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  align-self: flex-end;
+  /* Alinha à direita */
+  transition: color 0.2s ease;
+}
+
+.loginPage .linkLogin:hover {
+  color: #3182ce;
+  /* Azul mais escuro no hover */
+}
+
+.loginPage .buttonLogin {
+  background-color: #007bff;
+  /* Azul primário */
+  color: white;
+  padding: 10px 30px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 40% !important;
+  margin-top: 10px;
+}
+
+.loginPage .buttonLogin:hover {
+  background-color: #0056b3;
+  /* Azul mais escuro no hover */
+  transform: translateY(-2px);
+}
+
+.loginPage p {
+  color: #cbd5e0;
+  margin-top: 25px;
+  font-size: 0.95rem;
+}
+
+.loginPage p .linkLogin {
+  margin-bottom: 0;
+  /* Remove margem inferior para links dentro de p */
+  align-self: auto;
+  /* Reseta o alinhamento para links dentro de p */
+}
+
+.loginPage .error-message {
+  color: #fc8181;
+  /* Vermelho para mensagens de erro */
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
+  .loginPage .Container {
+    width: 80%;
+  }
+}
+
+.image-background-login {
+  height: 120% !important;
+  opacity: 0.3;
+}
+
 .Container {
   width: 100%;
-  min-height: 100vh;
+  min-height: 46vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -465,9 +930,7 @@
 
 h1 {
   align-self: start;
-  font-size: 15px;
   font-weight: bold;
-  margin-left: 10px;
 }
 
 .formLogin {
@@ -508,7 +971,6 @@ h1 {
   font-size: 12px;
   text-align: right;
   align-self: end;
-  margin-right: 5%;
   margin-top: 10px;
 }
 
@@ -554,13 +1016,13 @@ h1 {
 
 }
 
-.btnLogin{
+.btnLogin {
   width: 30% !important;
   margin: 30px auto;
   text-decoration: none;
 }
 
-.btnNewReclam{
+.btnNewReclam {
   width: 88% !important;
   font-size: 20px;
   align-items: center;
@@ -569,7 +1031,7 @@ h1 {
   margin-bottom: -50px !important;
 }
 
-.btnNewReclam:hover{
+.btnNewReclam:hover {
   transition: all 0.3s;
   background-color: #d45a03;
 }
@@ -745,9 +1207,337 @@ video {
 
 
 /* Slides */
+/* Estilos para o componente ProconCarousel */
+.ProconCarrosel {
+  width: 60%;
+}
+
+.procon-carousel-container {
+  padding: 0px 0px;
+  margin: 30px auto;
+  width: 100%;
+  text-align: center;
+}
+
+.procon-carousel-title {
+  font-size: 15px !important;
+  color: #2c3e50;
+  margin-bottom: 10px;
+  line-height: 1.4;
+  font-weight: bold;
+  width: 60%;
+  margin: 0 auto;
+}
+
+.procon-carousel-link {
+  font-size: 15px;
+  color: #0056b3;
+}
+
+/* Estilos para o Splide */
+.procon-splide .splide__track {
+  padding: 10px 0;
+  /* Espaçamento para as sombras dos slides */
+}
+
+.procon-splide-slide {
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+.slide-content {
+  border: 1px solid #ffb776;
+  /* Borda sutil */
+  border-radius: 10px;
+  padding: 25px;
+  min-height: 80px;
+  /* Altura mínima para os slides */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  /* Alinha o texto à esquerda */
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.slide-content:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.slide-number {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #f47632;
+}
+
+.slide-text {
+  font-size: 15px !important;
+  color: #333;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+
+
+/* SlideFeactures.css */
+
+/* --- Container Principal do Splide --- */
+.splide-container {
+  padding: 0px 0;
+  /* Espaçamento superior e inferior para o carrossel */
+  width: 100%;
+  /* Limita a largura para centralizar e dar respiro */
+  margin: 0 auto;
+  /* Centraliza o container */
+}
+
+/* --- Estilo do Slide Individual (Card do Representante) --- */
+.representative-card-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  /* Espaçamento interno para o card dentro do slide */
+}
+
+.representative-card {
+  background-color: #ffffff;
+  /* Fundo branco do card */
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  /* Sombra suave */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  /* Ocupa a largura disponível no slide */
+  max-width: 280px;
+  /* Largura máxima para o card individual */
+  height: auto;
+  /* Altura automática baseada no conteúdo */
+  max-height: 130px;
+  /* Altura mínima para consistência */
+  transition: transform 0.2s ease-in-out;
+  /* Animação suave no hover */
+}
+
+.representative-card:hover {
+  transform: translateY(-5px);
+  /* Efeito de "levantar" no hover */
+}
+
+/* --- Cabeçalho do Card (Imagem e Info) --- */
+.representative-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+  justify-content: center;
+  /* Centraliza o cabeçalho */
+  flex-direction: column;
+  /* Empilha imagem e info em telas menores */
+  text-align: center;
+}
+
+.representative-image-wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  /* Torna a imagem circular */
+  overflow: hidden;
+  /* Garante que a imagem seja cortada em círculo */
+  border: 2px solid #e0e0e0;
+  /* Borda clara ao redor da imagem */
+  margin-bottom: 10px;
+  /* Espaçamento entre imagem e nome */
+}
+
+.representative-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Garante que a imagem preencha o círculo */
+}
+
+.representative-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Centraliza o texto */
+}
+
+.representative-name {
+  font-size: 15px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+  align-items: center !important;
+  white-space: nowrap;
+  width: 17ch;
+  overflow: hidden;
+  text-overflow: ellipsis !important;
+}
+
+.verified-icon {
+  font-size: 0.8em;
+  /* Tamanho do ícone de verificação */
+  color: #4CAF50;
+  /* Cor verde para o ícone de verificação */
+}
+
+.representative-role {
+  font-size: 12px;
+  color: #777;
+  margin: 5px 0 0 0;
+}
+
+/* --- Estatísticas do Representante --- */
+.representative-stats {
+  display: flex;
+  justify-content: space-around;
+  /* Distribui as estatísticas horizontalmente */
+  width: 100%;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+  /* Linha divisória sutil */
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 12px;
+  color: #555;
+  margin: 0;
+}
+
+.stat-value {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+/* --- Estilos das Setas de Navegação do Splide --- */
+/* Sobrescreve os estilos padrão do Splide para as setas */
+.splide__arrow {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  /* Fundo branco semi-transparente */
+  border-radius: 50%;
+  /* Torna as setas circulares */
+  width: 40px;
+  height: 40px;
+  /* Sombra para destacá-las */
+  opacity: 1;
+  /* Garante que estejam sempre visíveis */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.splide__arrow svg {
+  fill: #888;
+  /* Cor cinza para o ícone da seta */
+  width: 1.2em;
+  height: 1.2em;
+}
+
+.splide__arrow--prev {
+  top: 9em !important;
+  left: -15px !important;
+  /* Ajusta a posição da seta esquerda */
+}
+
+.splide__arrow--next {
+  top: 9em !important;
+  left: 67.5%;
+  margin-left: 61%;
+  z-index: 1;
+  /* Ajusta a posição da seta direita */
+}
+
+/* --- Responsividade --- */
+@media (max-width: 768px) {
+
+  .ProconCarrosel {
+    width: 100% !important;
+  }
+
+  .splide__track--loop {
+    margin-left: 0px !important;
+  }
+
+  .procon-carousel-container>.procon-splide>.splide__arrows--ltr {
+    display: none !important;
+  }
+
+  .splide-container {
+    max-width: 95%;
+    /* Ocupa mais largura em telas menores */
+  }
+
+  .representative-card {
+    padding: 15px;
+    min-height: 160px;
+  }
+
+  .representative-image-wrapper {
+    width: 70px;
+    height: 70px;
+  }
+
+  .representative-name {
+    font-size: 1.1em;
+  }
+
+  .representative-role {
+    font-size: 0.85em;
+  }
+
+  .representative-stats {
+    flex-direction: column;
+    /* Empilha as estatísticas em telas muito pequenas */
+    gap: 5px;
+  }
+
+  .stat-item {
+    font-size: 0.8em;
+  }
+
+  .stat-value {
+    font-size: 1.1em;
+  }
+
+  .splide__arrow {
+    width: 35px;
+    height: 35px;
+  }
+
+  .splide__arrow svg {
+    width: 1em;
+    height: 1em;
+  }
+
+  .splide__arrow--prev {
+    left: -10px;
+  }
+
+  .splide__arrow--next {
+    right: -10px;
+  }
+}
+
+
+
+.slidesFeacture {
+  width: 250px !important;
+  height: 255px !important;
+}
+
 
 .splide__arrow {
-  display: none !important;
+  display: block !important;
 }
 
 .splide.is-initialized,
@@ -762,7 +1552,8 @@ video {
 }
 
 .splide__pagination__page.is-active {
-  background: #FF7A00 !important;
+  background: #fff !important;
+  display: none;
 }
 
 .splide__pagination__page {
@@ -865,6 +1656,183 @@ video {
 
 .favoritosItem:hover {
   background-color: #FF7A00;
+}
+
+
+/* Container principal para os cards */
+.cards-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  /* Colunas responsivas */
+  gap: 20px;
+  /* Espaçamento entre os cards */
+  padding: 20px;
+  width: 100%;
+  height: 245px;
+  max-width: 1200px;
+  /* Limita a largura máxima do grid */
+  margin: 20px auto;
+  /* Centraliza o grid */
+}
+
+/* Estilo base para todos os cards */
+.card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  /* Sombra mais suave */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  min-height: 200px;
+  /* Altura mínima para os cards */
+  border: 1px solid #e0e0e0;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  /* Efeito de elevação no hover */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  /* Sombra mais pronunciada */
+}
+
+.card-description {
+  font-size: 12px;
+}
+
+/* Estilo específico para o card de "Criar Novo Chamado" */
+.create-new-card {
+  background-color: #e6f7ff;
+  /* Um azul claro para o card de criação */
+  border: 2px dashed #91d5ff;
+  /* Borda tracejada para indicar "novo" */
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  color: #0056b3;
+  font-weight: bold;
+}
+
+.create-new-card:hover {
+  background-color: #d6eaff;
+}
+
+.card-icon-large {
+  margin-bottom: 15px;
+  color: #007bff;
+  /* Cor do ícone */
+}
+
+/* Estilos para o cabeçalho do card (Protocolo e Status) */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.card-title {
+  font-size: 12px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.card-status {
+  background-color: #f0f0f0;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #555;
+}
+
+/* Estilos para o corpo do card (detalhes da reclamação) */
+.card-body {
+  flex-grow: 1;
+  /* Permite que o corpo ocupe o espaço disponível */
+  text-align: left;
+}
+
+.card-detail {
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 5px;
+  line-height: 0.9;
+  max-width: 500px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+
+
+}
+
+.card-detail strong {
+  color: #333;
+}
+
+/* Estilos para o rodapé do card */
+.card-footer {
+  text-align: right;
+  margin-top: 5px;
+  border-top: 1px solid #eee;
+  text-align: center;
+}
+
+.card-footer-text {
+  margin-top: -5px;
+  font-size: 12px;
+  color: #888;
+}
+
+/* Estilos para a área de filtros */
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  /* Permite que os inputs quebrem linha em telas menores */
+  gap: 10px;
+  /* Espaçamento entre os inputs */
+  padding: 20px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  margin: 20px auto;
+  width: 60%;
+  justify-content: center;
+  /* Centraliza os inputs */
+}
+
+.filter-input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 12px;
+  flex: 1;
+  /* Permite que os inputs cresçam e encolham */
+  min-width: 150px;
+  /* Largura mínima para inputs */
+}
+
+/* Media Queries para Responsividade (ajuste conforme necessário) */
+@media (max-width: 768px) {
+  .cards-grid-container {
+    grid-template-columns: 1fr;
+    /* Uma coluna em telas menores */
+    padding: 15px;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  .filters-container {
+    flex-direction: column;
+    /* Inputs empilhados em telas menores */
+    padding: 15px;
+  }
 }
 
 /*  Minhas Consultas */
@@ -1016,7 +1984,7 @@ video {
 .atualizeData {
   flex-grow: 3;
   display: block;
-  background-color: #d8d8d8;
+  background-color: #fff;
   margin-left: 5%;
   margin-top: 50px;
   border-radius: 10px;
@@ -1026,15 +1994,285 @@ video {
   padding: 20px;
   color: #1f1f1f;
   float: left;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
-.profile-desc-ul{
+/* Estilos gerais para o container do perfil */
+.profile-container {
+  padding: 30px;
+  width: 80%;
+  /* Largura máxima similar à imagem */
+  margin: 40px auto;
+  background-color: #fff;
+  /* Fundo levemente cinza */
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  /* Espaçamento entre as seções */
+}
+
+/* Estilo para o cabeçalho do perfil (card superior) */
+.profile-header-card {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 25px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  /* Para posicionar o botão de edição */
+}
+
+.profile-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  /* Cor de fundo para o avatar */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  /* Evita que o avatar encolha */
+}
+
+.profile-avatar svg {
+  color: #666;
+  /* Cor do ícone de usuário */
+}
+
+.profile-info-main {
+  flex-grow: 1;
+  /* Ocupa o espaço restante */
+  text-align: left;
+  font-size: 15px;
+}
+
+.profile-name {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 5px 0;
+}
+
+.profile-email {
+  font-size: 1em;
+  color: #666;
+  margin: 0;
+}
+
+.edit-profile-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  flex-shrink: 0;
+  /* Evita que o botão encolha */
+}
+
+.edit-profile-button:hover {
+  background-color: #0056b3;
+}
+
+/* Grid para os cards de dados */
+.profile-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  /* 2 colunas em telas maiores, 1 em menores */
+  gap: 25px;
+}
+
+/* Estilo para cada card de dados (Dados Pessoais, Endereço) */
+.profile-card {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 25px;
+  border: 1px solid #e0e0e0;
+  text-align: left;
+  font-size: 15px;
+}
+
+.card-section-title {
+  font-size: 1.4em;
+  color: #0056b3;
+  /* Cor primária para títulos de seção */
+  margin-top: 0;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.profile-card p {
+  font-size: 0.95em;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.profile-card p strong {
+  color: #333;
+}
+
+/* Estilos para inputs em modo de edição */
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.profile-input {
+  width: calc(100% - 22px);
+  /* Ajusta para padding e borda */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
+  background-color: #fdfdfd;
+  transition: border-color 0.2s ease;
+}
+
+.profile-input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.profile-input:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+  color: #6c757d;
+}
+
+/* Container para botões de ação */
+.profile-actions-container {
+  display: flex;
+  justify-content: flex-end;
+  /* Alinha os botões à direita */
+  gap: 15px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.save-profile-button {
+  background-color: #28a745;
+  /* Verde para salvar */
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.save-profile-button:hover {
+  background-color: #218838;
+}
+
+.logout-button {
+  background-color: #dc3545;
+  /* Vermelho para sair */
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #c82333;
+}
+
+/* Estilos para mensagens de carregamento/erro */
+.loading-message,
+.error-message,
+.not-found-message {
+  min-height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  text-align: center;
+  padding: 50px;
+  color: #333;
+  font-size: 15px;
+}
+
+.loading-message h1,
+.error-message h1,
+.not-found-message h1 {
+  font-size: 2.2em;
+  color: #0056b3;
+  margin-bottom: 15px;
+}
+
+.error-message h1 {
+  color: #dc3545;
+}
+
+/* Media Queries para responsividade */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 20px;
+    margin: 20px auto;
+  }
+
+  .profile-header-card {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+
+  .edit-profile-button {
+    position: static;
+    /* Remove o posicionamento absoluto em telas pequenas */
+    margin-top: 15px;
+    width: 100%;
+    /* Ocupa a largura total */
+  }
+
+  .profile-cards-grid {
+    grid-template-columns: 1fr;
+    /* Uma coluna em telas menores */
+  }
+
+  .profile-actions-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .save-profile-button,
+  .logout-button {
+    width: 100%;
+  }
+}
+
+.profile-desc-ul {
   width: 100%;
   display: inline-block;
 }
 
 
-.profile-desc{
+.profile-desc {
   flex-grow: 3;
   display: block;
   background-color: #d8d8d8;
@@ -1050,7 +2288,7 @@ video {
   float: left;
 }
 
-.profile-btn-exit{
+.profile-btn-exit {
   width: 100px !important;
   background: red;
   text-decoration: none;
@@ -1069,6 +2307,139 @@ video {
   padding: 15px;
 }
 
+.chat-message-meta {
+  font-size: 10px;
+  text-align: right;
+}
+
+.chat-message-meta-client {
+  font-size: 10px;
+  text-align: left;
+}
+
+/* Estilos para o container do chat */
+.chat-container {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #f9f9f9;
+  max-height: 300px;
+  /* Limita a altura do chat */
+  overflow-y: auto;
+  /* Adiciona scroll se o conteúdo exceder */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Estilos para cada mensagem de chat */
+.chat-message {
+  max-width: 80%;
+  padding: 10px 15px;
+  border-radius: 18px;
+  margin-bottom: 10px;
+  word-wrap: break-word;
+  /* Garante que o texto quebre linhas longas */
+}
+
+.chat-message>div>p>a {
+  color: #4a3dff;
+  font-weight: 400;
+}
+
+/* Estilo para mensagens do administrador (PROCON) */
+.admin-message {
+  background-color: #f8e7c6;
+  /* Um verde claro para mensagens do admin */
+  align-self: flex-start;
+  /* Alinha à esquerda */
+  color: #333;
+}
+
+/* Estilo para a área de input do chat */
+.chat-input-area {
+  display: flex;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+/* Estilo para o campo de texto do chat */
+.chat-input-comentario-textarea {
+  width: 40%;
+}
+
+.chat-input-comentario-textarea-client {
+  width: 70%;
+}
+
+.chat-textarea {
+  width: calc(100% - 20px);
+  /* Ajusta a largura com padding */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  resize: vertical;
+  /* Permite redimensionar verticalmente */
+  min-height: 60px;
+  margin-top: 5px;
+  background: #fff;
+  color: #000;
+}
+
+.chat-input-label {
+  font-weight: bold;
+  display: block;
+}
+
+/* Estilo para o botão de upload de arquivo */
+.chat-input-file-upload-send {
+  display: block;
+  margin-top: 5px;
+  margin-left: 20px;
+  width: 20%;
+  border: 1px solid #a2a2a2;
+  border-radius: 10px;
+  margin-right: 20px;
+  height: 70px;
+  padding: 5px;
+}
+
+.btnUploadFileChat {
+  width: 100%;
+  height: 20px;
+  background-color: transparent;
+  color: #000;
+  border-radius: 5px;
+  margin-bottom: 0px;
+  padding: 5px;
+}
+
+.file-attached-message {
+  font-size: 12px;
+  color: #5cb85c;
+  /* Verde para mensagem de arquivo anexado */
+  margin-left: 20px;
+}
+
+/* Estilos para as mensagens de status de e-mail */
+.email-status-message {
+  border-radius: 5px;
+  text-align: left;
+}
+
+.email-status-success {
+  color: #05631b;
+}
+
+.email-status-error {
+  color: #721c24;
+  /* Vermelho escuro */
+  background-color: #f8d7da;
+  /* Fundo vermelho claro */
+  border: 1px solid #f5c6cb;
+}
+
 #comentarios {
   background-color: white;
   border-radius: 5px;
@@ -1080,10 +2451,31 @@ video {
 }
 
 .btnComentario {
-  width: 20%;
-  margin-top: -20px;
+  width: 11%;
+  margin-top: 5px;
   margin-left: -2px;
-  background-color: #7c7c7c;
+  background-color: #f27633;
+  height: 76px;
+}
+
+
+.btnUpload {
+  padding: 10px;
+  text-align: center;
+  background-color: transparent;
+  width: 98%;
+  margin: 10px 0 20px 0;
+}
+
+
+
+
+/* Atualizar status */
+.chat-input-situacao {
+  width: 25%;
+  margin-right: 30px;
+  padding-right: 20px;
+  border-right: 1px solid #a2a2a2;
 }
 
 #situacao {
@@ -1092,30 +2484,118 @@ video {
   border-radius: 5px;
   margin-top: 10px;
   margin-bottom: 20px;
-}
-
-.btnUpload {
-  padding: 10px;
-  text-align: center;
-  background-color: #7c7c7c;
-  width: 98%;
-  margin: 10px 0 20px 0;
+  background-color: #fff;
+  border: 1px solid #c6c6c6;
 }
 
 .btnSend {
-  margin-top: 20px;
+  margin-top: -8px;
   font-weight: bold;
   width: 100%;
-  background-color: #FF6B07;
+  background-color: #105394;
+  height: 42px;
+}
+
+
+/* ... (seus estilos existentes para chat-container, chat-message, etc.) ... */
+
+/* Estilo para mensagens enviadas pelo ADMINISTRADOR (já existia 'admin-message') */
+.admin-message {
+  background-color: #c5e2ff;
+  align-self: flex-start;
+  /* Alinha à esquerda */
+  color: #333;
+}
+
+
+
+/* Estilo para mensagens enviadas pelo USUÁRIO */
+.user-message {
+  background-color: #ffe6d8;
+  /* Um azul claro para mensagens do usuário */
+  align-self: flex-end;
+  /* Alinha à direita */
+  color: #333;
+}
+
+/* Estilo para metadados de mensagens (data, hora, autor) */
+.chat-message-meta {
+  font-size: 0.75em;
+  /* Fonte menor para metadados */
+  color: #888;
+  /* Cor mais suave */
+  margin-top: 5px;
+  display: block;
+  /* Garante que ocupe sua própria linha */
+}
+
+/* Alinhamento dos metadados para mensagens do administrador */
+.admin-message-meta {
+  text-align: left;
+}
+
+/* Alinhamento dos metadados para mensagens do usuário */
+.user-message-meta {
+  text-align: right;
+}
+
+/* Estilo para o campo de texto do chat */
+.chat-textarea {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  resize: vertical;
+  min-height: 60px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.chat-input-label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+}
+
+/* Estilo para o input de arquivo no chat */
+.btnUploadFileChat {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+}
+
+.btnUploadFileChat:hover {
+  background-color: #e0e0e0;
+}
+
+.file-attached-message {
+  font-size: 12px;
+  color: #5cb85c;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.current-situacao {
+  font-weight: bold;
+  color: #0056b3;
+  font-size: 1.1em;
+  margin-top: 5px;
 }
 
 .formLogin {
   align-items: flex-start;
   text-align: left;
-  
+
 }
 
-.formLogin > div {
+.formLogin>div {
   width: 100%;
 }
 
@@ -1123,7 +2603,7 @@ video {
   font-size: 15px !important;
 }
 
-.label-register{
+.label-register {
   display: none;
 }
 
@@ -1136,9 +2616,272 @@ video {
   margin-top: 10px;
 }
 
-.formRealizarReclamacao{
+.formRealizarReclamacao {
   width: 80% !important;
 }
+
+
+
+/* Estilos para o container principal do formulário com abas */
+.form-container-tabs {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    margin: 40px auto;
+    max-width: 800px;
+    width: 90%;
+}
+
+/* Estilos para o cabeçalho das abas */
+.tabs-header {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 10px;
+    font-size: 12px;
+}
+
+.tab-button {
+    background-color: transparent;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #555;
+    cursor: pointer;
+    transition: color 0.3s ease, border-bottom 0.3s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-button:hover:not(.active) {
+    color: #007bff;
+}
+
+.tab-button.active {
+    color: #007bff;
+    border-bottom: 3px solid #007bff;
+}
+
+.tab-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    color: #888;
+}
+
+/* Estilos para o conteúdo de cada aba */
+.tab-content {
+    padding: 20px 0;
+    font-size: 12px;
+}
+
+.form-section h3 {
+    color: #0056b3;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+/* Estilos para os inputs do formulário */
+.form-input {
+    width: calc(100% - 22px); /* Ajusta para padding e borda */
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    background-color: #fdfdfd;
+    color: #000;
+    border-radius: 8px;
+    font-size: 1em;
+    box-sizing: border-box; /* Garante que padding e borda não aumentem a largura total */
+}
+
+.form-input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.textarea-input {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.labelform-materia {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.btnSearchBusiness{
+  width: 200px;
+  height: 50px;
+}
+
+.btnEnviarReclamação{
+  margin-top: 19px;
+  background-color: #f27634;
+}
+
+.section-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    color: #0056b3;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+/* Estilos para botões de navegação e submissão */
+.form-navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.buttonLogin {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.btnLogin { /* Botão de Enviar Reclamação */
+    background-color: #28a745; /* Verde */
+    color: white;
+}
+
+.btnLogin:hover {
+    background-color: #218838;
+}
+
+.btnNext {
+    background-color: #007bff; /* Azul */
+    color: white;
+}
+
+.btnNext:hover {
+    background-color: #0056b3;
+}
+
+.btnPrev {
+    background-color: #6c757d; /* Cinza */
+    color: white;
+}
+
+.btnPrev:hover {
+    background-color: #5a6268;
+}
+
+.btnComentario { /* Botão de buscar CNPJ */
+    background-color: #17a2b8; /* Ciano */
+    color: white;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.btnComentario:hover {
+    background-color: #138496;
+}
+
+.buttonLogin:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Estilos para feedback de mensagens */
+.success-message {
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.error-message {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.company-info {
+    margin-top: 10px;
+    font-size: 0.95em;
+    color: #333;
+}
+
+.file-upload-label {
+    display: block;
+    background-color: #007bff;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    transition: background-color 0.3s ease;
+}
+
+.file-upload-label:hover {
+    background-color: #0056b3;
+}
+
+.file-upload-label input[type="file"] {
+    display: none; /* Esconde o input de arquivo padrão */
+}
+
+.file-count-message {
+    font-size: 0.9em;
+    color: #5cb85c;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Media Queries para responsividade */
+@media (max-width: 768px) {
+    .form-container-tabs {
+        padding: 20px;
+        margin: 20px auto;
+    }
+
+    .tabs-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tab-button {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .form-input {
+        width: 100%;
+    }
+
+    .form-navigation-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .buttonLogin {
+        width: 100%;
+    }
+}
+
+
 
 .minhasCompras {
   width: 90%;
@@ -2015,11 +3758,11 @@ video {
 
 .header-Dach-div {
   display: inline-flex;
-  text-align: left;
+  text-align: center;
   flex-direction: row;
-  color: #1f1f1f;
-  margin-left: 40px;
-  width: 300px;
+  color: #8a8a8a;
+  margin-top: 50px;
+  width: 100%;
 }
 
 
@@ -2027,7 +3770,8 @@ video {
 
 .header-Dach-div>h1 {
   width: 100%;
-  font-weight: bold;
+  font-weight: 300;
+  font-size: 15px;
 }
 
 
@@ -2410,24 +4154,15 @@ video {
   cursor: pointer;
 }
 
-.btnsHome {
-  width: 100%;
-  height: auto;
-  flex-direction: row;
-  align-items: center;
-  align-content: center;
-  margin-bottom: 10px;
-}
-
 .btnsHome:first-child {
   height: 100px;
 }
 
 .btnHome {
   display: inline-block;
-  width: 40%;
-  height: 50px;
   margin: 10px;
+  width: 20%;
+  height: 20px;
   border: none;
   color: white;
   text-decoration: none;
@@ -2439,40 +4174,28 @@ video {
   text-align: center;
 }
 
-.btnHome:hover,
-.btnLargeHome:hover {
-  transition: 0.3s all;
-  transform: scale(1.03);
-}
 
 
 .btnHome:first-child {
   background-color: #0d5193;
 }
 
+
 .btnHome:last-child {
-  background-color: #FF6B07;
+  border: 2px solid #fff;
+  color: #fff;
+  background-color: transparent;
 }
 
-.btnLargeHome {
-  display: inline-block;
-  flex: 1;
-  flex-direction: column;
-  background-color: #ECECEC;
-  color: #5A5A5A;
-  width: 19% !important;
-  height: 200px;
-  font-size: 15px;
-  border-radius: 10px;
-  margin: 10px;
+
+.btnLargeHome>a {
+  color: #fff;
   text-decoration: none;
-  align-items: center;
-  text-align: center;
 }
 
 .iconHomeBtn {
-  font-size: 100px;
-  margin: 20px;
+  font-size: 30px;
+  margin: 5px;
 }
 
 
@@ -2481,13 +4204,144 @@ textarea {
   height: 40px;
   border: 0;
   border-bottom: 1px solid #BCBCBC;
-  margin-bottom: 20px;
   background-color: #1f1f1f;
   color: #fff;
 }
 
 
 /* Footer */
+
+.footer {
+  background-color: #2d3748;
+  /* Cor de fundo cinza escuro */
+  color: #ffffff !important;
+  /* Cor do texto branco */
+  padding: 32px 16px;
+  /* Padding vertical e horizontal */
+  margin-top: auto;
+  /* Empurra o rodapé para baixo em layouts flexbox */
+  border-top-left-radius: 8px;
+  /* Cantos arredondados superiores */
+  border-top-right-radius: 8px;
+  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06);
+  /* Sombra sutil */
+  position: relative;
+  z-index: 1;
+}
+
+.footer-container {
+  max-width: 1120px;
+  /* Largura máxima do conteúdo */
+  margin: 0 auto;
+  /* Centraliza o container */
+  display: grid;
+  grid-template-columns: 1fr;
+  /* Uma coluna por padrão (mobile) */
+  gap: 32px;
+  /* Espaçamento entre as colunas */
+}
+
+@media (min-width: 768px) {
+
+  /* Para telas médias e maiores (md breakpoint) */
+  .footer-container {
+    grid-template-columns: repeat(3, 1fr);
+    /* Três colunas */
+  }
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Centraliza itens em mobile */
+  text-align: center;
+  /* Centraliza texto em mobile */
+}
+
+@media (min-width: 768px) {
+  .footer-column {
+    align-items: flex-start;
+    /* Alinha itens à esquerda em desktop */
+    text-align: left;
+    /* Alinha texto à esquerda em desktop */
+  }
+}
+
+.footer-column h3 {
+  font-size: 1.25rem;
+  /* text-xl */
+  font-weight: bold;
+  margin-bottom: 8px;
+  /* mb-2 */
+}
+
+.footer-column h4 {
+  font-size: 1.125rem;
+  /* text-lg */
+  font-weight: 600;
+  /* font-semibold */
+  margin-top: 24px;
+  /* mt-6 */
+  margin-bottom: 12px;
+  /* mb-3 */
+}
+
+.footer-column p {
+  font-size: 0.875rem;
+  /* text-sm */
+  color: #cbd5e0;
+  /* text-gray-400 */
+  margin-bottom: 8px;
+  /* mb-2 */
+}
+
+.footer-column ul {
+  list-style: none;
+  /* Remove marcadores de lista */
+  padding: 0;
+  margin: 0;
+  line-height: 1.5;
+  /* Espaçamento entre linhas */
+}
+
+.footer-column ul li {
+  margin-bottom: 8px;
+  /* space-y-2 */
+}
+
+.footer-column ul li a {
+  color: #d1d5db;
+  /* text-gray-300 */
+  text-decoration: none;
+  /* Remove sublinhado */
+  transition: color 0.2s ease-in-out;
+  /* Transição suave na cor */
+}
+
+.footer-column ul li a:hover {
+  color: #63b3ed;
+  /* hover:text-blue-400 */
+}
+
+.footer-copyright {
+  margin-top: 32px;
+  /* mt-8 */
+  padding-top: 16px;
+  /* pt-4 */
+  border-top: 1px solid #4a5568;
+  /* border-t border-gray-700 */
+  text-align: center;
+  color: #a0aec0;
+  /* text-gray-500 */
+  font-size: 0.875rem;
+  /* text-sm */
+}
+
+.footer-copyright>p {
+  color: white;
+}
+
 .footer {
   background-color: #012447;
   color: #fff !important;
@@ -2496,7 +4350,7 @@ textarea {
 }
 
 footer>p {
-  color: #fff !important;
+  color: #ffffff !important;
   font-size: 12px;
 }
 
@@ -2574,6 +4428,50 @@ footer>p {
 
 
 
+/* Estilos para o Iframe do Código de Defesa do Consumidor */
+.cdc-embed-container {
+  width: 100%;
+  position: relative;
+  padding-bottom: 75%;
+  /* Proporção de aspecto (ex: 4:3, 16:9, etc.). 75% para 4:3, 56.25% para 16:9 */
+  height: 90%;
+  overflow: hidden;
+  margin: 20px auto;
+  /* Centraliza e adiciona margem */
+  max-width: 1000px;
+  /* Largura máxima para o iframe */
+  border-radius: 8px;
+  /* Cantos arredondados */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* Sombra */
+}
+
+.cdc-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  /* Remove a borda padrão do iframe */
+}
+
+/* Estilos para o layout geral da aplicação */
+.App-header {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* Garante que o layout ocupe a altura total da viewport */
+}
+
+.minhasCompras {
+  flex-grow: 1;
+  /* Permite que o conteúdo principal ocupe todo o espaço disponível */
+  padding: 20px;
+  /* Adiciona um padding para o conteúdo */
+}
+
+
 .menuDesktop {
   position: fixed !important;
   top: 0;
@@ -2581,7 +4479,7 @@ footer>p {
   height: 100vh;
   left: 0;
   background: #105394;
-  width: 35px;
+  width: 40px;
   overflow: hidden;
   transition: width 0.2 linear;
   box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
@@ -2592,7 +4490,7 @@ footer>p {
 }
 
 .menuDesktop:hover {
-  width: 170px;
+  width: 190px;
 }
 
 
@@ -2652,14 +4550,17 @@ footer>p {
 .fas {
   font-size: 18px;
   position: relative;
-  top: 15px;
+  top: 10px;
+  left: 5px;
   text-align: center;
   font-weight: lighter;
+  border-radius: 5px;
 }
 
 
 .link-desktop-active {
-  color: #043a32 !important;
+  color: #fff !important;
+  background-color: #f47632;
 }
 
 
@@ -2667,7 +4568,7 @@ footer>p {
 .nav-item {
   font-size: 14px;
   position: relative;
-  top: 5px;
+  top: 0px;
   padding: 10px 15px;
   margin-left: 0px;
 }
@@ -2761,9 +4662,10 @@ footer>p {
     width: 115%;
   }
 
-  .btnLargeHome {
-    width: 150px !important;
-  }
+
+
+
+
 
   .slidesFeacture {
     width: 200px !important;

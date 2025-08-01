@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import {
     GoHome,
     GoCircleSlash  ,
-    GoCalendar,
+    // GoCalendar,
     GoStop 
   } from 'react-icons/go';
 
@@ -82,13 +82,14 @@ class menuDesktop extends Component {
                     <span className='nav-item'>Reclamação</span>
                 </a>
 
-                <a href="/agendar-atendimento" className={this.state.linkMenu3}>
+                {/* <a href="/agendar-atendimento" className={this.state.linkMenu3}>
                     <GoCalendar className='fas fa-Notificacoes'></GoCalendar>
                     <span className='nav-item'>Agendar</span>
-                </a>
+                </a> */}
+
                 <a href="/golpes" className={this.state.linkMenu4}>
                     <GoStop className='fas fa-Ajuda'></GoStop>
-                    <span className='nav-item'>Sites/Golpes</span>
+                    <span className='nav-item'>Empresas Reclamadas</span>
                 </a>
                 
                 <a href="/perfil" className={this.state.linkMenu5}>

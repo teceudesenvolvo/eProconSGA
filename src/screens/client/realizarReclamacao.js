@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import MenuDashboard from '../../componets/menuDashboard';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs } from 'firebase/firestore'; // Adicionado query, where, getDocs
 import { db } from '../../firebase';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -8,8 +8,19 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
+// Lista de UFs do Brasil (mantida para selects que possam existir na reclamação)
+
+
 const AddProducts = () => {
-    const [formData, setFormData] = useState({
+    // Abas: 1: Detalhes da Reclamação, 2: Anexos e Envio
+    const [activeTab, setActiveTab] = useState(1); 
+
+    // Dados do usuário logado (cujo userId/uid está no localStorage)
+    const [loggedInUserData, setLoggedInUserData] = useState(null); 
+    const [loadingLoggedInUserData, setLoadingLoggedInUserData] = useState(true);
+    const [loggedInUserDataError, setLoggedInUserDataError] = useState(null);
+
+    const [reclamacaoFormData, setReclamacaoFormData] = useState({
         tipoReclamacao: '',
         classificacao: '',
         assuntoDenuncia: '',
@@ -28,33 +39,57 @@ const AddProducts = () => {
         detalhesReclamacao: '',
         pedidoConsumidor: '',
         numeroMateriaExt: '',
-        arquivos: [],
-        cnpj: '', // Adiciona o campo CNPJ ao state
+        cnpj: '',
     });
 
+    const [fileData, setFileData] = useState([]);
     const [empresaInfo, setEmpresaInfo] = useState(null);
     const [cnpjError, setCnpjError] = useState('');
     const [loadingCnpj, setLoadingCnpj] = useState(false);
-
-    const navigate = useNavigate();
-    const location = useLocation();
-    const [fileInputKey] = useState(Date.now());
+    const [fileInputKey, setFileInputKey] = useState(Date.now());
     const [fileErrors, setFileErrors] = useState([]);
     const [fileCount, setFileCount] = useState(0);
 
-    useEffect(() => {
-        const userId = localStorage.getItem('userId');
+    const navigate = useNavigate();
+    const location = useLocation();
 
+    useEffect(() => {
+        // 1. Pega o userId do localStorage. Este userId é o UID do Firebase Auth.
+        const userId = localStorage.getItem('userId'); 
         if (!userId) {
             localStorage.setItem('paginaAnterior', location.pathname);
             navigate('/login');
+            return;
         }
+
+        const fetchLoggedInUserData = async () => {
+            try {
+                // 2. Agora, usamos uma query para filtrar pelo CAMPO 'uid' dentro dos documentos
+                const usersCollectionRef = collection(db, 'users');
+                const q = query(usersCollectionRef, where('uid', '==', userId));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    // Se houver resultados, pegamos o primeiro documento (assumindo que uid é único)
+                    setLoggedInUserData(querySnapshot.docs[0].data());
+                } else {
+                    setLoggedInUserDataError('Dados do usuário logado não encontrados no Firestore com o UID fornecido.');
+                }
+            } catch (error) {
+                console.error('Erro ao buscar dados do usuário logado:', error);
+                setLoggedInUserDataError('Erro ao buscar dados do usuário logado.');
+            } finally {
+                setLoadingLoggedInUserData(false);
+            }
+        };
+
+        fetchLoggedInUserData();
     }, [navigate, location]);
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+    const handleReclamacaoChange = (e) => {
+        setReclamacaoFormData({ ...reclamacaoFormData, [e.target.name]: e.target.value });
         if (e.target.name === 'cnpj') {
-            setEmpresaInfo(null); // Limpa as informações da empresa ao digitar um novo CNPJ
+            setEmpresaInfo(null);
             setCnpjError('');
         }
     };
@@ -69,7 +104,7 @@ const AddProducts = () => {
                 errors.push(`O arquivo "${file.name}" não é um formato permitido. Use .png, .jpg ou .pdf.`);
                 return false;
             }
-            if (file.size > 2 * 1024 * 1024) {
+            if (file.size > 2 * 1024 * 1024) { // 2MB limite
                 errors.push(`O arquivo "${file.name}" excede o limite de 2MB.`);
                 return false;
             }
@@ -83,7 +118,7 @@ const AddProducts = () => {
                     resolve({
                         name: file.name,
                         type: file.type,
-                        data: event.target.result,
+                        data: event.target.result, // Base64
                     });
                 };
                 reader.onerror = (error) => reject(error);
@@ -92,11 +127,8 @@ const AddProducts = () => {
         });
 
         Promise.all(filePromises)
-            .then((fileData) => {
-                setFormData({
-                    ...formData,
-                    arquivos: fileData,
-                });
+            .then((data) => {
+                setFileData(data);
                 setFileCount(validatedFiles.length);
                 setFileErrors(errors);
             })
@@ -104,7 +136,7 @@ const AddProducts = () => {
     };
 
     const buscarEmpresaPorCnpj = async () => {
-        const cnpj = formData.cnpj.replace(/\D/g, ''); // Remove caracteres não numéricos
+        const cnpj = reclamacaoFormData.cnpj.replace(/\D/g, '');
         if (cnpj.length !== 14) {
             setCnpjError('CNPJ inválido');
             setEmpresaInfo(null);
@@ -139,304 +171,423 @@ const AddProducts = () => {
         return protocolo;
     };
 
-    const gerarPDF = (protocolo, formData) => {
+    const gerarPDF = (protocolo, userProfileData, reclamacaoForm, empresaInfo) => {
         const documentDefinition = {
             content: [
-                { text: 'Protocolo: ' + protocolo, style: 'header' },
-                { text: 'Tipo de Reclamação: ' + formData.tipoReclamacao },
-                { text: 'Classificação: ' + formData.classificacao },
-                { text: 'Assunto da Denúncia: ' + formData.assuntoDenuncia },
-                { text: 'CNPJ da Empresa: ' + formData.cnpj },
-                { text: 'Nome da Empresa: ' + (empresaInfo?.razao_social || 'Não Informado') },
-                // Adicione outros campos do formulário aqui
+                { text: 'Detalhes da Reclamação PROCON CMSGA', style: 'header' },
+                { text: `Protocolo: ${protocolo}`, style: 'subheader' },
+                { text: '\nDados do Requerente:', style: 'sectionHeader' }, 
+                { text: `Nome: ${userProfileData?.nome || 'N/A'}`, margin: [0, 5] },
+                { text: `Email: ${userProfileData?.email || 'N/A'}`, margin: [0, 5] },
+                { text: `CPF: ${userProfileData?.cpf || 'N/A'}`, margin: [0, 5] },
+                { text: `Telefone: ${userProfileData?.telefone || 'N/A'}`, margin: [0, 5] },
+                { text: `Endereço: ${userProfileData?.endereco || 'N/A'}, ${userProfileData?.numero || 'N/A'} - ${userProfileData?.bairro || 'N/A'}, ${userProfileData?.municipio || 'N/A'} - ${userProfileData?.ufEmissor || 'N/A'}, CEP: ${userProfileData?.cep || 'N/A'}`, margin: [0, 5] },
+                { text: `Estado Civil: ${userProfileData?.estadoCivil || 'N/A'}`, margin: [0, 5] },
+                { text: `Sexo: ${userProfileData?.sexo || 'N/A'}`, margin: [0, 5] },
+
+                { text: '\nDados da Empresa Reclamada:', style: 'sectionHeader' },
+                { text: `CNPJ: ${reclamacaoForm.cnpj}`, margin: [0, 5] },
+                { text: `Razão Social: ${empresaInfo?.razao_social || 'Não Informado'}`, margin: [0, 5] },
+                { text: `Nome Fantasia: ${empresaInfo?.fantasia || 'Não Informado'}`, margin: [0, 5] },
+
+                { text: '\nDetalhes da Reclamação:', style: 'sectionHeader' },
+                { text: `Tipo de Reclamação: ${reclamacaoForm.tipoReclamacao}`, margin: [0, 5] },
+                { text: `Classificação: ${reclamacaoForm.classificacao}`, margin: [0, 5] },
+                { text: `Assunto da Denúncia: ${reclamacaoForm.assuntoDenuncia}`, margin: [0, 5] },
+                { text: `Procurou o Fornecedor: ${reclamacaoForm.procurouFornecedor}`, margin: [0, 5] },
+                { text: `Forma de Aquisição: ${reclamacaoForm.formaAquisicao}`, margin: [0, 5] },
+                { text: `Tipo de Contratação: ${reclamacaoForm.tipoContratacao}`, margin: [0, 5] },
+                { text: `Data da Contratação: ${reclamacaoForm.dataContratacao}`, margin: [0, 5] },
+                { text: `Nome do Serviço/Plano: ${reclamacaoForm.nomeServico}`, margin: [0, 5] },
+                { text: `Detalhes do Serviço/Plano: ${reclamacaoForm.detalheServico}`, margin: [0, 5] },
+                { text: `Tipo de Documento: ${reclamacaoForm.tipoDocumento}`, margin: [0, 5] },
+                { text: `Número do Documento: ${reclamacaoForm.numeroDoc}`, margin: [0, 5] },
+                { text: `Data da Ocorrência: ${reclamacaoForm.dataOcorrencia}`, margin: [0, 5] },
+                { text: `Data de Cancelamento/Negativa: ${reclamacaoForm.dataNegativa}`, margin: [0, 5] },
+                { text: `Forma de Pagamento: ${reclamacaoForm.formaPagamento}`, margin: [0, 5] },
+                { text: `Valor da Compra: R$ ${reclamacaoForm.valorCompra}`, margin: [0, 5] },
+                { text: `Descrição Detalhada: ${reclamacaoForm.detalhesReclamacao}`, margin: [0, 5] },
+                { text: `Pedido do Consumidor: ${reclamacaoForm.pedidoConsumidor}`, margin: [0, 5] },
             ],
             styles: {
-                header: { fontSize: 18, bold: true },
+                header: { fontSize: 20, bold: true, alignment: 'center', margin: [0, 0, 0, 10] },
+                subheader: { fontSize: 16, bold: true, margin: [0, 10, 0, 5] },
+                sectionHeader: { fontSize: 14, bold: true, margin: [0, 15, 0, 5], decoration: 'underline' },
             },
+            defaultStyle: {
+                fontSize: 12,
+            }
         };
 
-        pdfMake.createPdf(documentDefinition).download('reclamacao_' + protocolo + '.pdf');
+        pdfMake.createPdf(documentDefinition).download(`reclamacao_${protocolo}.pdf`);
     };
 
-    const enviarReclamacaoParaFirebase = async (data, protocolo) => {
-        try {
-            const userId = localStorage.getItem('userId');
-
-            if (!userId) {
-                console.error('Usuário não autenticado.');
+    const handleNextTab = () => {
+        // Validação da aba atual antes de avançar
+        if (activeTab === 1) { // Detalhes da Reclamação
+            const { tipoReclamacao, classificacao, assuntoDenuncia, cnpj, procurouFornecedor, formaAquisicao, tipoContratacao, dataContratacao, nomeServico, detalheServico, tipoDocumento, numeroDoc, dataOcorrencia, dataNegativa, formaPagamento, valorCompra, detalhesReclamacao, pedidoConsumidor } = reclamacaoFormData;
+            if (!tipoReclamacao || !classificacao || !assuntoDenuncia || !cnpj || !procurouFornecedor || !formaAquisicao || !tipoContratacao || !dataContratacao || !nomeServico || !detalheServico || !tipoDocumento || !numeroDoc || !dataOcorrencia || !dataNegativa || !formaPagamento || !valorCompra || !detalhesReclamacao || !pedidoConsumidor) {
+                alert('Por favor, preencha todos os campos obrigatórios de Detalhes da Reclamação.');
                 return;
             }
-
-            const reclamacaoData = {
-                ...data,
-                userId: userId,
-                cpf: '', // Você pode querer buscar o CPF do localStorage ou de outro lugar
-                timestamp: new Date(),
-                protocolo: protocolo,
-                nomeEmpresaReclamada: empresaInfo?.razao_social || '',
-            };
-
-            const docRef = await addDoc(collection(db, 'reclamacoes'), reclamacaoData);
-
-            console.log('Reclamação enviada com sucesso! ID do documento:', docRef.id);
-        } catch (error) {
-            console.error('Erro ao enviar reclamação para o Firebase:', error);
         }
+        setActiveTab(prev => prev + 1);
+    };
+
+    const handlePrevTab = () => {
+        setActiveTab(prev => prev - 1);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const userId = localStorage.getItem('userId'); // Pega o userId (UID) do usuário logado do localStorage
+        const userEmail = loggedInUserData?.email; // E-mail do usuário logado (obtido dos dados do perfil)
+        const timestamp = new Date().toISOString(); // Data e hora da reclamação
         const protocolo = gerarProtocolo();
-        await enviarReclamacaoParaFirebase(formData, protocolo);
-        gerarPDF(protocolo, formData);
-        console.log(formData);
-        window.location.pathname = '/meus-atendimentos';
+
+        if (!userId || !userEmail || !loggedInUserData) {
+            alert('Erro: Dados do usuário logado não disponíveis. Por favor, tente novamente ou faça login.');
+            return;
+        }
+
+        try {
+            const reclamacaoDataFinal = {
+                ...reclamacaoFormData,
+                userId: userId, // Salva o UID do usuário logado na reclamação
+                userEmail: userEmail, // Salva o e-mail do usuário logado na reclamação
+                timestamp: timestamp, // Salva a data e hora do registro
+                protocolo: protocolo,
+                nomeEmpresaReclamada: empresaInfo?.razao_social || '',
+                arquivos: fileData,
+                status: 'Em Análise',
+                userDataAtTimeOfComplaint: loggedInUserData, // Salva todos os dados do perfil do usuário logado na reclamação
+            };
+
+            const docRef = await addDoc(collection(db, 'reclamacoes'), reclamacaoDataFinal);
+
+            console.log('Reclamação enviada com sucesso! ID do documento:', docRef.id);
+            gerarPDF(protocolo, loggedInUserData, reclamacaoFormData, empresaInfo);
+            alert('Reclamação registrada com sucesso!');
+            
+            setFileInputKey(Date.now());
+
+            navigate('/atendimentos-sga-hyo6d27');
+        } catch (error) {
+            console.error('Erro ao enviar reclamação para o Firebase:', error);
+            alert('Erro ao registrar reclamação. Tente novamente.');
+        }
     };
+
+    if (loadingLoggedInUserData) {
+        return (
+            <div className="App-header">
+                <div className="loading-message">
+                    <h1>Carregando dados do usuário...</h1>
+                    <p>Por favor, aguarde.</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (loggedInUserDataError) {
+        return (
+            <div className="App-header">
+                <div className="error-message">
+                    <h1>Erro ao carregar dados.</h1>
+                    <p>{loggedInUserDataError}</p>
+                    <button onClick={() => navigate('/login')} className="buttonLogin">Ir para Login</button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="App-header">
             <MenuDashboard />
-            <div className="formRealizarReclamacao">
-                <div className='atualizeData formRealizarReclamacao'>
-                    <h3>Faça sua reclamação</h3>
-                    <form onSubmit={handleSubmit}>
-                        <p>Informações Principais</p>
-                        <select
-                            name="tipoReclamacao"
-                            className="conteinar-Add-Products-select"
-                            value={formData.tipoReclamacao}
-                            onChange={handleChange}
-                        >
-                            <option value="">Tipo de Reclamação</option>
-                            <option value="Outra Compra/Contratação">Compra de Produto</option>
-                            <option value="Outra Compra/Contratação">Contratação de Serviço</option>
-                            <option value="Jogos e Apostas">Jogos e Apostas</option>
-                        </select>
-                        <select
-                            name="classificacao"
-                            className="conteinar-Add-Products-select"
-                            value={formData.classificacao}
-                            onChange={handleChange}
-                        >
-                            <option value="">Área de Atuação</option>
-                            <option value="Agua">Água, Energia e Gás</option>
-                            <option value="Alimentos">Alimentos</option>
-                            <option value="Educacao">Educação</option>
-                            <option value="Habitacao">Habitação</option>
-                            <option value="Produtos Automotivos">Produtos Automotivos</option>
-                            <option value="Produtos de Telefonia e Informática">Produtos de Telefonia e Informática</option>
-                            <option value="Produtos Eletrodomésticos e Eletrônicos">Produtos Eletrodomésticos e Eletrônicos</option>
-                            <option value="Saude">Saúde</option>
-                            <option value="Servicos Financeiros">Serviços Financeiros</option>
-                            <option value="Telecomunicacoes">Telecomunicações</option>
-                            <option value="Transportes">Transportes</option>
-                            <option value="Turismo/Viagens">Turismo/Viagens</option>
-                            <option value="Demais Produtos">Demais Produtos</option>
-                            <option value="Demais Serviços">Demais Serviços</option>
-                        </select>
-                        <input
-                            className="conteinar-Add-Products-select"
-                            type="text"
-                            name="assuntoDenuncia"
-                            placeholder="Assunto da Denuncia"
-                            value={formData.assuntoDenuncia}
-                            onChange={handleChange}
-                        />
-                        <br />
-                        <label className="labelform-materia">Empresa Reclamada:</label><br />
-                        <input
-                            className="conteinar-Add-Products-select"
-                            type="text"
-                            name="cnpj"
-                            placeholder="Digite o CNPJ"
-                            value={formData.cnpj}
-                            onChange={handleChange}
-                        /><br />
-                        <button className='buttonLogin btnComentario' type="button" onClick={buscarEmpresaPorCnpj} disabled={loadingCnpj}>
-                            {loadingCnpj ? 'Buscando...' : 'Buscar Empresa'}
-                        </button>
-                        {cnpjError && <p style={{ color: 'red' }}>{cnpjError}</p>}
-                        {empresaInfo && (
-                            <p>
-                                <strong>Empresa:</strong> {empresaInfo.razao_social}
-                                {empresaInfo.fantasia && ` (${empresaInfo.fantasia})`}
-                            </p>
-                        )}
-                        <br />
-                        <label className="labelform-materia">Detalhes da Reclamação</label>
-                        <br />
-                        <select
-                            name="procurouFornecedor"
-                            className="conteinar-Add-Products-select"
-                            value={formData.procurouFornecedor}
-                            onChange={handleChange}
-                        >
-                            <option value="">Procurei o fornecedor para resolver?</option>
-                            <option value="Sim">Sim</option>
-                            <option value="Não">Não</option>
-                        </select>
-                        <select
-                            name="formaAquisicao"
-                            className="conteinar-Add-Products-select"
-                            value={formData.formaAquisicao}
-                            onChange={handleChange}
-                        >
-                            <option value="">Forma de Aquisição</option>
-                            <option value="Catalogo">Catalogo</option>
-                            <option value="Loja Física">Loja Física</option>
-                            <option value="Loja Virtual ou Internet">Loja Virtual ou Internet</option>
-                            <option value="Não comprei ou não contratei">Não comprei ou não contratei</option>
-                            <option value="Presente">Presente</option>
-                            <option value="Stand, feira ou eventos">Stand, feira ou eventos</option>
-                            <option value="Telefone">Telefone</option>
-                            <option value="Venda em domicílio">Venda em domicílio</option>
-                        </select>
-                        <select
-                            name="tipoContratacao"
-                            className="conteinar-Add-Products-select"
-                            value={formData.tipoContratacao}
-                            onChange={handleChange}
-                        >
-                            <option value="">Tipo de Contratação</option>
-                            <option value="Produto">Produto</option>
-                            <option value="Serviço">Serviço</option>
-                        </select>
-                        <br /><label className="labelform-materia">Data da contratação</label><br />
-                        <input
-                            className="conteinar-Add-Products-select"
-                            type="date"
-                            name="dataContratacao"
-                            placeholder="Data da Compra"
-                            value={formData.dataContratacao}
-                            onChange={handleChange}
-                        />
-                        <input
-                            className="conteinar-Add-Products-select"
-                            type="text"
-                            name="nomeServico"
-                            placeholder="Nome do Serviço ou Plano"
-                            value={formData.nomeServico}
-                            onChange={handleChange}
-                        />
-                        <textarea
-                            id="comentarios"
-                            className="conteinar-Add-Products-select"
-                            name="detalheServico"
-                            placeholder="Detalhes do Serviço ou Plano"
-                            value={formData.detalheServico}
-                            onChange={handleChange}
-                        />
-                        <select
-                            name="tipoDocumento"
-                            className="conteinar-Add-Products-select"
-                            value={formData.tipoDocumento}
-                            onChange={handleChange}
-                        >
-                            <option value="">Tipo de Documento</option>
-                            <option value="NF">Nota Fiscal</option>
-                            <option value="Contrato">Contrato</option>
-                            <option value="Ordem de Serviço">Ordem de Serviço</option>
-                            <option value="Pedido">Pedido</option>
-                            <option value="Outros">Outros</option>
-                        </select>
-                        <input
-                            className="conteinar-Add-Products-select"
-                            type="number"
-                            name="numeroDoc"
-                            placeholder="Número do documento"
-                            value={formData.numeroDoc}
-                            onChange={handleChange}
-                        />
-                        <br /><label className="labelform-materia">Data da ocorrência</label><br />
-                        <input
-                            className="conteinar-Add-Products-select"
-                            type="date"
-                            name="dataOcorrencia"
-                            placeholder="Data da ocorrência ou serviço"
-                            value={formData.dataOcorrencia}
-                            onChange={handleChange}
-                        />
+            <div className="form-container-tabs">
+                <div className="tabs-header">
+                    <button className={`tab-button ${activeTab === 1 ? 'active' : ''}`} onClick={() => setActiveTab(1)}>
+                        1. Detalhes da Reclamação
+                    </button>
+                    <button className={`tab-button ${activeTab === 2 ? 'active' : ''}`} onClick={() => setActiveTab(2)} disabled={activeTab < 2}>
+                        2. Anexos e Envio
+                    </button>
+                </div>
 
-                        <br /><label className="labelform-materia">Data do cancelamento, desistência ou negativa</label><br />
-
-                        <input
-                            className="conteinar-Add-Products-select"
-                            type="date"
-                            name="dataNegativa"
-                            placeholder="Data de cancelamento, desistência ou negativa"
-                            value={formData.dataNegativa}
-                            onChange={handleChange}
-                        />
-                        <select
-                            name="formaPagamento"
-                            className="conteinar-Add-Products-select"
-                            value={formData.formaPagamento}
-                            onChange={handleChange}
-                        >
-                            <option value="">Forma de Pagamento</option>
-                            <option value="Boleto Bancário">Boleto Bancário</option>
-                            <option value="Cartão">Cartão</option>
-                            <option value="Cheque">Cheque</option>
-                            <option value="Débito em Conta Corrente">Débito em Conta Corrente</option>
-                            <option value="Débito em Conta Poupança">Débito em Conta Poupança</option>
-                            <option value="Dinheiro (espécie)">Dinheiro (espécie)</option>
-                            <option value="Fatura">Fatura</option>
-                            <option value="Intermediadoras de Pagamento">Intermediadoras de Pagamento</option>
-                            <option value="Não Informado">Não Informado</option>
-                            <option value="Pix">Pix</option>
-                        </select>
-                        <input
-                            className="conteinar-Add-Products-select"
-                            type="number"
-                            name="valorCompra"
-                            placeholder="Valor da Compra"
-                            value={formData.valorCompra}
-                            onChange={handleChange}
-                        />
-                        <p>Outras Informações</p>
-                        <textarea
-                            id="comentarios"
-                            className="conteinar-Add-Products-select"
-                            name="detalhesReclamacao"
-                            placeholder="Descreva em detalhes sua reclamação"
-                            value={formData.detalhesReclamacao}
-                            onChange={handleChange}
-                        />
-                        <select
-                            name="pedidoConsumidor"
-                            className="conteinar-Add-Products-select"
-                            value={formData.pedidoConsumidor}
-                            onChange={handleChange}
-                        >
-                            <option value="">Pedido do Consumidor</option>
-                            <option value="cancelamento">Cancelamento da compra/serviço com restituição do valor pago</option>
-                            <option value="Conserto do produto">Conserto do produto</option>
-                            <option value="Cumprimento a oferta">Cumprimento a oferta</option>
-                            <option value="Devolução proporcional/total do valor cobrado/pago">Devolução proporcional/total do valor cobrado/pago</option>
-                            <option value="Entrega imediata do produto/serviço">Entrega imediata do produto/serviço</option>
-                            <option value="Reexecução do serviço">Reexecução do serviço</option>
-                            <option value="Substituição do produto/serviço">Substituição do produto/serviço</option>
-                            <option value="Outros (Exceto indenização por danos morais, que só podem ser solicitadas através de ação judicial">Outros (Exceto indenização por danos morais, que só podem ser solicitadas através de ação judicial</option>
-                        </select>
-                        <p>Anexos</p>
-                        <label>
-                            Selecione arquivos (máximo 2MB por arquivo, formatos: .png, .jpg, .pdf)
+                <div className="tab-content">
+                    {/* Aba 1: Detalhes da Reclamação */}
+                    {activeTab === 1 && (
+                        <form onSubmit={(e) => { e.preventDefault(); handleNextTab(); }} className="form-section">
+                            <h3>Detalhes da Reclamação</h3>
+                            <select
+                                name="tipoReclamacao"
+                                className="form-input"
+                                value={reclamacaoFormData.tipoReclamacao}
+                                onChange={handleReclamacaoChange}
+                                required
+                            >
+                                <option value="">Tipo de Reclamação</option>
+                                <option value="Outra Compra/Contratação">Compra de Produto</option>
+                                <option value="Outra Compra/Contratação">Contratação de Serviço</option>
+                                <option value="Jogos e Apostas">Jogos e Apostas</option>
+                            </select>
+                            <select
+                                name="classificacao"
+                                className="form-input"
+                                value={reclamacaoFormData.classificacao}
+                                onChange={handleReclamacaoChange}
+                                required
+                            >
+                                <option value="">Área de Atuação</option>
+                                <option value="Agua">Água, Energia e Gás</option>
+                                <option value="Alimentos">Alimentos</option>
+                                <option value="Educacao">Educação</option>
+                                <option value="Habitacao">Habitação</option>
+                                <option value="Produtos Automotivos">Produtos Automotivos</option>
+                                <option value="Produtos de Telefonia e Informática">Produtos de Telefonia e Informática</option>
+                                <option value="Produtos Eletrodomésticos e Eletrônicos">Produtos Eletrodomésticos e Eletrônicos</option>
+                                <option value="Saude">Saúde</option>
+                                <option value="Servicos Financeiros">Serviços Financeiros</option>
+                                <option value="Telecomunicacoes">Telecomunicações</option>
+                                <option value="Transportes">Transportes</option>
+                                <option value="Turismo/Viagens">Turismo/Viagens</option>
+                                <option value="Demais Produtos">Demais Produtos</option>
+                                <option value="Demais Serviços">Demais Serviços</option>
+                            </select>
                             <input
-                                key={fileInputKey}
-                                type="file"
-                                multiple
-                                onChange={handleFileChange}
-                                accept=".png,.jpg,.jpeg,.pdf"
-                                className='buttonLogin btnUpload'
+                                className="form-input"
+                                type="text"
+                                name="assuntoDenuncia"
+                                placeholder="Assunto da Denúncia"
+                                value={reclamacaoFormData.assuntoDenuncia}
+                                onChange={handleReclamacaoChange}
+                                required
                             />
-                        </label>
-                        {fileCount > 0 && <p>{fileCount} arquivos selecionados</p>}
-                        {fileErrors.map((error, index) => (
-                            <p key={index} style={{ color: 'red' }}>{error}</p>
-                        ))}
-                        <br />
-                        <button type="submit" className='buttonLogin btnLogin'>Enviar Reclamação</button>
-                    </form>
+                            <br />
+                            <label className="labelform-materia">Empresa Reclamada:</label><br />
+                            <input
+                                className="form-input"
+                                type="text"
+                                name="cnpj"
+                                placeholder="Digite o CNPJ"
+                                value={reclamacaoFormData.cnpj}
+                                onChange={handleReclamacaoChange}
+                                required
+                            /><br />
+                            <button className='buttonLogin btnSearchBusiness' type="button" onClick={buscarEmpresaPorCnpj} disabled={loadingCnpj}>
+                                {loadingCnpj ? 'Buscando...' : 'Buscar Empresa'}
+                            </button>
+                            {cnpjError && <p style={{ color: 'red' }}>{cnpjError}</p>}
+                            {empresaInfo && (
+                                <p className="company-info">
+                                    <strong>Empresa:</strong> {empresaInfo.razao_social}
+                                    {empresaInfo.fantasia && ` (${empresaInfo.fantasia})`}
+                                </p>
+                            )}
+                            <br />
+                            <label className="labelform-materia">Detalhes da Reclamação</label>
+                            <br />
+                            <select
+                                name="procurouFornecedor"
+                                className="form-input"
+                                value={reclamacaoFormData.procurouFornecedor}
+                                onChange={handleReclamacaoChange}
+                                required
+                            >
+                                <option value="">Procurei o fornecedor para resolver?</option>
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
+                            </select>
+                            <select
+                                name="formaAquisicao"
+                                className="form-input"
+                                value={reclamacaoFormData.formaAquisicao}
+                                onChange={handleReclamacaoChange}
+                                required
+                            >
+                                <option value="">Forma de Aquisição</option>
+                                <option value="Catalogo">Catalogo</option>
+                                <option value="Loja Física">Loja Física</option>
+                                <option value="Loja Virtual ou Internet">Loja Virtual ou Internet</option>
+                                <option value="Não comprei ou não contratei">Não comprei ou não contratei</option>
+                                <option value="Presente">Presente</option>
+                                <option value="Stand, feira ou eventos">Stand, feira ou eventos</option>
+                                <option value="Telefone">Telefone</option>
+                                <option value="Venda em domicílio">Venda em domicílio</option>
+                            </select>
+                            <select
+                                name="tipoContratacao"
+                                className="form-input"
+                                value={reclamacaoFormData.tipoContratacao}
+                                onChange={handleReclamacaoChange}
+                                required
+                            >
+                                <option value="">Tipo de Contratação</option>
+                                <option value="Produto">Produto</option>
+                                <option value="Serviço">Serviço</option>
+                            </select>
+                            <br /><label className="labelform-materia">Data da contratação</label><br />
+                            <input
+                                className="form-input"
+                                type="date"
+                                name="dataContratacao"
+                                placeholder="Data da Compra"
+                                value={reclamacaoFormData.dataContratacao}
+                                onChange={handleReclamacaoChange}
+                                required
+                            />
+                            <input
+                                className="form-input"
+                                type="text"
+                                name="nomeServico"
+                                placeholder="Nome do Serviço ou Plano"
+                                value={reclamacaoFormData.nomeServico}
+                                onChange={handleReclamacaoChange}
+                                required
+                            />
+                            <textarea
+                                id="detalheServico"
+                                className="form-input textarea-input"
+                                name="detalheServico"
+                                placeholder="Detalhes do Serviço ou Plano"
+                                value={reclamacaoFormData.detalheServico}
+                                onChange={handleReclamacaoChange}
+                                required
+                            />
+                            <select
+                                name="tipoDocumento"
+                                className="form-input"
+                                value={reclamacaoFormData.tipoDocumento}
+                                onChange={handleReclamacaoChange}
+                                required
+                            >
+                                <option value="">Tipo de Documento</option>
+                                <option value="NF">Nota Fiscal</option>
+                                <option value="Contrato">Contrato</option>
+                                <option value="Ordem de Serviço">Ordem de Serviço</option>
+                                <option value="Pedido">Pedido</option>
+                                <option value="Outros">Outros</option>
+                            </select>
+                            <input
+                                className="form-input"
+                                type="number"
+                                name="numeroDoc"
+                                placeholder="Número do documento"
+                                value={reclamacaoFormData.numeroDoc}
+                                onChange={handleReclamacaoChange}
+                                required
+                            />
+                            <br /><label className="labelform-materia">Data da ocorrência</label><br />
+                            <input
+                                className="form-input"
+                                type="date"
+                                name="dataOcorrencia"
+                                placeholder="Data da ocorrência ou serviço"
+                                value={reclamacaoFormData.dataOcorrencia}
+                                onChange={handleReclamacaoChange}
+                                required
+                            />
+
+                            <br /><label className="labelform-materia">Data do cancelamento, desistência ou negativa</label><br />
+
+                            <input
+                                className="form-input"
+                                type="date"
+                                name="dataNegativa"
+                                placeholder="Data de cancelamento, desistência ou negativa"
+                                value={reclamacaoFormData.dataNegativa}
+                                onChange={handleReclamacaoChange}
+                                required
+                            />
+                            <select
+                                name="formaPagamento"
+                                className="form-input"
+                                value={reclamacaoFormData.formaPagamento}
+                                onChange={handleReclamacaoChange}
+                                required
+                            >
+                                <option value="">Forma de Pagamento</option>
+                                <option value="Boleto Bancário">Boleto Bancário</option>
+                                <option value="Cartão">Cartão</option>
+                                <option value="Cheque">Cheque</option>
+                                <option value="Débito em Conta Corrente">Débito em Conta Corrente</option>
+                                <option value="Débito em Conta Poupança">Débito em Conta Poupança</option>
+                                <option value="Dinheiro (espécie)">Dinheiro (espécie)</option>
+                                <option value="Fatura">Fatura</option>
+                                <option value="Intermediadoras de Pagamento">Intermediadoras de Pagamento</option>
+                                <option value="Não Informado">Não Informado</option>
+                                <option value="Pix">Pix</option>
+                            </select>
+                            <input
+                                className="form-input"
+                                type="number"
+                                name="valorCompra"
+                                placeholder="Valor da Compra"
+                                value={reclamacaoFormData.valorCompra}
+                                onChange={handleReclamacaoChange}
+                                required
+                            />
+                            <p className="section-title">Outras Informações</p>
+                            <textarea
+                                id="detalhesReclamacao"
+                                className="form-input textarea-input"
+                                name="detalhesReclamacao"
+                                placeholder="Descreva em detalhes sua reclamação"
+                                value={reclamacaoFormData.detalhesReclamacao}
+                                onChange={handleReclamacaoChange}
+                                required
+                            />
+                            <select
+                                name="pedidoConsumidor"
+                                className="form-input"
+                                value={reclamacaoFormData.pedidoConsumidor}
+                                onChange={handleReclamacaoChange}
+                                required
+                            >
+                                <option value="">Pedido do Consumidor</option>
+                                <option value="cancelamento">Cancelamento da compra/serviço com restituição do valor pago</option>
+                                <option value="Conserto do produto">Conserto do produto</option>
+                                <option value="Cumprimento a oferta">Cumprimento a oferta</option>
+                                <option value="Devolução proporcional/total do valor cobrado/pago">Devolução proporcional/total do valor cobrado/pago</option>
+                                <option value="Entrega imediata do produto/serviço">Entrega imediata do produto/serviço</option>
+                                <option value="Reexecução do serviço">Reexecução do serviço</option>
+                                <option value="Substituição do produto/serviço">Substituição do produto/serviço</option>
+                                <option value="Outros (Exceto indenização por danos morais, que só podem ser solicitadas através de ação judicial">Outros (Exceto indenização por danos morais, que só podem ser solicitadas através de ação judicial</option>
+                            </select>
+                            <div className="form-navigation-buttons">
+                                <button type="button" className="buttonLogin btnNext" onClick={handleNextTab}>Próximo</button>
+                            </div>
+                        </form>
+                    )}
+
+                    {/* Aba 2: Anexos e Envio */}
+                    {activeTab === 2 && (
+                        <form onSubmit={handleSubmit} className="form-section">
+                            <h3>Anexos e Envio</h3>
+                            <p className="section-title">Anexos</p>
+                            <label className="file-upload-label">
+                                Selecione arquivos (máximo 2MB por arquivo, formatos: .png, .jpg, .jpeg, .pdf)
+                                <input
+                                    key={fileInputKey}
+                                    type="file"
+                                    multiple
+                                    onChange={handleFileChange}
+                                    accept=".png,.jpg,.jpeg,.pdf"
+                                    className='buttonLogin btnUpload'
+                                />
+                            </label>
+                            {fileCount > 0 && <p className="file-count-message">{fileCount} arquivos selecionado(s)</p>}
+                            {fileErrors.map((error, index) => (
+                                <p key={index} className="error-message">{error}</p>
+                            ))}
+                            <br />
+                            <div className="form-navigation-buttons">
+                                <button type="button" className="buttonLogin btnPrev" onClick={handlePrevTab}>Anterior</button>
+                                <button type="submit" className="buttonLogin btnLogin">Enviar Reclamação</button>
+                            </div>
+                        </form>
+                    )}
                 </div>
             </div>
         </div>

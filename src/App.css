@@ -1987,6 +1987,7 @@ video {
   background-color: #fff;
   margin-left: 5%;
   margin-top: 50px;
+  margin-bottom: 50px;
   border-radius: 10px;
   width: 40%;
   font-size: 15px;
@@ -2624,264 +2625,416 @@ video {
 
 /* Estilos para o container principal do formulário com abas */
 .form-container-tabs {
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-    margin: 40px auto;
-    max-width: 800px;
-    width: 90%;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  margin: 40px auto;
+  max-width: 800px;
+  width: 90%;
 }
 
 /* Estilos para o cabeçalho das abas */
 .tabs-header {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 30px;
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 10px;
-    font-size: 12px;
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 10px;
+  font-size: 12px;
 }
 
 .tab-button {
-    background-color: transparent;
-    border: none;
-    padding: 10px 20px;
-    font-size: 1.1em;
-    font-weight: bold;
-    color: #555;
-    cursor: pointer;
-    transition: color 0.3s ease, border-bottom 0.3s ease;
-    border-bottom: 3px solid transparent;
+  background-color: transparent;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.3s ease, border-bottom 0.3s ease;
+  border-bottom: 3px solid transparent;
 }
 
 .tab-button:hover:not(.active) {
-    color: #007bff;
+  color: #007bff;
 }
 
 .tab-button.active {
-    color: #007bff;
-    border-bottom: 3px solid #007bff;
+  color: #007bff;
+  border-bottom: 3px solid #007bff;
 }
 
 .tab-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-    color: #888;
+  cursor: not-allowed;
+  opacity: 0.6;
+  color: #888;
 }
 
 /* Estilos para o conteúdo de cada aba */
 .tab-content {
-    padding: 20px 0;
-    font-size: 12px;
+  padding: 20px 0;
+  font-size: 12px;
 }
 
 .form-section h3 {
-    color: #0056b3;
-    margin-bottom: 25px;
-    text-align: center;
+  color: #0056b3;
+  margin-bottom: 25px;
+  text-align: center;
 }
 
 /* Estilos para os inputs do formulário */
 .form-input {
-    width: calc(100% - 22px); /* Ajusta para padding e borda */
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    background-color: #fdfdfd;
-    color: #000;
-    border-radius: 8px;
-    font-size: 1em;
-    box-sizing: border-box; /* Garante que padding e borda não aumentem a largura total */
+  width: calc(100% - 22px);
+  /* Ajusta para padding e borda */
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  background-color: #fdfdfd;
+  color: #000;
+  border-radius: 8px;
+  font-size: 1em;
+  box-sizing: border-box;
+  /* Garante que padding e borda não aumentem a largura total */
 }
 
 .form-input:focus {
-    border-color: #007bff;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
 .textarea-input {
-    min-height: 100px;
-    resize: vertical;
+  min-height: 100px;
+  resize: vertical;
 }
 
 .labelform-materia {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: #333;
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
 }
 
-.btnSearchBusiness{
+.btnSearchBusiness {
   width: 200px;
   height: 50px;
 }
 
-.btnEnviarReclamação{
+.btnEnviarReclamação {
   margin-top: 19px;
   background-color: #f27634;
 }
 
 .section-title {
-    font-size: 1.2em;
-    font-weight: bold;
-    margin-top: 25px;
-    margin-bottom: 15px;
-    color: #0056b3;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-top: 25px;
+  margin-bottom: 15px;
+  color: #0056b3;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
 }
 
 /* Estilos para botões de navegação e submissão */
 .form-navigation-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
 }
 
 .buttonLogin {
-    padding: 12px 25px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: bold;
-    transition: background-color 0.3s ease, opacity 0.3s ease;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: bold;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
 }
 
-.btnLogin { /* Botão de Enviar Reclamação */
-    background-color: #28a745; /* Verde */
-    color: white;
+.btnLogin {
+  /* Botão de Enviar Reclamação */
+  background-color: #28a745;
+  /* Verde */
+  color: white;
 }
 
 .btnLogin:hover {
-    background-color: #218838;
+  background-color: #218838;
 }
 
 .btnNext {
-    background-color: #007bff; /* Azul */
-    color: white;
+  background-color: #007bff;
+  /* Azul */
+  color: white;
 }
 
 .btnNext:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
 .btnPrev {
-    background-color: #6c757d; /* Cinza */
-    color: white;
+  background-color: #6c757d;
+  /* Cinza */
+  color: white;
 }
 
 .btnPrev:hover {
-    background-color: #5a6268;
+  background-color: #5a6268;
 }
 
-.btnComentario { /* Botão de buscar CNPJ */
-    background-color: #17a2b8; /* Ciano */
-    color: white;
-    margin-top: 10px;
-    margin-bottom: 15px;
+.btnComentario {
+  /* Botão de buscar CNPJ */
+  background-color: #17a2b8;
+  /* Ciano */
+  color: white;
+  margin-top: 10px;
+  margin-bottom: 15px;
 }
 
 .btnComentario:hover {
-    background-color: #138496;
+  background-color: #138496;
 }
 
 .buttonLogin:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Estilos para feedback de mensagens */
 .success-message {
-    color: #155724;
-    background-color: #d4edda;
-    border: 1px solid #c3e6cb;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    text-align: center;
+  color: #155724;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  text-align: center;
 }
 
 .error-message {
-    color: #721c24;
-    background-color: #f8d7da;
-    border: 1px solid #f5c6cb;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    text-align: center;
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  text-align: center;
 }
 
 .company-info {
-    margin-top: 10px;
-    font-size: 0.95em;
-    color: #333;
+  margin-top: 10px;
+  font-size: 0.95em;
+  color: #333;
 }
 
 .file-upload-label {
-    display: block;
-    background-color: #007bff;
-    color: white;
-    padding: 12px 25px;
-    border-radius: 8px;
-    cursor: pointer;
-    text-align: center;
-    font-weight: bold;
-    margin-top: 20px;
-    margin-bottom: 15px;
-    transition: background-color 0.3s ease;
+  display: block;
+  background-color: #007bff;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  transition: background-color 0.3s ease;
 }
 
 .file-upload-label:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
 .file-upload-label input[type="file"] {
-    display: none; /* Esconde o input de arquivo padrão */
+  display: none;
+  /* Esconde o input de arquivo padrão */
 }
 
 .file-count-message {
-    font-size: 0.9em;
-    color: #5cb85c;
-    margin-top: -10px;
-    margin-bottom: 15px;
-    text-align: center;
+  font-size: 0.9em;
+  color: #5cb85c;
+  margin-top: -10px;
+  margin-bottom: 15px;
+  text-align: center;
 }
 
 /* Media Queries para responsividade */
 @media (max-width: 768px) {
-    .form-container-tabs {
-        padding: 20px;
-        margin: 20px auto;
-    }
+  .form-container-tabs {
+    padding: 20px;
+    margin: 20px auto;
+  }
 
-    .tabs-header {
-        flex-direction: column;
-        align-items: stretch;
-    }
+  .tabs-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-    .tab-button {
-        width: 100%;
-        margin-bottom: 5px;
-    }
+  .tab-button {
+    width: 100%;
+    margin-bottom: 5px;
+  }
 
-    .form-input {
-        width: 100%;
-    }
+  .form-input {
+    width: 100%;
+  }
 
-    .form-navigation-buttons {
-        flex-direction: column;
-        gap: 10px;
-    }
+  .form-navigation-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
 
-    .buttonLogin {
-        width: 100%;
-    }
+  .buttonLogin {
+    width: 100%;
+  }
 }
 
 
+
+/* Estilos para o container principal do slide de arquivos */
+.file-slider-container {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 30px;
+  margin: 0 auto;
+  width: 90%;
+  text-align: center;
+}
+
+.file-slider-container h3 {
+  font-size: 15px;
+  color: #0056b3;
+  margin: 20px auto;
+  display: none;
+}
+
+/* Wrapper para o slide e botões de navegação */
+.file-slide-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  /* Espaçamento entre os botões e o card */
+  position: relative;
+  /* Para posicionar os botões */
+}
+
+/* Estilos para os botões de navegação do slide */
+.slider-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  /* Botões redondos */
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5em;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  /* Garante que os botões fiquem acima do card */
+}
+
+.slider-button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.slider-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.splide__arrows--ltr {
+  display: none !important;
+}
+
+/* Estilos para o card de arquivo individual */
+.file-card {
+  border-radius: 10px;
+  padding: 20px;
+  width: 50%;
+  height: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.file-image {
+  max-width: 100%;
+  max-height: 80%;
+  /* Ocupa a maior parte do card */
+  object-fit: contain;
+  /* Redimensiona a imagem para caber sem cortar */
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.file-pdf-iframe {
+  width: 100%;
+  height: 80%;
+  border: none;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.file-unsupported {
+  text-align: center;
+  color: #666;
+  font-size: 0.9em;
+}
+
+.file-unsupported .download-link {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 15px;
+  background-color: #28a745;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.file-unsupported .download-link:hover {
+  background-color: #218838;
+}
+
+.file-name {
+  color: #333;
+  margin-top: 10px;
+  font-size: 10px;
+  word-break: break-all;
+}
+
+/* Media Queries para responsividade */
+@media (max-width: 768px) {
+  .file-slide-wrapper {
+    flex-direction: column;
+    /* Botões acima/abaixo do card em telas pequenas */
+    gap: 10px;
+  }
+
+  .slider-button {
+    width: 35px;
+    height: 35px;
+    font-size: 1.2em;
+  }
+
+  .file-card {
+    max-width: 100%;
+    height: 300px;
+    /* Ajusta a altura para telas menores */
+  }
+}
 
 .minhasCompras {
   width: 90%;

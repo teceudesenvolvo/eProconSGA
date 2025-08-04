@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { collection, addDoc} from 'firebase/firestore'; // setDoc e doc podem ser removidos se não forem usados em outro lugar
-import { db } from '../../firebase'; // Removido 'auth'
+import { collection, addDoc, query, where, getDocs } from 'firebase/firestore'; // Adicionado query, where, getDocs
+import { db } from '../../firebase';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { useNavigate, useLocation } from 'react-router-dom';
 import MenuAdmin from '../../componets/menuAdmin'; 
-// Removido 'axios' e imports de 'firebase/auth' (createUserWithEmailAndPassword, signOut)
+import LogoProcon from '../../assets/Procon-logo03.png'; // Importe a logo do Procon
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
-
-
-
-// Removidos dados do EmailJS pois não enviaremos e-mail de acesso daqui
 
 // Lista de UFs do Brasil
 const ufsBrasil = [
@@ -24,8 +20,8 @@ const AddProducts = () => {
 
     const [userFormData, setUserFormData] = useState({
         nome: '',
-        email: '', // O e-mail será o identificador para a reclamação
-        cpf: '',
+        email: '',
+        cpf: '', // CPF é o primeiro campo para busca
         telefone: '',
         cep: '',
         endereco: '',
@@ -70,19 +66,12 @@ const AddProducts = () => {
     const [fileErrors, setFileErrors] = useState([]);
     const [fileCount, setFileCount] = useState(0);
 
-    // Removidos estados relacionados ao registro de usuário e envio de e-mail de acesso
-    // const [isRegisteringUser, setIsRegisteringUser] = useState(false);
-    // const [isSendingEmail, setIsSendingEmail] = useState(false);
-    // const [registrationSuccess, setRegistrationSuccess] = useState('');
-    // const [registrationError, setRegistrationError] = useState('');
-    // const [newlyCreatedUserId, setNewlyCreatedUserId] = useState(null);
+    const [loadingCpfSearch, setLoadingCpfSearch] = useState(false); // NOVO: Estado para carregamento da busca por CPF
+    const [cpfSearchError, setCpfSearchError] = useState(''); // NOVO: Estado para erro da busca por CPF
 
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Este useEffect pode ser mantido se esta página ainda for acessada por um admin logado
-    // que precisa estar autenticado para usar o menuDashboard, por exemplo.
-    // Se esta página for para usuários não logados também, esta verificação deve ser removida.
     useEffect(() => {
         const userId = localStorage.getItem('userId');
         if (!userId) {
@@ -91,11 +80,90 @@ const AddProducts = () => {
         }
     }, [navigate, location]);
 
+    const buscarUsuarioPorCpf = async (cpf) => {
+        const cleanedCpf = cpf.replace(/\D/g, '');
+        if (cleanedCpf.length !== 11) {
+            setCpfSearchError('');
+            return;
+        }
+
+        setLoadingCpfSearch(true);
+        setCpfSearchError('');
+        
+        try {
+            const usersCollectionRef = collection(db, 'users');
+            // Consulta na coleção 'users' filtrando pelo campo 'cpf'
+            const q = query(usersCollectionRef, where('cpf', '==', cleanedCpf));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                const userDataFound = querySnapshot.docs[0].data();
+                setUserFormData(prevData => ({
+                    ...prevData,
+                    ...userDataFound, // Preenche todos os campos com os dados encontrados
+                    // Garante que o CPF no formulário seja o pesquisado
+                    cpf: cleanedCpf, 
+                }));
+                setCpfSearchError('');
+                // Se o CEP do usuário encontrado estiver preenchido, tenta buscar o endereço
+                if (userDataFound.cep && userDataFound.cep.replace(/\D/g, '').length === 8) {
+                    await buscarEnderecoPorCep(userDataFound.cep);
+                }
+            } else {
+                setCpfSearchError('CPF não encontrado. Preencha os dados manualmente.');
+                // Limpa os campos se o CPF não for encontrado, exceto o CPF digitado
+                setUserFormData(prevData => ({
+                    ...prevData,
+                    nome: '',
+                    email: '',
+                    telefone: '',
+                    cep: '',
+                    endereco: '',
+                    numero: '',
+                    complemento: '',
+                    bairro: '',
+                    municipio: '',
+                    ufEmissor: '',
+                    estadoCivil: '',
+                    sexo: '',
+                }));
+            }
+        } catch (error) {
+            console.error('Erro ao buscar usuário por CPF:', error);
+            setCpfSearchError('Erro ao buscar CPF. Tente novamente.');
+        } finally {
+            setLoadingCpfSearch(false);
+        }
+    };
+
     const handleUserChange = async (e) => {
         const { name, value } = e.target;
         setUserFormData({ ...userFormData, [name]: value });
 
-        if (name === 'cep' && value.replace(/\D/g, '').length === 8) {
+        if (name === 'cpf') {
+            const cleanedCpf = value.replace(/\D/g, '');
+            if (cleanedCpf.length === 11) {
+                await buscarUsuarioPorCpf(cleanedCpf);
+            } else {
+                setCpfSearchError('');
+                // Limpa os campos se o CPF não estiver completo
+                setUserFormData(prevData => ({
+                    ...prevData,
+                    nome: '',
+                    email: '',
+                    telefone: '',
+                    cep: '',
+                    endereco: '',
+                    numero: '',
+                    complemento: '',
+                    bairro: '',
+                    municipio: '',
+                    ufEmissor: '',
+                    estadoCivil: '',
+                    sexo: '',
+                }));
+            }
+        } else if (name === 'cep' && value.replace(/\D/g, '').length === 8) {
             await buscarEnderecoPorCep(value);
         } else if (name === 'cep') {
             setCepError('');
@@ -226,15 +294,11 @@ const AddProducts = () => {
         }
     };
 
-    // Removida a função generateStandardPassword
-
-    // Removida a função sendAccessEmail
-
     const handleNextTab = () => {
         // Validação da primeira aba antes de avançar
         if (activeTab === 1) {
-            const { nome, email, cpf, telefone, estadoCivil, sexo, ufEmissor } = userFormData;
-            if (!nome || !email || !cpf || !telefone || !estadoCivil || !sexo || !ufEmissor || !userFormData.endereco || !userFormData.numero || !userFormData.bairro || !userFormData.municipio) {
+            const { nome, email, cpf, telefone, estadoCivil, sexo, ufEmissor, endereco, numero, bairro, municipio } = userFormData;
+            if (!nome || !email || !cpf || !telefone || !estadoCivil || !sexo || !ufEmissor || !endereco || !numero || !bairro || !municipio) {
                 alert('Por favor, preencha todos os campos obrigatórios de Dados do Usuário.');
                 return;
             }
@@ -252,7 +316,66 @@ const AddProducts = () => {
         setActiveTab(prev => prev - 1);
     };
 
-    // Removida a função handleUserRegistration
+    const gerarProtocolo = (comprimento = 10) => {
+        let protocolo = '';
+        for (let i = 0; i < comprimento; i++) {
+            protocolo += Math.floor(Math.random() * 10);
+        }
+        return protocolo;
+    };
+
+    const gerarPDF = (protocolo, userForm, reclamacaoForm, empresaInfo) => {
+        const documentDefinition = {
+            content: [
+                {image: `${LogoProcon}`, width: 100, alignment: 'center'},
+                { text: 'PROCON CMSGA', style: 'header' },
+                { text: `Câmara Municpal de São Gonçalo do Amarante - CE`, style: 'subheader' },
+                { text: `Protocolo: ${protocolo}`, style: 'subheader' },
+                { text: '\nDados do Requerente:', style: 'sectionHeader' },
+                { text: `Nome: ${userForm.nome}`, margin: [0, 5] },
+                { text: `Email: ${userForm.email}`, margin: [0, 5] },
+                { text: `CPF: ${userForm.cpf}`, margin: [0, 5] },
+                { text: `Telefone: ${userForm.telefone}`, margin: [0, 5] },
+                { text: `Endereço: ${userForm.endereco}, ${userForm.numero} - ${userForm.bairro}, ${userForm.municipio} - ${userForm.ufEmissor}, CEP: ${userForm.cep}`, margin: [0, 5] },
+                { text: `Estado Civil: ${userForm.estadoCivil}`, margin: [0, 5] },
+                { text: `Sexo: ${userForm.sexo}`, margin: [0, 5] },
+
+                { text: '\nDados da Empresa Reclamada:', style: 'sectionHeader' },
+                { text: `CNPJ: ${reclamacaoForm.cnpj}`, margin: [0, 5] },
+                { text: `Razão Social: ${empresaInfo?.razao_social || 'Não Informado'}`, margin: [0, 5] },
+                { text: `Nome Fantasia: ${empresaInfo?.fantasia || 'Não Informado'}`, margin: [0, 5] },
+
+                { text: '\nDetalhes da Reclamação:', style: 'sectionHeader' },
+                { text: `Tipo de Reclamação: ${reclamacaoForm.tipoReclamacao}`, margin: [0, 5] },
+                { text: `Classificação: ${reclamacaoForm.classificacao}`, margin: [0, 5] },
+                { text: `Assunto da Denúncia: ${reclamacaoForm.assuntoDenuncia}`, margin: [0, 5] },
+                { text: `Procurou o Fornecedor: ${reclamacaoForm.procurouFornecedor}`, margin: [0, 5] },
+                { text: `Forma de Aquisição: ${reclamacaoForm.formaAquisicao}`, margin: [0, 5] },
+                { text: `Tipo de Contratação: ${reclamacaoForm.tipoContratacao}`, margin: [0, 5] },
+                { text: `Data da Contratação: ${reclamacaoForm.dataContratacao}`, margin: [0, 5] },
+                { text: `Nome do Serviço/Plano: ${reclamacaoForm.nomeServico}`, margin: [0, 5] },
+                { text: `Detalhes do Serviço/Plano: ${reclamacaoForm.detalheServico}`, margin: [0, 5] },
+                { text: `Tipo de Documento: ${reclamacaoForm.tipoDocumento}`, margin: [0, 5] },
+                { text: `Número do Documento: ${reclamacaoForm.numeroDoc}`, margin: [0, 5] },
+                { text: `Data da Ocorrência: ${reclamacaoForm.dataOcorrencia}`, margin: [0, 5] },
+                { text: `Data de Cancelamento/Negativa: ${reclamacaoForm.dataNegativa}`, margin: [0, 5] },
+                { text: `Forma de Pagamento: ${reclamacaoForm.formaPagamento}`, margin: [0, 5] },
+                { text: `Valor da Compra: R$ ${reclamacaoForm.valorCompra}`, margin: [0, 5] },
+                { text: `Descrição Detalhada: ${reclamacaoForm.detalhesReclamacao}`, margin: [0, 5] },
+                { text: `Pedido do Consumidor: ${reclamacaoForm.pedidoConsumidor}`, margin: [0, 5] },
+            ],
+            styles: {
+                header: { fontSize: 15, bold: true, alignment: 'center', margin: [0, 0, 0, 10] },
+                subheader: { fontSize: 12, bold: true, margin: [0, 10, 0, 5] },
+                sectionHeader: { fontSize: 10, bold: true, margin: [0, 15, 0, 5], decoration: 'underline' },
+            },
+            defaultStyle: {
+                fontSize: 10,
+            }
+        };
+
+        pdfMake.createPdf(documentDefinition).download(`reclamacao_${protocolo}.pdf`);
+    };
 
     const handleSubmitComplaint = async (e) => {
         e.preventDefault();
@@ -283,7 +406,7 @@ const AddProducts = () => {
             const docRef = await addDoc(collection(db, 'reclamacoes'), reclamacaoDataFinal);
 
             console.log('Reclamação enviada com sucesso! ID do documento:', docRef.id);
-            gerarPDF(protocolo, reclamacaoDataFinal, empresaInfo);
+            gerarPDF(protocolo, userFormData, reclamacaoFormData, empresaInfo);
             alert('Reclamação registrada com sucesso!');
             
             // Resetar o input de arquivo após o envio bem-sucedido
@@ -295,65 +418,6 @@ const AddProducts = () => {
             console.error('Erro ao enviar reclamação para o Firebase:', error);
             alert('Erro ao registrar reclamação. Tente novamente.');
         }
-    };
-
-    const gerarProtocolo = (comprimento = 10) => {
-        let protocolo = '';
-        for (let i = 0; i < comprimento; i++) {
-            protocolo += Math.floor(Math.random() * 10);
-        }
-        return protocolo;
-    };
-
-    const gerarPDF = (protocolo, formData, empresaInfo) => {
-        const documentDefinition = {
-            content: [
-                { text: 'Detalhes da Reclamação PROCON CMSGA', style: 'header' },
-                { text: `Protocolo: ${protocolo}`, style: 'subheader' },
-                { text: '\nDados do Requerente:', style: 'sectionHeader' },
-                { text: `Nome: ${userFormData.nome}`, margin: [0, 5] },
-                { text: `Email: ${userFormData.email}`, margin: [0, 5] },
-                { text: `CPF: ${userFormData.cpf}`, margin: [0, 5] },
-                { text: `Telefone: ${userFormData.telefone}`, margin: [0, 5] },
-                { text: `Endereço: ${userFormData.endereco}, ${userFormData.numero} - ${userFormData.bairro}, ${userFormData.municipio} - ${userFormData.ufEmissor}, CEP: ${userFormData.cep}`, margin: [0, 5] },
-                { text: `Estado Civil: ${userFormData.estadoCivil}`, margin: [0, 5] },
-                { text: `Sexo: ${userFormData.sexo}`, margin: [0, 5] },
-
-                { text: '\nDados da Empresa Reclamada:', style: 'sectionHeader' },
-                { text: `CNPJ: ${formData.cnpj}`, margin: [0, 5] },
-                { text: `Razão Social: ${empresaInfo?.razao_social || 'Não Informado'}`, margin: [0, 5] },
-                { text: `Nome Fantasia: ${empresaInfo?.fantasia || 'Não Informado'}`, margin: [0, 5] },
-
-                { text: '\nDetalhes da Reclamação:', style: 'sectionHeader' },
-                { text: `Tipo de Reclamação: ${formData.tipoReclamacao}`, margin: [0, 5] },
-                { text: `Classificação: ${formData.classificacao}`, margin: [0, 5] },
-                { text: `Assunto da Denúncia: ${formData.assuntoDenuncia}`, margin: [0, 5] },
-                { text: `Procurou o Fornecedor: ${formData.procurouFornecedor}`, margin: [0, 5] },
-                { text: `Forma de Aquisição: ${formData.formaAquisicao}`, margin: [0, 5] },
-                { text: `Tipo de Contratação: ${formData.tipoContratacao}`, margin: [0, 5] },
-                { text: `Data da Contratação: ${formData.dataContratacao}`, margin: [0, 5] },
-                { text: `Nome do Serviço/Plano: ${formData.nomeServico}`, margin: [0, 5] },
-                { text: `Detalhes do Serviço/Plano: ${formData.detalheServico}`, margin: [0, 5] },
-                { text: `Tipo de Documento: ${formData.tipoDocumento}`, margin: [0, 5] },
-                { text: `Número do Documento: ${formData.numeroDoc}`, margin: [0, 5] },
-                { text: `Data da Ocorrência: ${formData.dataOcorrencia}`, margin: [0, 5] },
-                { text: `Data de Cancelamento/Negativa: ${formData.dataNegativa}`, margin: [0, 5] },
-                { text: `Forma de Pagamento: ${formData.formaPagamento}`, margin: [0, 5] },
-                { text: `Valor da Compra: R$ ${formData.valorCompra}`, margin: [0, 5] },
-                { text: `Descrição Detalhada: ${formData.detalhesReclamacao}`, margin: [0, 5] },
-                { text: `Pedido do Consumidor: ${formData.pedidoConsumidor}`, margin: [0, 5] },
-            ],
-            styles: {
-                header: { fontSize: 20, bold: true, alignment: 'center', margin: [0, 0, 0, 10] },
-                subheader: { fontSize: 16, bold: true, margin: [0, 10, 0, 5] },
-                sectionHeader: { fontSize: 14, bold: true, margin: [0, 15, 0, 5], decoration: 'underline' },
-            },
-            defaultStyle: {
-                fontSize: 12,
-            }
-        };
-
-        pdfMake.createPdf(documentDefinition).download(`reclamacao_${protocolo}.pdf`);
     };
 
 
@@ -378,8 +442,20 @@ const AddProducts = () => {
                     {activeTab === 1 && (
                         <form onSubmit={(e) => { e.preventDefault(); handleNextTab(); }} className="form-section">
                             <h3>Dados do Requerente</h3>
-                            {/* Removidos messages de registrationSuccess e registrationError */}
                             
+                            {/* NOVO: Campo CPF primeiro */}
+                            <input
+                                className="form-input"
+                                type="text"
+                                name="cpf"
+                                placeholder="CPF"
+                                value={userFormData.cpf}
+                                onChange={handleUserChange}
+                                required
+                            />
+                            {loadingCpfSearch && <p className="loading-message-small">Buscando CPF...</p>}
+                            {cpfSearchError && <p className="error-message">{cpfSearchError}</p>}
+
                             <input
                                 className="form-input"
                                 type="text"
@@ -395,15 +471,6 @@ const AddProducts = () => {
                                 name="email"
                                 placeholder="Email"
                                 value={userFormData.email}
-                                onChange={handleUserChange}
-                                required
-                            />
-                            <input
-                                className="form-input"
-                                type="text"
-                                name="cpf"
-                                placeholder="CPF"
-                                value={userFormData.cpf}
                                 onChange={handleUserChange}
                                 required
                             />
@@ -513,7 +580,7 @@ const AddProducts = () => {
                                     <option key={uf} value={uf}>{uf}</option>
                                 ))}
                             </select>
-                            <button type="submit" className="buttonLogin btnNext" disabled={loadingCep}>
+                            <button type="submit" className="buttonLogin btnNext" disabled={loadingCep || loadingCpfSearch}>
                                 Próximo
                             </button>
                         </form>
@@ -760,7 +827,9 @@ const AddProducts = () => {
                             </select>
                             <div className="form-navigation-buttons">
                                 <button type="button" className="buttonLogin btnPrev" onClick={handlePrevTab}>Anterior</button>
-                                <button type="submit" className="buttonLogin btnNext">Próximo</button>
+                                <button type="submit" className="buttonLogin btnNext" disabled={loadingCnpj}>
+                                    Próximo
+                                </button>
                             </div>
                         </form>
                     )}

@@ -4,6 +4,7 @@ import { db, auth } from "../../firebase";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import MenuAdmin from "../../componets/menuAdmin";
+import Splide from "@splidejs/splide";
 
 // Dados do EmailJS
 const EMAILJS_SERVICE_ID = "service_z4k1d0m";
@@ -20,16 +21,18 @@ class ReclamacaoDetalhes extends Component {
             isLoadingData: true,
             isLoadingAuth: true,
             error: null,
-            comentarios: [], // Agora armazena objetos { text, type, timestamp, author, content(optional), fileName(optional) }
+            comentarios: [],
             situacao: "",
             novoComentario: "",
-            fileToUpload: null, // Guarda o arquivo selecionado temporariamente
-            uploadedFileName: "", // Guarda o nome do arquivo para exibição
+            fileToUpload: null,
+            uploadedFileName: "",
             isAuthorized: false,
-            emailStatus: "", // Feedback do envio de email
+            emailStatus: "",
             emailStatusType: "",
+            // currentFileIndex removido, pois o Splide gerenciará
         };
         this.navigate = props.navigate;
+        this.splideInstance = null; // Para armazenar a instância do Splide
     }
 
     componentDidMount() {
@@ -58,11 +61,49 @@ class ReclamacaoDetalhes extends Component {
         this.unsubscribeAuth = unsubscribe;
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        // Inicializa o Splide quando os arquivos da reclamação são carregados
+        if (this.state.reclamacao && this.state.reclamacao.arquivos &&
+            (!prevState.reclamacao || prevState.reclamacao.arquivos !== this.state.reclamacao.arquivos)) {
+            this.initializeSplide();
+        }
+    }
+
     componentWillUnmount() {
         if (this.unsubscribeAuth) {
             this.unsubscribeAuth();
         }
+        // Destrói a instância do Splide ao desmontar o componente
+        if (this.splideInstance) {
+            this.splideInstance.destroy();
+        }
     }
+
+    initializeSplide = () => {
+        // Garante que o Splide só seja inicializado se houver arquivos
+        const files = this.state.reclamacao?.arquivos || [];
+        if (files.length > 0 && typeof Splide !== 'undefined') {
+            if (this.splideInstance) {
+                this.splideInstance.destroy(); // Destrói a instância antiga se existir
+            }
+            this.splideInstance = new Splide('#file-carousel', {
+                type: 'slide', // Tipo de carrossel (slide, loop, fade)
+                perPage: 6, // Mostra 1 item por página
+                gap: '1rem', // Espaçamento entre os slides
+                pagination: true, // Mostra os pontos de navegação
+                arrows: true, // Mostra as setas de navegação
+                autoplay: false, // Desabilita autoplay
+                lazyLoad: 'sequential', // Carregamento lazy para imagens
+                height: '400px', // Altura fixa para o carrossel de arquivos
+                breakpoints: {
+                    768: {
+                        height: '300px',
+                    },
+                },
+            });
+            this.splideInstance.mount();
+        }
+    };
 
     async fetchReclamacao() {
         this.setState({ isLoadingData: true });
@@ -78,18 +119,17 @@ class ReclamacaoDetalhes extends Component {
             if (reclamacaoSnap.exists()) {
                 const reclamacaoData = reclamacaoSnap.data();
                 const comentariosData = reclamacaoData.comentarios || [];
-                // Garante que comentários antigos (strings) sejam formatados para o novo objeto
                 const formattedComentarios = comentariosData.map(comentario => {
                     if (typeof comentario === 'string') {
                         return {
                             text: comentario,
                             type: 'text',
-                            timestamp: new Date().toISOString(), // Usa data atual para comentários antigos sem timestamp
-                            author: 'admin@cmsga.ce.gov.br', // Assume admin para comentários antigos sem autor
-                            authorType: 'admin' // Adiciona authorType para compatibilidade
+                            timestamp: new Date().toISOString(),
+                            author: 'admin@cmsga.ce.gov.br',
+                            authorType: 'admin'
                         };
                     }
-                    return comentario; // Já é um objeto, usa como está
+                    return comentario;
                 });
 
                 this.setState({
@@ -98,7 +138,7 @@ class ReclamacaoDetalhes extends Component {
                     comentarios: formattedComentarios,
                     situacao: reclamacaoData.situacao || "EM ANALISE",
                 }, () => {
-                    this.fetchUserData(reclamacaoData); // Passa os dados da reclamação para fetchUserData
+                    this.fetchUserData(reclamacaoData);
                 });
             } else {
                 console.error("Reclamação não encontrada.");
@@ -113,14 +153,13 @@ class ReclamacaoDetalhes extends Component {
     async fetchUserData(reclamacaoData) {
         this.setState({ error: null });
         try {
-            // Prioriza os dados do usuário aninhados na reclamação
             if (reclamacaoData.userDataAtTimeOfComplaint) {
                 this.setState({ userData: reclamacaoData.userDataAtTimeOfComplaint });
                 return;
             }
 
-            // Se não houver dados aninhados, tenta buscar por userEmail
             const userEmail = reclamacaoData.userEmail;
+            console.log("Buscando dados do usuário com email:", reclamacaoData);
             if (userEmail) {
                 const usersCollection = collection(db, "users");
                 const q = query(usersCollection, where("email", "==", userEmail));
@@ -131,10 +170,9 @@ class ReclamacaoDetalhes extends Component {
                 } else {
                     this.setState({ error: "Dados do usuário não encontrados para este e-mail." });
                 }
-                return; // Sai da função após tentar buscar por e-mail
+                return;
             }
 
-            // Fallback para userId (UID do Firebase Auth) se userEmail não estiver presente
             const userId = reclamacaoData.userId;
             if (userId) {
                 const usersCollection = collection(db, "users");
@@ -239,11 +277,10 @@ class ReclamacaoDetalhes extends Component {
         }
 
         let newComentarios = [...comentarios];
-        const currentTimestamp = new Date().toISOString(); // Timestamp para a mensagem
-        const authorEmail = auth.currentUser ? auth.currentUser.email : 'admin@cmsga.ce.gov.br'; // Autor da mensagem
-        const authorType = 'admin'; // Mensagens desta página são sempre do admin
+        const currentTimestamp = new Date().toISOString();
+        const authorEmail = auth.currentUser ? auth.currentUser.email : 'admin@cmsga.ce.gov.br';
+        const authorType = 'admin';
 
-        // Declare messageForEmail e fileAttachmentNameForEmail aqui
         let messageForEmail = novoComentario;
         let fileAttachmentNameForEmail = null;
 
@@ -292,15 +329,15 @@ class ReclamacaoDetalhes extends Component {
             });
             console.log("Comentário(s) e/ou arquivo(s) adicionados com sucesso!");
 
-            // Determina o e-mail do destinatário: prioriza userEmail da reclamação, depois userData.email
             const recipientEmail = reclamacao.userEmail || userData?.email;
+            console.log("E-mail do destinatário:", recipientEmail);
 
             if (recipientEmail && reclamacao) {
                 const resultado = await this.sendEmailWithEmailJS(
-                    recipientEmail, // Usa o e-mail da reclamação ou do userData
+                    recipientEmail,
                     messageForEmail,
                     reclamacao.protocolo,
-                    userData?.nome || reclamacao.userDataAtTimeOfComplaint?.nome || "Consumidor", // Pega o nome de várias fontes
+                    userData?.nome || reclamacao.userDataAtTimeOfComplaint?.nome || "Consumidor",
                     fileAttachmentNameForEmail
                 );
 
@@ -322,7 +359,8 @@ class ReclamacaoDetalhes extends Component {
         }
     };
 
-    // Nova função para formatar data e hora para exibição no chat
+    // Funções handleNextFile e handlePrevFile removidas
+
     formatarDataHoraChat = (isoString) => {
         if (!isoString) return '';
         const date = new Date(isoString);
@@ -333,7 +371,7 @@ class ReclamacaoDetalhes extends Component {
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit',
-            hour12: false // Formato 24 horas
+            hour12: false
         };
         return date.toLocaleString('pt-BR', options);
     };
@@ -399,6 +437,8 @@ class ReclamacaoDetalhes extends Component {
             );
         }
 
+        const arquivos = reclamacao.arquivos || [];
+
         return (
             <div className="App-header">
                 <MenuAdmin />
@@ -410,21 +450,18 @@ class ReclamacaoDetalhes extends Component {
                             {/* Início da Seção de Chat */}
                             <div className="chat-container">
                                 {Array.isArray(this.state.comentarios) && this.state.comentarios.map((comentario, index) => (
-                                    // Aplica classe condicional baseada no email do autor
                                     <div
                                         key={index}
-                                        className={`chat-message ${
-                                            comentario.author === 'admin@cmsga.ce.gov.br'
-                                                ? 'admin-message mensage-admin-chat'
-                                                : 'user-message' // Assumimos que qualquer outro autor é um usuário nesta página
-                                        }`}
+                                        className={`chat-message ${comentario.author === 'admin@cmsga.ce.gov.br'
+                                            ? 'admin-message mensage-admin-chat'
+                                            : 'user-message'
+                                            }`}
                                     >
-                                        {/* Informações de data, hora e autor */}
                                         {(comentario.author) && (
                                             <p className={`chat-message-meta ${comentario.author === 'admin@cmsga.ce.gov.br' ? 'admin-message-meta' : 'user-message-meta'}`}>
                                                 {comentario.author && <span>{comentario.author}</span>}
                                             </p>
-                                        )}  
+                                        )}
                                         {comentario.type === 'text' && <p>{comentario.text}</p>}
                                         {comentario.type === 'file' && (
                                             <div>
@@ -443,7 +480,6 @@ class ReclamacaoDetalhes extends Component {
                             {/* Fim da Seção de Chat */}
 
                             {/* Área de Input do Chat, incluindo o anexo */}
-
                             <div className="chat-input-area">
                                 <div className="chat-input-situacao">
                                     <label htmlFor="situacao">Situação:</label><br />
@@ -483,7 +519,36 @@ class ReclamacaoDetalhes extends Component {
                             {/* Fim da Área de Input do Chat */}
                         </div>
 
-                        {/* Alterado para usar userData.email ou userData.uid */}
+                        {/* Seção de Slides de Arquivos com Splide */}
+                        {arquivos && arquivos.length > 0 && (
+                            <div className="file-slider-container">
+                                <h3>Arquivos Anexados</h3>
+                                <div id="file-carousel" className="splide">
+                                    <div className="splide__track">
+                                        <ul className="splide__list">
+                                            {arquivos.map((file, index) => (
+                                                <li key={index} className="splide__slide">
+                                                    <div className="file-card">
+                                                        {file.type.startsWith('image/') ? (
+                                                            <img src={file.data} alt={file.name} className="file-image" />
+                                                        ) : file.type === 'application/pdf' ? (
+                                                            <iframe src={file.data} title={file.name} className="file-pdf-iframe" />
+                                                        ) : (
+                                                            <div className="file-unsupported">
+                                                                <p>Tipo de arquivo não suportado para visualização.</p>
+                                                                <a href={file.data} download={file.name} className="download-link">Baixar {file.name}</a>
+                                                            </div>
+                                                        )}
+                                                        <p className="file-name">{file.name}</p>
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {userData && (
                             <div className="userData">
                                 <h2>Dados do requerente</h2>
@@ -496,7 +561,7 @@ class ReclamacaoDetalhes extends Component {
                                 <p><strong>Número:</strong> {userData.numero}</p>
                                 <p><strong>Complemento:</strong> {userData.complemento}</p>
                                 <p><strong>Bairro:</strong> {userData.bairro}</p>
-                                <p><strong>Cidade:</strong> {userData.municipio || userData.cidade}</p> {/* Usa municipio ou cidade */}
+                                <p><strong>Cidade:</strong> {userData.municipio || userData.cidade}</p>
                                 <p><strong>UF:</strong> {userData.ufEmissor}</p>
                             </div>
                         )}
@@ -515,7 +580,7 @@ class ReclamacaoDetalhes extends Component {
                             <p><strong>Detalhe Serviço:</strong> {reclamacao.detalheServico}</p>
                             <p><strong>Tipo Documento:</strong> {reclamacao.tipoDocumento}</p>
                             <p><strong>Número Documento:</strong> {reclamacao.numeroDoc}</p>
-                            <p><strong>Data Ocorrência:</strong> {this.formatarData(reclamacao.dataOcorrencia)}</p> {/* Corrigido de dataOcorrência para dataOcorrencia */}
+                            <p><strong>Data Ocorrência:</strong> {this.formatarData(reclamacao.dataOcorrencia)}</p>
                             <p><strong>Data Negativa:</strong> {this.formatarData(reclamacao.dataNegativa)}</p>
                             <p><strong>Forma Pagamento:</strong> {reclamacao.formaPagamento}</p>
                             <p><strong>Valor Compra:</strong> {reclamacao.valorCompra}</p>
@@ -524,9 +589,8 @@ class ReclamacaoDetalhes extends Component {
                             <p><strong>Situacao</strong> {reclamacao.situacao}</p>
                         </div>
                     </div>
-                    {this.state.pdfBase64 && (
-                        <iframe src={this.state.pdfBase64} width="100%" height="500px" title="Visualização do PDF" />
-                    )}
+
+
                 </div>
             </div>
         );

@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, auth } from "../../firebase";
-
-// Componente
 import MenuDashboard from '../../componets/menuDashboard';
+
+const MAX_FILE_SIZE = 1048576; // 1MB
 
 class ReclamacaoDetalhes extends Component {
     constructor(props) {
@@ -25,15 +25,12 @@ class ReclamacaoDetalhes extends Component {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (user) {
                 this.setState({ userData: user, loading: false }, () => {
-                    console.log(this.state.userData);
                     this.fetchReclamacao();
                 });
             } else {
-                console.error("Usuário não logado.");
                 this.setState({ loading: false, error: "Usuário não autenticado." });
             }
         });
-
         this.unsubscribeAuth = unsubscribe;
     }
 
@@ -47,20 +44,16 @@ class ReclamacaoDetalhes extends Component {
         this.setState({ loading: true });
         try {
             const reclamacaoId = localStorage.getItem('reclamacaoId');
-
             if (!reclamacaoId) {
-                console.error('ID da reclamação não encontrado no localStorage.');
                 this.setState({ loading: false });
                 return;
             }
-
             const reclamacaoRef = doc(db, 'reclamacoes', reclamacaoId);
             const reclamacaoSnap = await getDoc(reclamacaoRef);
 
             if (reclamacaoSnap.exists()) {
                 const reclamacaoData = reclamacaoSnap.data();
                 const comentariosData = reclamacaoData.comentarios || [];
-
                 const formattedComentarios = comentariosData.map(comentario => {
                     if (typeof comentario === 'string') {
                         return {
@@ -81,11 +74,9 @@ class ReclamacaoDetalhes extends Component {
                     situacao: reclamacaoData.situacao || 'EM ANALISE',
                 });
             } else {
-                console.error('Reclamação não encontrada.');
                 this.setState({ loading: false });
             }
         } catch (error) {
-            console.error('Erro ao buscar reclamação:', error);
             this.setState({ loading: false });
         }
     }
@@ -97,24 +88,15 @@ class ReclamacaoDetalhes extends Component {
     handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
+            if (file.size > MAX_FILE_SIZE) {
+                alert(`O arquivo é muito grande. O tamanho máximo permitido é ${MAX_FILE_SIZE / (1024 * 1024)}MB.`);
+                event.target.value = null;
+                this.setState({ fileToUpload: null, uploadedFileName: "" });
+                return;
+            }
             this.setState({ fileToUpload: file, uploadedFileName: file.name });
         } else {
             this.setState({ fileToUpload: null, uploadedFileName: "" });
-        }
-    };
-
-    salvarAtualizacoes = async () => {
-        try {
-            const reclamacaoId = localStorage.getItem('reclamacaoId');
-            const reclamacaoRef = doc(db, 'reclamacoes', reclamacaoId);
-
-            await updateDoc(reclamacaoRef, {
-                situacao: this.state.situacao,
-            });
-
-            console.log('Situação da reclamação atualizada com sucesso!');
-        } catch (error) {
-            console.error('Erro ao salvar situação:', error);
         }
     };
 
@@ -176,10 +158,7 @@ class ReclamacaoDetalhes extends Component {
                 uploadedFileName: '',
             });
 
-            console.log('Comentário(s) e/ou arquivo(s) adicionados com sucesso!');
-
         } catch (error) {
-            console.error('Erro ao adicionar comentário e/ou arquivo:', error);
             alert("Erro ao adicionar comentário/arquivo.");
         }
     };
@@ -203,17 +182,26 @@ class ReclamacaoDetalhes extends Component {
         if (!dataString) {
             return '';
         }
-
         const data = new Date(dataString);
         const dia = String(data.getDate()).padStart(2, '0');
         const mes = String(data.getMonth() + 1).padStart(2, '0');
         const ano = data.getFullYear();
-
         return `${dia}-${mes}-${ano}`;
     };
 
+    handleDownload = (anexo) => {
+        if (anexo && anexo.base64 && anexo.nome) {
+            const link = document.createElement('a');
+            link.href = anexo.base64;
+            link.download = anexo.nome;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    };
+
     render() {
-        const { reclamacao, loading, uploadedFileName } = this.state;
+        const { reclamacao, loading, comentarios, uploadedFileName } = this.state;
 
         if (loading) {
             return (
@@ -244,18 +232,16 @@ class ReclamacaoDetalhes extends Component {
                     <div className='infosGeral'>
                         <div className='atualizeData'>
                             <h3>Atualizações sobre a reclamação</h3>
-                            {/* Início da Seção de Chat */}
                             <div className="chat-container">
-                                {Array.isArray(this.state.comentarios) && this.state.comentarios.map((comentario, index) => (
-                                    // Aplica classe condicional baseada no authorType E no email do autor
+                                {Array.isArray(comentarios) && comentarios.map((comentario, index) => (
                                     <div
                                         key={index}
                                         className={`chat-message ${comentario.author === 'admin@cmsga.ce.gov.br'
-                                            ? (comentario.author === 'admin@cmsga.ce.gov.br' ? 'admin-message mensage-admin-chat' : 'admin-message')
+                                            ? 'admin-message mensage-admin-chat'
                                             : 'user-message'
                                             }`}
                                     >
-                                        {(comentario.author) && (
+                                        {comentario.author && (
                                             <p className={`chat-message-meta-client`}>
                                                 {comentario.author}
                                             </p>
@@ -266,20 +252,14 @@ class ReclamacaoDetalhes extends Component {
                                                 <p><strong>Arquivo anexado:</strong> <a href={comentario.content} target="_blank" rel="noopener noreferrer">{comentario.fileName}</a></p>
                                             </div>
                                         )}
-                                        {/* Informações de data, hora e autor */}
-                                        {(comentario.timestamp) && (
+                                        {comentario.timestamp && (
                                             <p className={`chat-message-meta-client`}>
-                                                {comentario.timestamp && (
-                                                    <span> {this.formatarDataHoraChat(comentario.timestamp)}</span>
-                                                )}
+                                                <span> {this.formatarDataHoraChat(comentario.timestamp)}</span>
                                             </p>
                                         )}
                                     </div>
                                 ))}
                             </div>
-                            {/* Fim da Seção de Chat */}
-
-                            {/* Área de Input do Chat, incluindo o anexo */}
                             <div className="chat-input-area">
                                 <div className="chat-input-comentario-textarea-client">
                                     <textarea
@@ -301,20 +281,9 @@ class ReclamacaoDetalhes extends Component {
                                         <p className="file-attached-message">Arquivo selecionado: {uploadedFileName}</p>
                                     )}
                                 </div>
-
                                 <button onClick={this.adicionarComentario} className="buttonLogin btnComentario">Enviar</button><br />
                             </div>
-                            {/* Fim da Área de Input do Chat */}
                         </div>
-
-                        {/* {this.state.userData && (
-                            <div className='userData'>
-                                <h2>Seus Dados</h2>
-                                <p><strong>Nome:</strong> {this.state.userData.displayName || this.state.userData.displayName}</p>
-                                <p><strong>Email:</strong> {this.state.userData.email}</p>
-                            </div>
-                        )} */}
-
                         <div className='infoData'>
                             <h2>Dados da Reclamação</h2>
                             <p><strong>Protocolo:</strong> {reclamacao.protocolo}</p>
@@ -335,12 +304,9 @@ class ReclamacaoDetalhes extends Component {
                             <p><strong>Valor Compra:</strong> {reclamacao.valorCompra}</p>
                             <p><strong>Detalhes Reclamacao:</strong> {reclamacao.detalhesReclamacao}</p>
                             <p><strong>Pedido Consumidor:</strong> {reclamacao.pedidoConsumidor}</p>
-                            <p><strong>Situação</strong> {reclamacao.situacao}</p>
+                            <p><strong>Situação:</strong> {reclamacao.situacao}</p>
                         </div>
                     </div>
-                    {this.state.pdfBase64 && (
-                        <iframe src={this.state.pdfBase64} width="100%" height="500px" title="Visualização do PDF" />
-                    )}
                 </div>
             </div>
         );
@@ -348,3 +314,8 @@ class ReclamacaoDetalhes extends Component {
 }
 
 export default ReclamacaoDetalhes;
+
+
+
+
+

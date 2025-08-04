@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth'; // Importado sendPasswordResetEmail
 import logo from '../assets/logo-SGA-procon.png';
 import { db, auth } from '../firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -11,25 +11,32 @@ const LoginClient = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
+    const [resetPasswordMessage, setResetPasswordMessage] = useState(null); // Novo estado para a mensagem de redefinição de senha
     const navigate = useNavigate();
 
+    // Função de validação de email
     const validateEmail = (email) => {
         if (!email || typeof email !== 'string') {
             return false;
         }
+        // Valida a presença e posição do '@'
         if (!email.includes('@') || email.indexOf('@') === 0 || email.indexOf('@') === email.length - 1) {
             return false;
         }
+        // Valida a presença e posição do '.'
         if (!email.includes('.') || email.indexOf('.') === 0 || email.indexOf('.') === email.length - 1) {
             return false;
         }
         return true;
     };
 
+    // Função para lidar com o login
     const handleLogin = async (e) => {
         e.preventDefault();
         setError(null);
+        setResetPasswordMessage(null); // Limpa a mensagem de redefinição de senha ao tentar fazer login
 
+        // Validações de campos
         if (!email) {
             setError('Por favor, digite seu email.');
             return;
@@ -75,6 +82,27 @@ const LoginClient = () => {
         }
     };
 
+    // Nova função para lidar com o "Esqueceu a senha?"
+    const handleForgotPassword = async (e) => {
+        e.preventDefault(); // Impede o comportamento padrão do link
+        setError(null);
+        setResetPasswordMessage(null); // Limpa a mensagem anterior
+
+        if (!email) {
+            setResetPasswordMessage('Por favor, digite seu email no campo acima para redefinir a senha.');
+            return;
+        }
+
+        try {
+            await sendPasswordResetEmail(auth, email);
+            setResetPasswordMessage('Um link de redefinição de senha foi enviado para o seu email.');
+        } catch (error) {
+            console.error("Erro ao enviar email de redefinição de senha:", error);
+            setResetPasswordMessage('Erro ao enviar o email. Verifique se o email está correto ou tente novamente mais tarde.');
+        }
+    };
+
+
     return (
         <div className="App-header loginPage">
             <div className="header-image-container image-background-login">
@@ -99,11 +127,14 @@ const LoginClient = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                    <a href="/consultas" className="linkLogin">
+                    {/* Alteração no link para chamar a nova função */}
+                    <button type="button" onClick={handleForgotPassword} className="linkLogin forgotPasswordLink">
                         Esqueceu a senha?
-                    </a>
+                    </button>
                     <input type="submit" className="buttonLogin btnLogin" value="Entrar" />
                     {error && <p style={{ color: 'red' }}>{error}</p>}
+                    {/* Exibe a nova mensagem de redefinição de senha */}
+                    {resetPasswordMessage && <p style={{ color: 'green' }}>{resetPasswordMessage}</p>}
                 </form>
                 <p>
                     Não tem uma conta?{' '}

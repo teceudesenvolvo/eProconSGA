@@ -8,9 +8,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-// Lista de UFs do Brasil (mantida para selects que possam existir na reclamação)
-
-
 const AddProducts = () => {
     // Abas: 1: Detalhes da Reclamação, 2: Anexos e Envio
     const [activeTab, setActiveTab] = useState(1); 
@@ -171,7 +168,6 @@ const AddProducts = () => {
         return protocolo;
     };
 
-<<<<<<< HEAD
     const gerarPDF = (protocolo, userProfileData, reclamacaoForm, empresaInfo) => {
         const documentDefinition = {
             content: [
@@ -214,52 +210,6 @@ const AddProducts = () => {
                 header: { fontSize: 20, bold: true, alignment: 'center', margin: [0, 0, 0, 10] },
                 subheader: { fontSize: 16, bold: true, margin: [0, 10, 0, 5] },
                 sectionHeader: { fontSize: 14, bold: true, margin: [0, 15, 0, 5], decoration: 'underline' },
-=======
-    const gerarPDF = (protocolo, formData, arquivosBase64) => {
-        const content = [
-            { text: 'Protocolo: ' + protocolo, style: 'header' },
-            { text: 'Tipo de Reclamação: ' + formData.tipoReclamacao },
-            { text: 'Classificação: ' + formData.classificacao },
-            { text: 'Assunto da Denúncia: ' + formData.assuntoDenuncia },
-            { text: 'CNPJ da Empresa: ' + formData.cnpj },
-            { text: 'Nome da Empresa: ' + (empresaInfo?.razao_social || 'Não Informado') },
-            { text: 'Procurou o Fornecedor? ' + formData.procurouFornecedor },
-            { text: 'Forma de Aquisição: ' + formData.formaAquisicao },
-            { text: 'Tipo de Contratação: ' + formData.tipoContratacao },
-            { text: 'Data da Contratação: ' + formData.dataContratacao },
-            { text: 'Nome do Serviço/Plano: ' + formData.nomeServico },
-            { text: 'Detalhes do Serviço/Plano: ' + formData.detalheServico },
-            { text: 'Tipo de Documento: ' + formData.tipoDocumento },
-            { text: 'Número do Documento: ' + formData.numeroDoc },
-            { text: 'Data da Ocorrência: ' + formData.dataOcorrencia },
-            { text: 'Data de Cancelamento/Desistência/Negativa: ' + formData.dataNegativa },
-            { text: 'Forma de Pagamento: ' + formData.formaPagamento },
-            { text: 'Valor da Compra: ' + formData.valorCompra },
-            { text: 'Detalhes da Reclamação: ' + formData.detalhesReclamacao },
-            { text: 'Pedido do Consumidor: ' + formData.pedidoConsumidor },
-            // Adicione outros campos conforme necessário
-            { text: '\nAnexos:', style: 'subheader' },
-        ];
-
-        arquivosBase64.forEach(arquivo => {
-            content.push({ text: arquivo.name, style: 'italics' });
-            if (arquivo.type.startsWith('image/')) {
-                content.push({ image: arquivo.data, width: 200 });
-            } else if (arquivo.type === 'application/pdf') {
-                content.push({ text: '[Arquivo PDF anexado]', style: 'italics' });
-                // Em PDFMake, geralmente não se incorpora o PDF diretamente como imagem.
-                // Você pode adicionar um link ou apenas indicar que um PDF foi anexado.
-            }
-            content.push({ text: '\n' });
-        });
-
-        const documentDefinition = {
-            content: content,
-            styles: {
-                header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
-                subheader: { fontSize: 14, bold: true, margin: [0, 10, 0, 5] },
-                italics: { italics: true },
->>>>>>> refs/remotes/origin/main
             },
             defaultStyle: {
                 fontSize: 12,
@@ -269,7 +219,6 @@ const AddProducts = () => {
         pdfMake.createPdf(documentDefinition).download(`reclamacao_${protocolo}.pdf`);
     };
 
-<<<<<<< HEAD
     const handleNextTab = () => {
         // Validação da aba atual antes de avançar
         if (activeTab === 1) { // Detalhes da Reclamação
@@ -278,32 +227,6 @@ const AddProducts = () => {
                 alert('Por favor, preencha todos os campos obrigatórios de Detalhes da Reclamação.');
                 return;
             }
-=======
-    const enviarReclamacaoParaFirebase = async (data, protocolo, arquivos) => {
-        try {
-            const userId = localStorage.getItem('userId');
-
-            if (!userId) {
-                console.error('Usuário não autenticado.');
-                return;
-            }
-
-            const reclamacaoData = {
-                ...data,
-                userId: userId,
-                cpf: '', // Você pode querer buscar o CPF do localStorage ou de outro lugar
-                timestamp: new Date(),
-                protocolo: protocolo,
-                nomeEmpresaReclamada: empresaInfo?.razao_social || '',
-                arquivos: arquivos.map(file => ({ name: file.name, type: file.type })), // Salva apenas metadados dos arquivos no Firestore
-            };
-
-            const docRef = await addDoc(collection(db, 'reclamacoes'), reclamacaoData);
-
-            console.log('Reclamação enviada com sucesso! ID do documento:', docRef.id);
-        } catch (error) {
-            console.error('Erro ao enviar reclamação para o Firebase:', error);
->>>>>>> refs/remotes/origin/main
         }
         setActiveTab(prev => prev + 1);
     };
@@ -319,7 +242,6 @@ const AddProducts = () => {
         const userEmail = loggedInUserData?.email; // E-mail do usuário logado (obtido dos dados do perfil)
         const timestamp = new Date().toISOString(); // Data e hora da reclamação
         const protocolo = gerarProtocolo();
-<<<<<<< HEAD
 
         if (!userId || !userEmail || !loggedInUserData) {
             alert('Erro: Dados do usuário logado não disponíveis. Por favor, tente novamente ou faça login.');
@@ -352,12 +274,6 @@ const AddProducts = () => {
             console.error('Erro ao enviar reclamação para o Firebase:', error);
             alert('Erro ao registrar reclamação. Tente novamente.');
         }
-=======
-        await enviarReclamacaoParaFirebase(formData, protocolo, formData.arquivos);
-        gerarPDF(protocolo, formData, formData.arquivos);
-        console.log(formData);
-        window.location.pathname = '/meus-atendimentos';
->>>>>>> refs/remotes/origin/main
     };
 
     if (loadingLoggedInUserData) {
@@ -466,8 +382,6 @@ const AddProducts = () => {
                                     {empresaInfo.fantasia && ` (${empresaInfo.fantasia})`}
                                 </p>
                             )}
-                            <br />
-                            <label className="labelform-materia">Detalhes da Reclamação</label>
                             <br />
                             <select
                                 name="procurouFornecedor"

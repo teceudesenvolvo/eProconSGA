@@ -1,7 +1,16 @@
 {
   "functions": {
     "pages/api/*.js": {
-      "runtime": "@vercel/node@18.x"
+      "runtime": "nodejs18.x"
     }
-  }
+  },
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": "node_modules/canvas/build/**"
+      }
+    }
+  ]
 }

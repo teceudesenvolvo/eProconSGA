@@ -1,5 +1,5 @@
 {
-  "name": "eCamara",
+  "name": "procon-cmsga",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -54,7 +54,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "postinstall": "apt-get update && apt-get install -y libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev"
   },
   "eslintConfig": {
     "extends": [

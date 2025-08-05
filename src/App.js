@@ -19,6 +19,7 @@ import Login from '../src/screens/login'; // Caminho corrigido
 import Atendimentos from '../src/screens/admin/atendimentosTodos'; // Caminho corrigido
 import Atendimento from '../src/screens/admin/atendimento'; // Caminho corrigido
 import CriarChamado from '../src/screens/admin/createChamadoAdmin'; // Caminho corrigido
+import Painel from '../src/screens/admin/dashboard'; // Caminho corrigido
 
 // Usuário Logado
 import MeusAgendamentos from '../src/screens/client/meusAtendimentos'; // Caminho corrigido
@@ -51,6 +52,7 @@ function App() {
           <Route path="/atendimentos-sga-hyo6d27" element={<Atendimentos />} />
           <Route path="/atendimento-sga-ppi6g59" element={<Atendimento />} />
           <Route path="/criar-chamado" element={<CriarChamado />} />
+          <Route path="/painel" element={<Painel />} />
 
           {/* Páginas Usuário Logado */}
           <Route path="/meus-atendimentos" element={<MeusAgendamentos />} />

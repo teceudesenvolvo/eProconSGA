@@ -4,7 +4,6 @@ import { db, auth } from "../../firebase";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import MenuAdmin from "../../componets/menuAdmin";
-import Splide from "@splidejs/splide";
 
 // Dados do EmailJS
 const EMAILJS_SERVICE_ID = "service_z4k1d0m";
@@ -29,10 +28,11 @@ class ReclamacaoDetalhes extends Component {
             isAuthorized: false,
             emailStatus: "",
             emailStatusType: "",
-            // currentFileIndex removido, pois o Splide gerenciará
+            // Novos estados para controlar o modal
+            showModal: false,
+            modalFile: null,
         };
         this.navigate = props.navigate;
-        this.splideInstance = null; // Para armazenar a instância do Splide
     }
 
     componentDidMount() {
@@ -61,49 +61,11 @@ class ReclamacaoDetalhes extends Component {
         this.unsubscribeAuth = unsubscribe;
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        // Inicializa o Splide quando os arquivos da reclamação são carregados
-        if (this.state.reclamacao && this.state.reclamacao.arquivos &&
-            (!prevState.reclamacao || prevState.reclamacao.arquivos !== this.state.reclamacao.arquivos)) {
-            this.initializeSplide();
-        }
-    }
-
     componentWillUnmount() {
         if (this.unsubscribeAuth) {
             this.unsubscribeAuth();
         }
-        // Destrói a instância do Splide ao desmontar o componente
-        if (this.splideInstance) {
-            this.splideInstance.destroy();
-        }
     }
-
-    initializeSplide = () => {
-        // Garante que o Splide só seja inicializado se houver arquivos
-        const files = this.state.reclamacao?.arquivos || [];
-        if (files.length > 0 && typeof Splide !== 'undefined') {
-            if (this.splideInstance) {
-                this.splideInstance.destroy(); // Destrói a instância antiga se existir
-            }
-            this.splideInstance = new Splide('#file-carousel', {
-                type: 'slide', // Tipo de carrossel (slide, loop, fade)
-                perPage: 6, // Mostra 1 item por página
-                gap: '1rem', // Espaçamento entre os slides
-                pagination: true, // Mostra os pontos de navegação
-                arrows: true, // Mostra as setas de navegação
-                autoplay: false, // Desabilita autoplay
-                lazyLoad: 'sequential', // Carregamento lazy para imagens
-                height: '400px', // Altura fixa para o carrossel de arquivos
-                breakpoints: {
-                    768: {
-                        height: '300px',
-                    },
-                },
-            });
-            this.splideInstance.mount();
-        }
-    };
 
     async fetchReclamacao() {
         this.setState({ isLoadingData: true });
@@ -359,7 +321,21 @@ class ReclamacaoDetalhes extends Component {
         }
     };
 
-    // Funções handleNextFile e handlePrevFile removidas
+    // Função para abrir o modal com o arquivo clicado
+    handleFileClick = (file) => {
+        this.setState({
+            showModal: true,
+            modalFile: file,
+        });
+    };
+
+    // Função para fechar o modal
+    handleCloseModal = () => {
+        this.setState({
+            showModal: false,
+            modalFile: null,
+        });
+    };
 
     formatarDataHoraChat = (isoString) => {
         if (!isoString) return '';
@@ -388,7 +364,7 @@ class ReclamacaoDetalhes extends Component {
     };
 
     render() {
-        const { reclamacao, isLoadingData, situacao, isAuthorized, isLoadingAuth, emailStatus, emailStatusType, uploadedFileName, userData } = this.state;
+        const { reclamacao, isLoadingData, situacao, isAuthorized, isLoadingAuth, emailStatus, emailStatusType, uploadedFileName, userData, showModal, modalFile } = this.state;
         const emailStatusClass = emailStatusType === "success" ? "email-status-success" :
             emailStatusType === "error" ? "email-status-error" : "";
 
@@ -519,32 +495,20 @@ class ReclamacaoDetalhes extends Component {
                             {/* Fim da Área de Input do Chat */}
                         </div>
 
-                        {/* Seção de Slides de Arquivos com Splide */}
+                        {/* Seção de Botões de Arquivos Anexados */}
                         {arquivos && arquivos.length > 0 && (
-                            <div className="file-slider-container">
+                            <div className="file-buttons-container">
                                 <h3>Arquivos Anexados</h3>
-                                <div id="file-carousel" className="splide">
-                                    <div className="splide__track">
-                                        <ul className="splide__list">
-                                            {arquivos.map((file, index) => (
-                                                <li key={index} className="splide__slide">
-                                                    <div className="file-card">
-                                                        {file.type.startsWith('image/') ? (
-                                                            <img src={file.data} alt={file.name} className="file-image" />
-                                                        ) : file.type === 'application/pdf' ? (
-                                                            <iframe src={file.data} title={file.name} className="file-pdf-iframe" />
-                                                        ) : (
-                                                            <div className="file-unsupported">
-                                                                <p>Tipo de arquivo não suportado para visualização.</p>
-                                                                <a href={file.data} download={file.name} className="download-link">Baixar {file.name}</a>
-                                                            </div>
-                                                        )}
-                                                        <p className="file-name">{file.name}</p>
-                                                    </div>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
+                                <div className="file-buttons-list">
+                                    {arquivos.map((file, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() => this.handleFileClick(file)}
+                                            className="file-link-button"
+                                        >
+                                            {file.name}
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
                         )}
@@ -589,9 +553,29 @@ class ReclamacaoDetalhes extends Component {
                             <p><strong>Situacao</strong> {reclamacao.situacao}</p>
                         </div>
                     </div>
-
-
                 </div>
+
+                {/* Modal para visualização de arquivos */}
+                {showModal && modalFile && (
+                    <div className="modal-overlay">
+                        <div className="modal-content">
+                            <button className="modal-close-button" onClick={this.handleCloseModal}>&times;</button>
+                            <h4>{modalFile.name}</h4>
+                            <div className="modal-body">
+                                {modalFile.type.startsWith('image/') ? (
+                                    <img src={modalFile.data} alt={modalFile.name} className="modal-image" />
+                                ) : modalFile.type === 'application/pdf' ? (
+                                    <iframe src={modalFile.data} title={modalFile.name} className="modal-pdf-iframe" />
+                                ) : (
+                                    <div className="modal-unsupported">
+                                        <p>Tipo de arquivo não suportado para visualização.</p>
+                                        <a href={modalFile.data} download={modalFile.name} className="download-link">Baixar {modalFile.name}</a>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         );
     }

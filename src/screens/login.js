@@ -73,7 +73,7 @@ const LoginClient = () => {
 
             // Redirecionamento condicional
             if (email === 'admin@cmsga.ce.gov.br') {
-                navigate('/atendimentos-sga-hyo6d27');
+                navigate('/painel');
             } else {
                 navigate('/meus-atendimentos');
             }

@@ -8,7 +8,8 @@ import Logo from '../assets/logoLaranga.png';
 // Icones
 import {
     FaAddressBook ,
-    FaRegUser
+    FaRegUser,
+    FaBuffer
     // FaPlusCircle ,
     // FaBook
 } from "react-icons/fa";
@@ -24,6 +25,7 @@ class MenuDashboard extends Component { // Renomeado para MenuDashboard para con
         super(props)
         this.state = {
             linkMenu: 'aDesktop',
+            linkMenu0: 'aDesktop',
             linkMenu1: 'aDesktop',
             linkMenu2: 'aDesktop',
             linkMenu3: 'aDesktop',
@@ -37,8 +39,10 @@ class MenuDashboard extends Component { // Renomeado para MenuDashboard para con
 
     btnHome = () => {
         switch (this.state.window) {
-            case `/atendimentos-sga-hyo6d27`:
+            case `/painel`:
                 return this.setState({ linkMenu: 'aDesktop link-desktop-active' })
+            case `/atendimentos-sga-hyo6d27`:
+                return this.setState({ linkMenu0: 'aDesktop link-desktop-active' })
             case `/agendar-atendimento`:
                 return this.setState({ linkMenu1: 'aDesktop link-desktop-active' })
             case `/registrar-reclamacao`:
@@ -111,10 +115,17 @@ class MenuDashboard extends Component { // Renomeado para MenuDashboard para con
         return (
             <nav className='menuDashboard'>
 
-                <a href="/atendimentos-sga-hyo6d27" className={this.state.linkMenu}>
+                <a href="/painel" className={this.state.linkMenu}>
+                    <FaBuffer className='fas fa-home'></FaBuffer>
+                    <span className='nav-item'>Painel</span>
+                </a>
+
+                <a href="/atendimentos-sga-hyo6d27" className={this.state.linkMenu0}>
                     <FaAddressBook className='fas fa-home'></FaAddressBook>
                     <span className='nav-item'>Atendimentos</span>
                 </a>
+
+                
 
                 {/* <a href="/agendar-atendimento" className={this.state.linkMenu1}>
                     <FaBook className='fas fa-home'></FaBook>
@@ -133,7 +144,7 @@ class MenuDashboard extends Component { // Renomeado para MenuDashboard para con
                 </a> 
 
 
-                <a href='/homeDashboard' className="logoDashbord" >
+                <a href='/painel' className="logoDashbord" >
                     <img src={Logo} alt="logomarca" ></img>
                     {/* <h1 className='h1-logo'>| List</h1> */}
                 </a>

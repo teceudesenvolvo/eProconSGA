@@ -2991,150 +2991,140 @@ video {
   }
 }
 
-
-
-/* Estilos para o container principal do slide de arquivos */
-.file-slider-container {
-  background-color: #ffffff;
-  border-radius: 12px;
-  padding: 30px;
-  margin: 0 auto;
-  width: 90%;
-  text-align: center;
+/* Estilos para o container dos botões de arquivo */
+.file-buttons-container {
+    margin-top: 2rem;
+    padding: 1.5rem;
 }
 
-.file-slider-container h3 {
-  font-size: 15px;
-  color: #0056b3;
-  margin: 20px auto;
-  display: none;
+.file-buttons-container h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937; /* Cor de texto mais escura para o título */
+    margin-bottom: 1rem;
 }
 
-/* Wrapper para o slide e botões de navegação */
-.file-slide-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-  /* Espaçamento entre os botões e o card */
-  position: relative;
-  /* Para posicionar os botões */
+/* Estilos para a lista de botões (flexbox para alinhamento) */
+.file-buttons-list {
+    display: flex;
+    flex-wrap: wrap; /* Permite que os botões quebrem para a próxima linha em telas menores */
+    gap: 1rem; /* Espaço entre os botões */
 }
 
-/* Estilos para os botões de navegação do slide */
-.slider-button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  /* Botões redondos */
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5em;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  z-index: 10;
-  /* Garante que os botões fiquem acima do card */
+/* Estilos para cada botão de link de arquivo */
+.file-link-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem; /* Aumenta o padding para botões maiores */
+    background-color: #006aff; /* Cor de fundo principal */
+    color: #ffffff; /* Cor do texto */
+    text-decoration: none; /* Remove o sublinhado padrão dos links */
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease; /* Adiciona uma transição suave para os efeitos */
+    text-align: center;
+    border: none;
+    cursor: pointer;
 }
 
-.slider-button:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
+/* Efeito ao passar o mouse */
+.file-link-button:hover {
+    background-color: #0056e0; /* Cor de fundo mais escura no hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px); /* Efeito de elevação sutil */
 }
 
-.slider-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-  box-shadow: none;
+/* Efeito ao clicar no botão */
+.file-link-button:active {
+    background-color: #0045b3; /* Cor de fundo ainda mais escura no clique */
+    transform: translateY(0); /* Remove o efeito de elevação */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.splide__arrows--ltr {
-  display: none !important;
+/* Estilos do Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Fundo escuro semi-transparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
-/* Estilos para o card de arquivo individual */
-.file-card {
-  border-radius: 10px;
-  padding: 20px;
-  width: 50%;
-  height: 350px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.file-image {
-  max-width: 100%;
-  max-height: 80%;
-  /* Ocupa a maior parte do card */
-  object-fit: contain;
-  /* Redimensiona a imagem para caber sem cortar */
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-
-.file-pdf-iframe {
-  width: 100%;
-  height: 80%;
-  border: none;
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-
-.file-unsupported {
-  text-align: center;
-  color: #666;
-  font-size: 0.9em;
-}
-
-.file-unsupported .download-link {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 8px 15px;
-  background-color: #28a745;
-  color: white;
-  text-decoration: none;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
-
-.file-unsupported .download-link:hover {
-  background-color: #218838;
-}
-
-.file-name {
-  color: #333;
-  margin-top: 10px;
-  font-size: 10px;
-  word-break: break-all;
-}
-
-/* Media Queries para responsividade */
-@media (max-width: 768px) {
-  .file-slide-wrapper {
+.modal-content {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 50%;
+    max-height: 90%;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    display: flex;
     flex-direction: column;
-    /* Botões acima/abaixo do card em telas pequenas */
-    gap: 10px;
-  }
-
-  .slider-button {
-    width: 35px;
-    height: 35px;
-    font-size: 1.2em;
-  }
-
-  .file-card {
-    max-width: 100%;
-    height: 300px;
-    /* Ajusta a altura para telas menores */
-  }
 }
+
+.modal-content h4 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.modal-close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #6b7280;
+    transition: color 0.2s ease;
+}
+
+.modal-close-button:hover {
+    color: #1f2937;
+}
+
+.modal-body {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.modal-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: contain;
+}
+
+.modal-pdf-iframe {
+    width: 100%;
+    height: 80vh; /* Ajuste a altura conforme necessário */
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.modal-unsupported {
+    padding: 2rem;
+    text-align: center;
+    font-size: 1rem;
+    color: #6b7280;
+}
+
+.modal-unsupported a {
+    margin-top: 1rem;
+    display: inline-block;
+}
+
 
 .minhasCompras {
   width: 90%;
@@ -3940,8 +3930,182 @@ video {
 
 
 
+/* Página Painel Dashboard */
 
 
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+.loading-text {
+  font-size: 1.25rem;
+  color: #6b7280;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+}
+
+.dashboard-container {
+  padding: 1.5rem;
+  background-color: #f9fafb;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  color: #1f2937;
+}
+
+.dashboard-content {
+  max-width: 80rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.dashboard-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  text-align: left;
+}
+
+@media (min-width: 640px) {
+  .dashboard-header {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.header-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #111827;
+}
+
+.header-subtitle {
+  color: #6b7280;
+}
+
+.user-id-box {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+@media (min-width: 640px) {
+  .user-id-box {
+    margin-top: 0;
+  }
+}
+
+.user-id-value {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: #4f46e5;
+}
+
+.main-tabs-container {
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 0.5rem;
+}
+
+.main-tabs-header {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.main-tab-button {
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition-property: color;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  color: #6b7280;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.main-tab-button:hover {
+  color: #4b5563;
+}
+
+.main-tab-button.active {
+  border-bottom: 2px solid #4f46e5;
+  color: #4f46e5;
+}
+
+.tab-content {
+  padding: 1rem;
+}
+
+.sub-tabs-container {
+  background-color: #f3f4f6;
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.sub-tab-button {
+  flex: 1 1 0%;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition-property: color, background-color;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  color: #4b5563;
+  white-space: nowrap;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.sub-tab-button:hover {
+  background-color: #e5e7eb;
+}
+
+.sub-tab-button.active {
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  color: #4f46e5;
+}
+
+.chart-card {
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+}
+
+.chart-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.chart-subtitle {
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.chart-container {
+  height: 24rem;
+}
 
 
 

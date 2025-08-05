@@ -6,8 +6,5 @@
       "use": "@vercel/static-build"
     }
   ],
-  "outputDirectory": "build",
-  "node": {
-    "version": "20.x"
-  }
+  "outputDirectory": "build"
 }

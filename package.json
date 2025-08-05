@@ -1,8 +1,9 @@
 {
-  "name": "eCamara",
+  "name": "procon-cmsga",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "canvas": "^2.11.2",
     "@chakra-ui/react": "^3.15.0",
     "@date-io/dayjs": "^2.15.0",
     "@date-io/luxon": "^2.15.0",
@@ -86,6 +87,6 @@
     "tailwindcss": "^4.1.11"
   },
   "engines": {
-    "node": "22.x"
+    "node": "18.x"
   }
 }

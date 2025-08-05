@@ -1,10 +1,7 @@
 {
-  "installCommand": "sudo apt-get update && sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev && npm install --unsafe-perm",
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build"
+  "functions": {
+    "pages/api/*.js": {
+      "runtime": "@vercel/node@18.x"
     }
-  ],
-  "outputDirectory": "build"
+  }
 }

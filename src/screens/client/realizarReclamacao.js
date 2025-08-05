@@ -6,8 +6,6 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-// A CORREÇÃO ESTÁ AQUI: O objeto 'pdfFonts' já contém diretamente a propriedade 'vfs'.
-// A linha correta para atribuir as fontes é a abaixo:
 pdfMake.vfs = pdfFonts.vfs;
 
 const AddProducts = () => {

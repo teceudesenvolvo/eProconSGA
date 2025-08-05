@@ -7,7 +7,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import MenuAdmin from '../../componets/menuAdmin'; 
 import LogoProcon from '../../assets/Procon-logo03.png'; // Importe a logo do Procon
 
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+pdfMake.vfs = pdfFonts.vfs;
 
 // Lista de UFs do Brasil
 const ufsBrasil = [

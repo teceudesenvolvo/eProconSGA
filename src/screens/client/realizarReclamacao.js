@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import MenuDashboard from '../../componets/menuDashboard';
-import { collection, addDoc, query, where, getDocs } from 'firebase/firestore'; // Adicionado query, where, getDocs
+import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+// A CORREÇÃO ESTÁ AQUI: O objeto 'pdfFonts' já contém diretamente a propriedade 'vfs'.
+// A linha correta para atribuir as fontes é a abaixo:
+pdfMake.vfs = pdfFonts.vfs;
 
 const AddProducts = () => {
     // Abas: 1: Detalhes da Reclamação, 2: Anexos e Envio

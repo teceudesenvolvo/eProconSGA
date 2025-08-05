@@ -86,6 +86,6 @@
     "tailwindcss": "^4.1.11"
   },
   "engines": {
-    "node": "18.x"
+    "node": "22.x"
   }
 }

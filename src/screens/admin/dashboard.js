@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithCustomToken, onAuthStateChanged, signInAnonymously } from 'firebase/auth';
-import { getFirestore, collection, onSnapshot, doc, setDoc } from 'firebase/firestore';
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { getFirestore, collection, onSnapshot, addDoc } from 'firebase/firestore';
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-// Componentes 
-import MenuAdmin from '../../componets/menuAdmin'; 
+// Componentes
+import MenuAdmin from '../../componets/menuAdmin';
 
 // Configuração do Firebase
 const firebaseConfig = {
@@ -24,76 +24,73 @@ const initialAuthToken = null;
 
 // Usamos o projectId da sua configuração como o appId para os caminhos do Firestore.
 const appId = firebaseConfig.projectId;
+console.log("App ID (projectId):", appId);
 
 // Função auxiliar para gerar dados de exemplo se a coleção estiver vazia
-const generateMockData = async (db, collectionName, userId) => {
+const generateMockData = async (db, collectionName) => {
   const collectionRef = collection(db, collectionName);
   
   if (collectionName.includes('reclamacoes')) {
-    const statuses = ['Em Analise', 'Em Negociação', 'Pendente', 'Finalizada'];
+    const statuses = ['Em Análise', 'Em Negociação', 'Pendente', 'Finalizada'];
+    console.log("Gerando dados de exemplo para Reclamações...");
     for (let i = 0; i < 50; i++) {
       const dateOffset = Math.floor(Math.random() * 365) * 24 * 60 * 60 * 1000;
-      await setDoc(doc(collectionRef), {
-        status: statuses[Math.floor(Math.random() * statuses.length)],
+      await addDoc(collectionRef, {
+        situacao: statuses[Math.floor(Math.random() * statuses.length)],
         createdAt: new Date(Date.now() - dateOffset),
-        userId: userId,
       });
     }
+    console.log("Dados de exemplo de Reclamações gerados com sucesso.");
   } else if (collectionName.includes('usuarios')) {
+    console.log("Gerando dados de exemplo para Usuários...");
     for (let i = 0; i < 100; i++) {
       const dateOffset = Math.floor(Math.random() * 365) * 24 * 60 * 60 * 1000;
-      await setDoc(doc(collectionRef), {
+      await addDoc(collectionRef, {
         email: `user_${Math.floor(Math.random() * 10000)}@example.com`,
         createdAt: new Date(Date.now() - dateOffset),
-        userId: userId,
       });
     }
+    console.log("Dados de exemplo de Usuários gerados com sucesso.");
   }
 };
 
 function App() {
   const [db, setDb] = useState(null);
   const [auth, setAuth] = useState(null);
-  console.log(auth)
+  console.log("Estado do Auth:", auth);
   const [userId, setUserId] = useState(null);
   const [reclamacoes, setReclamacoes] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [usuariosTab, setUsuariosTab] = useState('diario');
   const [mainTab, setMainTab] = useState('reclamacoes');
-  // Novo estado para o filtro de status das reclamações
   const [selectedStatus, setSelectedStatus] = useState('Todas');
 
   // Processamento de dados para o gráfico de Reclamações com filtro
   const getReclamacoesChartData = useCallback(() => {
-    const allPossibleStatuses = ['Em Analise', 'Pendente', 'Finalizada', 'Em Negociação'];
+    const allPossibleStatuses = ['Em Análise', 'Pendente', 'Finalizada', 'Em Negociação'];
     
-    // Inicializa a contagem de todos os status como zero
     const statusCounts = {};
     allPossibleStatuses.forEach(status => statusCounts[status] = 0);
 
-    // Se 'Todas' for selecionado, conta todas as reclamações por status
-    if (selectedStatus === 'Todas') {
-      reclamacoes.forEach(r => {
-        const status = r.status || 'Sem Status';
-        if (statusCounts.hasOwnProperty(status)) {
-          statusCounts[status]++;
+    reclamacoes.forEach(r => {
+        const situacao = r.situacao;
+        if (situacao && statusCounts.hasOwnProperty(situacao)) {
+            statusCounts[situacao]++;
         }
-      });
-    } else {
-      // Se um status específico for selecionado, conta apenas esse status e mantém os outros zerados
-      reclamacoes.forEach(r => {
-        if (r.status === selectedStatus) {
-          statusCounts[selectedStatus]++;
-        }
-      });
-    }
+    });
 
-    // Formata os dados para o gráfico
-    return Object.keys(statusCounts).map(status => ({
-      name: status,
-      count: statusCounts[status]
-    }));
+    if (selectedStatus === 'Todas') {
+        return Object.keys(statusCounts).map(status => ({
+            name: status,
+            count: statusCounts[status]
+        }));
+    } else {
+        return [{
+            name: selectedStatus,
+            count: statusCounts[selectedStatus] || 0
+        }];
+    }
   }, [reclamacoes, selectedStatus]);
 
   // Processamento de dados para os gráficos de Usuários
@@ -135,15 +132,19 @@ function App() {
       const authInstance = getAuth(app);
       setDb(firestore);
       setAuth(authInstance);
+      console.log("Firebase inicializado. Aguardando autenticação...");
 
       // Listener para o estado de autenticação.
       const unsubscribeAuth = onAuthStateChanged(authInstance, async (user) => {
         if (user) {
           setUserId(user.uid);
+          console.log("Usuário autenticado. userId:", user.uid);
         } else {
+          console.log("Nenhum usuário logado. Tentando login anônimo...");
           if (!initialAuthToken) {
             try {
               await signInAnonymously(authInstance);
+              console.log("Login anônimo bem-sucedido.");
             } catch (error) {
               console.error("Erro ao fazer login anônimo:", error);
             }
@@ -168,15 +169,23 @@ function App() {
 
   // Busca de dados em tempo real para 'reclamacoes'
   useEffect(() => {
-    if (!db || !userId) return;
+    if (!db || !userId) {
+      console.log("Busca de reclamações não iniciada: db ou userId não estão prontos.");
+      return;
+    }
+    
+    // Caminho da coleção corrigido para "reclamacoes"
+    const reclamacoesColPath = `reclamacoes`;
+    console.log("Tentando buscar dados de reclamações no caminho:", reclamacoesColPath);
 
-    const reclamacoesColRef = collection(db, `artifacts/${appId}/users/${userId}/reclamacoes`);
+    const reclamacoesColRef = collection(db, reclamacoesColPath);
     const unsubscribe = onSnapshot(reclamacoesColRef, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setReclamacoes(data);
+      console.log("Reclamações recebidas:", data);
       if (snapshot.empty) {
         console.log("Nenhuma reclamação encontrada. Gerando dados de exemplo...");
-        generateMockData(db, `artifacts/${appId}/users/${userId}/reclamacoes`, userId);
+        generateMockData(db, reclamacoesColPath);
       }
     }, (error) => {
       console.error("Erro ao buscar reclamações:", error);
@@ -187,15 +196,23 @@ function App() {
 
   // Busca de dados em tempo real para 'usuarios'
   useEffect(() => {
-    if (!db || !userId) return;
+    if (!db || !userId) {
+      console.log("Busca de usuários não iniciada: db ou userId não estão prontos.");
+      return;
+    }
 
-    const usersColRef = collection(db, `artifacts/${appId}/users/${userId}/usuarios`);
+    // Caminho da coleção corrigido para "usuarios"
+    const usersColPath = `usuarios`;
+    console.log("Tentando buscar dados de usuários no caminho:", usersColPath);
+
+    const usersColRef = collection(db, usersColPath);
     const unsubscribe = onSnapshot(usersColRef, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setUsers(data);
+      console.log("Usuários recebidos:", data);
       if (snapshot.empty) {
         console.log("Nenhum usuário encontrado. Gerando dados de exemplo...");
-        generateMockData(db, `artifacts/${appId}/users/${userId}/usuarios`, userId);
+        generateMockData(db, usersColPath);
       }
     }, (error) => {
       console.error("Erro ao buscar usuários:", error);
@@ -213,7 +230,20 @@ function App() {
   }[usuariosTab];
 
   // Lista de status para os botões de filtro
-  const statusFilters = ['Todas', 'Em Analise', 'Pendente', 'Finalizada', 'Em Negociação'];
+  const statusFilters = ['Todas', 'Em Análise', 'Pendente', 'Finalizada', 'Em Negociação'];
+
+  // Componente de Tooltip personalizado para o gráfico de linhas
+  const CustomReclamacoesTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="custom-tooltip">
+          <p className="label">{`Status: ${label}`}</p>
+          <p className="intro">{`Total de Reclamações: ${payload[0].value}`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
   
   if (loading || !userId) {
     return (
@@ -267,7 +297,7 @@ function App() {
                   ))}
                 </div>
 
-                {/* Conteúdo do gráfico de Reclamações */}
+                {/* Conteúdo do gráfico de Reclamações (Line Chart) */}
                 <div className="chart-card">
                   <h2 className="chart-title">
                     Reclamações por Status ({selectedStatus})
@@ -277,13 +307,13 @@ function App() {
                   </p>
                   <div className="chart-container">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={reclamacoesChartData}>
+                      <LineChart data={reclamacoesChartData}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" />
                         <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="count" fill="#006aff" radius={[10, 10, 0, 0]} />
-                      </BarChart>
+                        <Tooltip content={<CustomReclamacoesTooltip />} />
+                        <Line type="monotone" dataKey="count" stroke="#8884d8" activeDot={{ r: 8 }} />
+                      </LineChart>
                     </ResponsiveContainer>
                   </div>
                 </div>
@@ -305,7 +335,7 @@ function App() {
                   ))}
                 </div>
 
-                {/* Conteúdo do gráfico de Usuários */}
+                {/* Conteúdo do gráfico de Usuários (Area Chart) */}
                 <div className="chart-card">
                   <h2 className="chart-title">
                     Crescimento de Usuários ({usuariosTab.charAt(0).toUpperCase() + usuariosTab.slice(1)})
@@ -315,13 +345,21 @@ function App() {
                   </p>
                   <div className="chart-container">
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={usersChartData}>
+                      <AreaChart
+                        data={usersChartData}
+                        margin={{
+                          top: 10,
+                          right: 30,
+                          left: 0,
+                          bottom: 0,
+                        }}
+                      >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="date" />
                         <YAxis />
                         <Tooltip />
-                        <Line type="monotone" dataKey="count" stroke="#006aff" strokeWidth={2} dot={{ fill: '#006aff', r: 4 }} activeDot={{ r: 6 }} />
-                      </LineChart>
+                        <Area type="monotone" dataKey="count" stroke="#8884d8" fill="#8884d8" />
+                      </AreaChart>
                     </ResponsiveContainer>
                   </div>
                 </div>

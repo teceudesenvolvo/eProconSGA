@@ -1,73 +1,97 @@
-import '../src/App.css'; // Caminho corrigido para App.css
-import { Routes, Route } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import './App.css';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { onAuthStateChanged } from 'firebase/auth'; // Importar onAuthStateChanged
+import { auth } from './firebase'; // Certifique-se de que o seu firebase.js exporta 'auth'
 
-// Navigate Components
-import TopBar from '../src/componets/topBarSearch'; // Caminho e nome da pasta corrigidos
-import Menu from '../src/componets/menu'; // Caminho e nome da pasta corrigidos
-import MenuDesktop from '../src/componets/menuDesktop'; // Caminho e nome da pasta corrigidos
-import Footer from '../src/componets/footer'; // Caminho e nome da pasta corrigidos
+// Componentes de Navegação
+import TopBar from './componets/topBarSearch';
+import Menu from './componets/menu';
+import MenuDesktop from './componets/menuDesktop';
+import Footer from './componets/footer';
 
 // Páginas Principais
-import HomeDashboard from './screens/homePage'; // Caminho corrigido
-import Cdc from './screens/CodigoDefesaConsumidor'; // Caminho corrigido
+import HomeDashboard from './screens/homePage';
+import Cdc from './screens/CodigoDefesaConsumidor';
 
 // Controle de Acesso
-import Register from '../src/screens/register'; // Caminho corrigido
-import Login from '../src/screens/login'; // Caminho corrigido
+import Register from './screens/register';
+import Login from './screens/login';
 
 // Controle Admin
-import Atendimentos from '../src/screens/admin/atendimentosTodos'; // Caminho corrigido
-import Atendimento from '../src/screens/admin/atendimento'; // Caminho corrigido
-import CriarChamado from '../src/screens/admin/createChamadoAdmin'; // Caminho corrigido
-import Painel from '../src/screens/admin/dashboard'; // Caminho corrigido
+import Atendimentos from './screens/admin/atendimentosTodos';
+import Atendimento from './screens/admin/atendimento';
+import CriarChamado from './screens/admin/createChamadoAdmin';
+import Painel from './screens/admin/dashboard';
 
 // Usuário Logado
-import MeusAgendamentos from '../src/screens/client/meusAtendimentos'; // Caminho corrigido
-import ReclamacaoDetalhes from '../src/screens/client/reclamacaoDetalhes'; // Caminho corrigido
-import Perfil from '../src/screens/client/Perfil'; // Caminho corrigido
-import RealizarReclamacao from '../src/screens/client/realizarReclamacao'; // Caminho corrigido
+import MeusAgendamentos from './screens/client/meusAtendimentos';
+import ReclamacaoDetalhes from './screens/client/reclamacaoDetalhes';
+import Perfil from './screens/client/Perfil';
+import RealizarReclamacao from './screens/client/realizarReclamacao';
 
+// Componente PrivateRoute para proteger rotas que exigem autenticação
+const PrivateRoute = ({ children }) => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    // Usamos um estado de carregamento LOCAL para a verificação de autenticação
+    // Isso evita que o preloader GLOBAL fique preso durante a inicialização do Firebase.
+    const [loadingAuthCheck, setLoadingAuthCheck] = useState(true);
+
+    useEffect(() => {
+        // Ouve as mudanças no estado de autenticação do Firebase
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            setIsAuthenticated(!!user); // Define se o usuário está autenticado
+            setLoadingAuthCheck(false); // A verificação de autenticação terminou
+        });
+        return () => unsubscribe(); // Limpa o listener quando o componente é desmontado
+    }, []);
+
+    if (loadingAuthCheck) {
+        // Mostra um carregador simples e rápido ENQUANTO a autenticação está a ser verificada.
+        // Este é um carregador local, não o preloader global.
+        return (
+            <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 rounded-lg">
+                <div className="text-white text-xl p-4 bg-blue-600 rounded-lg shadow-lg">A verificar autenticação...</div>
+            </div>
+        );
+    }
+
+    // Se a verificação terminou e o usuário não está autenticado, redireciona para a página de login
+    return isAuthenticated ? children : <Navigate to="/login" />;
+};
 
 function App() {
-
-  // Array de rotas onde o rodapé não deve ser exibido (exemplo, ajuste conforme necessário)
-  // const noFooterPaths = ['/login', '/register', '/testePage'];
-  // const shouldShowFooter = !noFooterPaths.includes(location.pathname);
-
   return (
-    <div className="App flex flex-col min-h-screen"> {/* Adiciona flexbox para layout */}
-      <TopBar />
-     
-      <main className="flex-grow"> {/* Permite que o conteúdo principal ocupe o espaço restante */}
-        <Routes>
-          {/* Página Principal */}
-          <Route path="/" element={<HomeDashboard />} />
-          <Route path="/codigo-de-defesa-do-consumidor" element={<Cdc />} />
+      <div className="App flex flex-col min-h-screen">
+        <TopBar />
+        <main className="flex-grow">
+          <Routes>
+            {/* Página Principal (geralmente pública) */}
+            <Route path="/" element={<HomeDashboard />} />
+            <Route path="/codigo-de-defesa-do-consumidor" element={<Cdc />} />
 
-          {/* Controle de Acesso */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+            {/* Controle de Acesso (Login e Registro são sempre públicos) */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-          {/* Controle Admin */}
-          <Route path="/atendimentos-sga-hyo6d27" element={<Atendimentos />} />
-          <Route path="/atendimento-sga-ppi6g59" element={<Atendimento />} />
-          <Route path="/criar-chamado" element={<CriarChamado />} />
-          <Route path="/painel" element={<Painel />} />
+            {/* Rotas Protegidas: Envolva os componentes com PrivateRoute */}
+            <Route path="/atendimentos-sga-hyo6d27" element={<PrivateRoute><Atendimentos /></PrivateRoute>} />
+            <Route path="/atendimento-sga-ppi6g59" element={<PrivateRoute><Atendimento /></PrivateRoute>} />
+            <Route path="/criar-chamado" element={<PrivateRoute><CriarChamado /></PrivateRoute>} />
+            <Route path="/painel" element={<PrivateRoute><Painel /></PrivateRoute>} />
+            <Route path="/meus-atendimentos" element={<PrivateRoute><MeusAgendamentos /></PrivateRoute>} />
+            <Route path="/registrar-reclamacao" element={<PrivateRoute><RealizarReclamacao /></PrivateRoute>} />
+            <Route path="/reclamacao-detalhes" element={<PrivateRoute><ReclamacaoDetalhes /></PrivateRoute>} />
+            <Route path="/perfil" element={<PrivateRoute><Perfil /></PrivateRoute>} />
 
-          {/* Páginas Usuário Logado */}
-          <Route path="/meus-atendimentos" element={<MeusAgendamentos />} />
-          <Route path="/registrar-reclamacao" element={<RealizarReclamacao />} />
-          <Route path="/reclamacao-detalhes" element={<ReclamacaoDetalhes />} />
-          <Route path="/perfil" element={<Perfil />} />
-
-          
-        </Routes>
-      </main> {/* Fim do conteúdo principal */}
-     
-      <Menu />
-      <MenuDesktop />
-      <Footer />
-    </div>
+            {/* Você pode adicionar um redirecionamento padrão para rotas não encontradas ou a raiz */}
+            {/* Exemplo: <Route path="*" element={<Navigate to="/" />} /> */}
+          </Routes>
+        </main>
+        <Menu />
+        <MenuDesktop />
+        <Footer />
+      </div>
   );
 }
 

@@ -65,6 +65,191 @@ body {
   color: #FF740F;
 }
 
+/* Estilos para o Preloader */
+.preloader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #105394; /* Fundo azul, conforme a imagem */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Garante que o preloader fique acima de todo o conteúdo */
+}
+
+.preloader-dots-container {
+  display: flex;
+  gap: 15px; /* Espaçamento entre os pontos */
+}
+
+.preloader-dot {
+  width: 20px;
+  height: 20px;
+  background-color: #ffffff; /* Pontos brancos */
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.preloader-dot:nth-child(1) { animation-delay: -0.32s; }
+.preloader-dot:nth-child(2) { animation-delay: -0.16s; }
+.preloader-dot:nth-child(3) { animation-delay: 0s; }
+.preloader-dot:nth-child(4) { animation-delay: 0.16s; }
+.preloader-dot:nth-child(5) { animation-delay: 0.32s; }
+.preloader-dot:nth-child(6) { animation-delay: 0.48s; }
+
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1.0); }
+}
+
+.preloader-text {
+  /* O texto "Carregando..." não é visível na imagem, mas pode ser mantido se desejar */
+  margin-top: 20px;
+  font-size: 1.2rem;
+  color: #ffffff; /* Cor do texto branca para contrastar com o fundo azul */
+  font-weight: bold;
+  position: absolute; /* Posiciona o texto abaixo dos pontos */
+  bottom: 20%; /* Ajuste conforme necessário */
+}
+
+
+/* Estilos para o preloader */
+.preloader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9); /* Fundo semi-transparente */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Garante que o preloader fique acima de tudo */
+}
+
+.preloader-dots-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.preloader-dot {
+  width: 15px;
+  height: 15px;
+  margin: 0 5px;
+  background-color: #3498db; /* Cor dos pontos */
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.preloader-dot:nth-child(1) { animation-delay: -0.32s; }
+.preloader-dot:nth-child(2) { animation-delay: -0.16s; }
+.preloader-dot:nth-child(3) { animation-delay: 0s; }
+.preloader-dot:nth-child(4) { animation-delay: 0.16s; }
+.preloader-dot:nth-child(5) { animation-delay: 0.32s; }
+.preloader-dot:nth-child(6) { animation-delay: 0.48s; }
+
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+.preloader-text {
+  font-size: 1.2em;
+  color: #333;
+}
+
+/* Estilos para o container de mensagens de carregamento/erro no RealizarReclamacao */
+.txtPreloader{
+  color: #fff;
+}
+.loading-message, .error-message {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Ocupa a altura total da viewport */
+    text-align: center;
+    background-color: #f9f9f9; /* Um fundo claro para as mensagens */
+    color: #333;
+    font-family: sans-serif;
+}
+
+.loading-message h1, .error-message h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.loading-message p, .error-message p {
+    font-size: 1.1em;
+    margin-bottom: 20px;
+}
+
+.buttonLogin {
+    /* Mantenha seus estilos existentes para buttonLogin aqui */
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.buttonLogin:hover {
+    background-color: #0056b3;
+}
+
+/* Você pode manter seus estilos existentes abaixo */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.App {
+  background-color: #f0f2f5;
+}
+
+/* Você pode manter seus estilos existentes abaixo */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.App {
+  background-color: #f0f2f5;
+}
+
+
+
 .loginPage {
   background: #0f5294;
   margin-bottom: -10px;
@@ -981,6 +1166,7 @@ body {
   /* Vermelho para mensagens de erro */
   margin-top: 10px;
   font-size: 0.9rem;
+  height: 10px;
 }
 
 @media (max-width: 600px) {
@@ -1895,9 +2081,10 @@ video {
 /* Media Queries para Responsividade (ajuste conforme necessário) */
 @media (max-width: 768px) {
   .cards-grid-container {
-    grid-template-columns: 1fr;
     /* Uma coluna em telas menores */
     padding: 15px;
+    width: 95%;
+    height: auto;
   }
 
   .card {
@@ -1908,6 +2095,7 @@ video {
     flex-direction: column;
     /* Inputs empilhados em telas menores */
     padding: 15px;
+    width: 90%;
   }
 }
 
@@ -2114,6 +2302,31 @@ video {
   margin-bottom: 1.5rem;
 }
 
+@media (max-width: 800px) {
+  .profile-header{
+    width: 90% !important;
+  }
+  .user-name, .user-email{
+    font-size: 13px   !important;
+    margin-right: 10px;
+    margin-bottom: 10px  !important;
+  }
+  .profile-icon-container {
+    width: 2rem   !important;
+    height: 2rem !important;
+    margin-right: 7px !important;
+  }
+  .profile-actions-btns{
+    margin-left: -10px;
+  }
+  .save-button, .edit-button{
+    width: 100% !important;
+    margin-left: 10px !important;
+    margin-bottom: 10px;
+    height: 32px !important;
+    padding: 8px !important;
+  }
+}
 /* .profile-header.dark-mode {
     background-color: #1e3a8a;
 } */
@@ -2460,6 +2673,30 @@ video {
   margin-top: 20px;
   padding-top: 15px;
   border-top: 1px solid #eee;
+}
+
+@media (max-width: 768px) {
+  .chat-input-area {
+    flex-direction: column;
+    /* Empilha os elementos em telas menores */
+  }
+  .chat-input-situacao{
+    width: 100% !important;
+    border: none  !important;
+  }
+  .chat-input-comentario-textarea {
+    width: 100% !important;
+    margin-bottom: 10px;
+  }
+  .chat-input-file-upload-send {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+  .userData, .infoData{
+    width: 85% !important;
+    margin: 0 auto !important;
+    margin-bottom: 20px !important;
+  }
 }
 
 /* Estilo para o campo de texto do chat */
@@ -5000,6 +5237,9 @@ footer>p {
 
 
 @media (max-width: 600px) {
+  .App-header{
+    margin-bottom: 10%;
+  }
 
 
   .heroDesc {

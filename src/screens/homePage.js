@@ -20,7 +20,7 @@ function HomeDashboard() {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (localStorage.getItem('userId')) {
                 if (localStorage.getItem('userId') === 'wwFXcDCrlVNcQ1yjR4GFR9CbmAL2') {
-                    navigate('/atendimentos-sga-hyo6d27');
+                    navigate('/painel');
                 } else {
                     navigate('/perfil');
                 }

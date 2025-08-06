@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithCustomToken, onAuthStateChanged, signInAnonymously } from 'firebase/auth';
-import { getFirestore, collection, onSnapshot, addDoc } from 'firebase/firestore';
+import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 // Componentes
@@ -26,33 +26,6 @@ const initialAuthToken = null;
 const appId = firebaseConfig.projectId;
 console.log("App ID (projectId):", appId);
 
-// Função auxiliar para gerar dados de exemplo se a coleção estiver vazia
-const generateMockData = async (db, collectionName) => {
-  const collectionRef = collection(db, collectionName);
-  
-  if (collectionName.includes('reclamacoes')) {
-    const statuses = ['Em Análise', 'Em Negociação', 'Pendente', 'Finalizada'];
-    console.log("Gerando dados de exemplo para Reclamações...");
-    for (let i = 0; i < 50; i++) {
-      const dateOffset = Math.floor(Math.random() * 365) * 24 * 60 * 60 * 1000;
-      await addDoc(collectionRef, {
-        situacao: statuses[Math.floor(Math.random() * statuses.length)],
-        createdAt: new Date(Date.now() - dateOffset),
-      });
-    }
-    console.log("Dados de exemplo de Reclamações gerados com sucesso.");
-  } else if (collectionName.includes('usuarios')) {
-    console.log("Gerando dados de exemplo para Usuários...");
-    for (let i = 0; i < 100; i++) {
-      const dateOffset = Math.floor(Math.random() * 365) * 24 * 60 * 60 * 1000;
-      await addDoc(collectionRef, {
-        email: `user_${Math.floor(Math.random() * 10000)}@example.com`,
-        createdAt: new Date(Date.now() - dateOffset),
-      });
-    }
-    console.log("Dados de exemplo de Usuários gerados com sucesso.");
-  }
-};
 
 function App() {
   const [db, setDb] = useState(null);
@@ -185,7 +158,6 @@ function App() {
       console.log("Reclamações recebidas:", data);
       if (snapshot.empty) {
         console.log("Nenhuma reclamação encontrada. Gerando dados de exemplo...");
-        generateMockData(db, reclamacoesColPath);
       }
     }, (error) => {
       console.error("Erro ao buscar reclamações:", error);
@@ -212,7 +184,6 @@ function App() {
       console.log("Usuários recebidos:", data);
       if (snapshot.empty) {
         console.log("Nenhum usuário encontrado. Gerando dados de exemplo...");
-        generateMockData(db, usersColPath);
       }
     }, (error) => {
       console.error("Erro ao buscar usuários:", error);

@@ -8,6 +8,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 pdfMake.vfs = pdfFonts.vfs;
 
+
 const AddProducts = () => {
     // Abas: 1: Detalhes da Reclamação, 2: Anexos e Envio
     const [activeTab, setActiveTab] = useState(1); 
@@ -15,6 +16,7 @@ const AddProducts = () => {
     // Dados do usuário logado (cujo userId/uid está no localStorage)
     const [loggedInUserData, setLoggedInUserData] = useState(null); 
     const [loadingLoggedInUserData, setLoadingLoggedInUserData] = useState(true);
+    console.log('loggedInUserData', loadingLoggedInUserData);
     const [loggedInUserDataError, setLoggedInUserDataError] = useState(null);
 
     const [reclamacaoFormData, setReclamacaoFormData] = useState({
@@ -276,16 +278,7 @@ const AddProducts = () => {
         }
     };
 
-    if (loadingLoggedInUserData) {
-        return (
-            <div className="App-header">
-                <div className="loading-message">
-                    <h1>Carregando dados do usuário...</h1>
-                    <p>Por favor, aguarde.</p>
-                </div>
-            </div>
-        );
-    }
+    
 
     if (loggedInUserDataError) {
         return (

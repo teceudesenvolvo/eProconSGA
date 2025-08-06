@@ -1,26 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import {
-  signInWithCustomToken,
-  onAuthStateChanged,
-  EmailAuthProvider,
-  reauthenticateWithCredential,
-  updatePassword,
-  signOut
+    signInWithCustomToken,
+    onAuthStateChanged,
+    EmailAuthProvider,
+    reauthenticateWithCredential,
+    updatePassword,
+    signOut
 } from 'firebase/auth';
 import { doc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 
+// Importa os componentes de menu (assumindo que estão corretos)
 import MenuAdmin from '../../componets/menuAdmin';
 import MenuDashboard from '../../componets/menuDashboard';
 
 // Importa as instâncias de auth e db do seu arquivo de configuração do Firebase
 import { auth, db } from '../../firebase';
 
+// Importar apenas o hook useLoading do caminho correto
+import { useLoading } from '../../componets/LoadingContext';
 
 const Perfil = () => {
     // Estados do componente
     const [userData, setUserData] = useState(null);
-    const [loading, setLoading] = useState(true);
+    // Usa o hook useLoading para acessar e controlar o estado de carregamento
+    const { isLoading, setIsLoading } = useLoading();
     const [error, setError] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -31,29 +35,30 @@ const Perfil = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
     const [passwordMessage, setPasswordMessage] = useState({ type: '', text: '' });
-    const [isAuthReady, setIsAuthReady] = useState(false);
 
     const navigate = useNavigate();
 
     // Efeito para autenticar e carregar os dados do utilizador
     useEffect(() => {
+        setIsLoading(true); // Inicia o estado de carregamento
         // eslint-disable-next-line no-undef
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
         let isCancelled = false;
 
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (isCancelled) return;
-            
+
             // Se o token personalizado estiver disponível, tenta usá-lo para autenticar
+            // Esta lógica só deve ser executada se não houver um usuário já autenticado
             if (initialAuthToken && !user) {
                 try {
                     await signInWithCustomToken(auth, initialAuthToken);
+                    // O onAuthStateChanged será chamado novamente com o usuário autenticado
                 } catch (err) {
                     console.error("Falha na autenticação com token personalizado:", err.code, err.message);
                     if (!isCancelled) {
                         setError(`Erro de autenticação: ${err.message}. Verifique o token ou a configuração do Firebase.`);
-                        setLoading(false);
-                        setIsAuthReady(true);
+                        setIsLoading(false); // Para o carregamento em caso de erro
                     }
                 }
                 return; // Aguarda a próxima chamada do onAuthStateChanged com o utilizador logado
@@ -61,7 +66,7 @@ const Perfil = () => {
 
             if (user && user.email) {
                 setIsAdmin(user.email === 'admin@cmsga.ce.gov.br');
-                
+
                 try {
                     const authUid = user.uid;
                     const usersCollection = collection(db, 'users');
@@ -81,16 +86,18 @@ const Perfil = () => {
                     setError('Erro ao buscar dados do utilizador. Tente novamente.');
                     console.error('Erro ao buscar dados do utilizador:', err);
                 } finally {
-                    setLoading(false);
-                    setIsAuthReady(true);
+                    setIsLoading(false); // Para o carregamento após a busca de dados
                 }
             } else {
                 if (!isCancelled) {
                     setIsAdmin(false);
-                    setLoading(false);
-                    setIsAuthReady(true);
-                    if (!error) { // Evita sobrescrever um erro de autenticação mais específico
+                    setIsLoading(false); // Para o carregamento se não houver utilizador
+                    // Redireciona para login apenas se não houver erro pré-existente
+                    // A linha abaixo usa 'error' e é a razão da advertência do ESLint.
+                    // Desativamos a regra para evitar o loop.
+                    if (!error) {
                         setError('Utilizador não autenticado. Faça login novamente.');
+                        navigate('/login'); // Redireciona para login se não autenticado
                     }
                 }
             }
@@ -100,8 +107,8 @@ const Perfil = () => {
             isCancelled = true;
             unsubscribe();
         };
-    }, [navigate, error]);
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [navigate, setIsLoading]); // REMOVIDO 'error' das dependências para evitar loop, e adicionado eslint-disable-next-line
 
     const handleEditToggle = () => {
         setIsEditing(!isEditing);
@@ -116,12 +123,12 @@ const Perfil = () => {
     };
 
     const handleSaveProfile = async () => {
-        setLoading(true);
+        setIsLoading(true); // Inicia o carregamento ao salvar
         setError(null);
         try {
             if (!userFirestoreDocId) {
                 setError('ID do documento do utilizador não disponível para salvar.');
-                setLoading(false);
+                setIsLoading(false); // Para o carregamento em caso de erro
                 return;
             }
             const userDocRef = doc(db, 'users', userFirestoreDocId);
@@ -129,18 +136,18 @@ const Perfil = () => {
             await updateDoc(userDocRef, dataToUpdate);
             setUserData(editedData);
             setIsEditing(false);
-            setLoading(false);
+            setIsLoading(false); // Para o carregamento após salvar
         } catch (err) {
             setError('Erro ao salvar perfil. Tente novamente.');
             console.error('Erro ao salvar perfil:', err);
-            setLoading(false);
+            setIsLoading(false); // Para o carregamento em caso de erro
         }
     };
 
     const handleChangePassword = async (e) => {
         e.preventDefault();
         setPasswordMessage({ type: '', text: '' });
-        
+
         if (newPassword !== confirmNewPassword) {
             setPasswordMessage({ type: 'error', text: 'As novas senhas não coincidem.' });
             return;
@@ -151,6 +158,7 @@ const Perfil = () => {
             return;
         }
 
+        setIsLoading(true); // Inicia o carregamento ao mudar a senha
         try {
             const credential = EmailAuthProvider.credential(auth.currentUser.email, oldPassword);
             await reauthenticateWithCredential(auth.currentUser, credential);
@@ -171,24 +179,32 @@ const Perfil = () => {
                 errorMessage = 'Sua sessão expirou. Por favor, saia e entre novamente para alterar a senha.';
             }
             setPasswordMessage({ type: 'error', text: errorMessage });
+        } finally {
+            setIsLoading(false); // Para o carregamento após a tentativa de mudança de senha
         }
     };
 
     const handleLogout = () => {
+        setIsLoading(true); // Inicia o carregamento ao fazer logout
         signOut(auth).then(() => {
-            localStorage.removeItem('userId');
-            navigate('/');
+            localStorage.removeItem('userId'); // Limpa o userId do localStorage
+            navigate('/'); // Redireciona para a página inicial
         }).catch((err) => {
             console.error('Erro ao fazer logout:', err);
             setError('Erro ao fazer logout. Tente novamente.');
+        }).finally(() => {
+            setIsLoading(false); // Para o carregamento após a tentativa de logout
         });
     };
 
-    if (loading || !isAuthReady) {
+    // Renderiza o preloader se isLoading for verdadeiro (do contexto global)
+    // O Preloader global em App.js já deve estar a lidar com isto.
+    // Este bloco é mais um fallback visual caso o Preloader global não esteja visível por algum motivo.
+    if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
                 <div className="text-center p-8 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
-                    <h1 className="text-2xl font-semibold text-gray-700 dark:text-gray-100">Carregando dados...</h1>
+                    <h1 className="text-2xl font-semibold text-gray-700 dark:text-gray-100">A carregar dados...</h1>
                     <p className="text-gray-500 dark:text-gray-400 mt-2">Por favor, aguarde.</p>
                 </div>
             </div>
@@ -201,17 +217,29 @@ const Perfil = () => {
                 <div className="text-center p-8 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
                     <h1 className="text-2xl font-semibold text-red-500">Erro:</h1>
                     <p className="text-red-400 mt-2">{error}</p>
+                    <button onClick={() => navigate('/login')} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Voltar ao Login</button>
                 </div>
             </div>
         );
     }
 
     if (!userData) {
+        // Se não há userData e não está mais carregando, significa que não foi possível carregar os dados.
+        // Isso pode acontecer se o usuário não estiver autenticado ou se os dados não existirem.
         return (
             <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
                 <div className="text-center p-8 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
                     <h1 className="text-2xl font-semibold text-gray-700 dark:text-gray-100">Dados do utilizador não disponíveis.</h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-2">Não foi possível carregar seu perfil. <a href='/perfil' onClick={() => navigate('/')} className="text-blue-500 cursor-pointer hover:underline">Clique aqui para voltar ao login.</a></p>
+                    <p className="text-gray-500 dark:text-gray-400 mt-2">Não foi possível carregar seu perfil.
+                        {/* CORREÇÃO: Usando um botão em vez de <a> para acessibilidade */}
+                        <button
+                            type="button"
+                            onClick={() => navigate('/login')}
+                            className="text-blue-500 cursor-pointer hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 ml-1"
+                        >
+                            Clique aqui para ir para a página de login.
+                        </button>
+                    </p>
                 </div>
             </div>
         );
@@ -219,7 +247,7 @@ const Perfil = () => {
 
     return (
         <div className="container">
-              {isAdmin ? <MenuAdmin /> : <MenuDashboard />}
+            {isAdmin ? <MenuAdmin /> : <MenuDashboard />}
             <div className="main-content">
                 <div className="profile-header">
                     <div className="header-info">
@@ -229,16 +257,19 @@ const Perfil = () => {
                             </svg>
                         </div>
                         <div className="user-text">
-                            <h1 className="user-name">{userData.nome || 'Nome não informado'}</h1>
-                            <p className="user-email">{userData.email}</p>
+                            <h1 className="user-name">{userData?.nome || 'Nome não informado'}</h1> {/* Use optional chaining */}
+                            <p className="user-email">{userData?.email}</p>
                         </div>
                     </div>
-                    {isEditing && (
-                        <button className="action-button save-button" onClick={handleSaveProfile}>Salvar Alterações</button>
-                    )}
-                    <button className="edit-button" onClick={handleEditToggle}>
-                        {isEditing ? 'Cancelar' : 'Editar'}
-                    </button>
+                    <div className="profile-actions-btns">
+
+                        {isEditing && (
+                            <button className="action-button save-button" onClick={handleSaveProfile}>Salvar</button>
+                        )}
+                        <button className="edit-button" onClick={handleEditToggle}>
+                            {isEditing ? 'Cancelar' : 'Editar'}
+                        </button>
+                    </div>
                 </div>
 
                 <div className="info-grid">
@@ -280,12 +311,12 @@ const Perfil = () => {
                             </>
                         ) : (
                             <>
-                                <p className="info-text"><strong>Nome:</strong> {userData.nome}</p>
-                                <p className="info-text"><strong>Email:</strong> {userData.email}</p>
-                                <p className="info-text"><strong>Telefone:</strong> {userData.telefone}</p>
-                                <p className="info-text"><strong>CPF:</strong> {userData.cpf}</p>
-                                <p className="info-text"><strong>Estado Civil:</strong> {userData.estadoCivil}</p>
-                                <p className="info-text"><strong>Sexo:</strong> {userData.sexo}</p>
+                                <p className="info-text"><strong>Nome:</strong> {userData?.nome}</p>
+                                <p className="info-text"><strong>Email:</strong> {userData?.email}</p>
+                                <p className="info-text"><strong>Telefone:</strong> {userData?.telefone}</p>
+                                <p className="info-text"><strong>CPF:</strong> {userData?.cpf}</p>
+                                <p className="info-text"><strong>Estado Civil:</strong> {userData?.estadoCivil}</p>
+                                <p className="info-text"><strong>Sexo:</strong> {userData?.sexo}</p>
                             </>
                         )}
                     </div>
@@ -304,20 +335,20 @@ const Perfil = () => {
                             </>
                         ) : (
                             <>
-                                <p className="info-text"><strong>CEP:</strong> {userData.cep}</p>
-                                <p className="info-text"><strong>Endereço:</strong> {userData.endereco}</p>
-                                <p className="info-text"><strong>Número:</strong> {userData.numero}</p>
-                                <p className="info-text"><strong>Complemento:</strong> {userData.complemento}</p>
-                                <p className="info-text"><strong>Bairro:</strong> {userData.bairro}</p>
-                                <p className="info-text"><strong>Cidade:</strong> {userData.municipio}</p>
-                                <p className="info-text"><strong>UF:</strong> {userData.ufEmissor}</p>
+                                <p className="info-text"><strong>CEP:</strong> {userData?.cep}</p>
+                                <p className="info-text"><strong>Endereço:</strong> {userData?.endereco}</p>
+                                <p className="info-text"><strong>Número:</strong> {userData?.numero}</p>
+                                <p className="info-text"><strong>Complemento:</strong> {userData?.complemento}</p>
+                                <p className="info-text"><strong>Bairro:</strong> {userData?.bairro}</p>
+                                <p className="info-text"><strong>Cidade:</strong> {userData?.municipio}</p>
+                                <p className="info-text"><strong>UF:</strong> {userData?.ufEmissor}</p>
                             </>
                         )}
                     </div>
                 </div>
 
                 <div className="button-group">
-                    
+
                     <button className="action-button change-password-button" onClick={() => setShowPasswordChange(!showPasswordChange)}>{showPasswordChange ? 'Ocultar Alterar Senha' : 'Alterar Senha'}</button>
                     <button className="action-button logout-button" onClick={handleLogout}>Sair da conta</button>
                 </div>
@@ -357,4 +388,4 @@ const Perfil = () => {
     );
 };
 
-export default Perfil; 
+export default Perfil;

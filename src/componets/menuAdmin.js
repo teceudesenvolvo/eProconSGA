@@ -9,9 +9,9 @@ import Logo from '../assets/logoLaranga.png';
 import {
     FaAddressBook ,
     FaRegUser,
-    FaBuffer
+    FaBuffer,
     // FaPlusCircle ,
-    // FaBook
+    FaPlusCircle
 } from "react-icons/fa";
 
 
@@ -45,7 +45,7 @@ class MenuDashboard extends Component { // Renomeado para MenuDashboard para con
                 return this.setState({ linkMenu0: 'aDesktop link-desktop-active' })
             case `/agendar-atendimento`:
                 return this.setState({ linkMenu1: 'aDesktop link-desktop-active' })
-            case `/registrar-reclamacao`:
+            case `/criar-chamado`:
                 return this.setState({ linkMenu2: 'aDesktop link-desktop-active' })
             case `/perfil`:
                 return this.setState({ linkMenu3: 'aDesktop link-desktop-active' })
@@ -127,10 +127,10 @@ class MenuDashboard extends Component { // Renomeado para MenuDashboard para con
 
                 
 
-                {/* <a href="/agendar-atendimento" className={this.state.linkMenu1}>
-                    <FaBook className='fas fa-home'></FaBook>
-                    <span className='nav-item'>Agendar</span>
-                </a> */}
+                <a href="/criar-chamado" className={this.state.linkMenu1}>
+                    <FaPlusCircle className='fas fa-home'></FaPlusCircle>
+                    <span className='nav-item'>Criar Chamado</span>
+                </a>
 
              
                 {/* <a href="/atendimento-sga-ppi6g59" className={this.state.linkMenu2}>

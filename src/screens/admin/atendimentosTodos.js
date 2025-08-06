@@ -99,7 +99,7 @@ class Notificacoes extends Component {
     };
 
     render() {
-        const { reclamacoes, isLoadingData, isAuthorized, isLoadingAuth, filtroProtocolo, filtroAssuntoDenuncia, filtroEmail } = this.state;
+        const { reclamacoes, isAuthorized, isLoadingAuth, filtroProtocolo, filtroAssuntoDenuncia, filtroEmail } = this.state;
 
         if (isLoadingAuth) {
             return (
@@ -124,16 +124,6 @@ class Notificacoes extends Component {
             );
         }
 
-        if (isLoadingData) {
-            return (
-                <div className="App-header">
-                    <div className="loading-message">
-                        <h1>Carregando dados das reclamações...</h1>
-                        <p>Por favor, aguarde...</p>
-                    </div>
-                </div>
-            );
-        }
 
         const reclamacoesFiltradas = reclamacoes.filter((reclamacao) => {
             return (

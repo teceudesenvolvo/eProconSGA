@@ -127,7 +127,7 @@ class MenuDashboard extends Component { // Renomeado para MenuDashboard para con
 
                 
 
-                <a href="/criar-chamado" className={this.state.linkMenu1}>
+                <a href="/criar-chamado" className={this.state.linkMenu2}>
                     <FaPlusCircle className='fas fa-home'></FaPlusCircle>
                     <span className='nav-item'>Criar Chamado</span>
                 </a>

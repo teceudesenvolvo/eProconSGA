@@ -8,7 +8,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 pdfMake.vfs = pdfFonts.vfs;
 
-
 const AddProducts = () => {
     // Abas: 1: Detalhes da Reclamação, 2: Anexos e Envio
     const [activeTab, setActiveTab] = useState(1); 
@@ -70,7 +69,16 @@ const AddProducts = () => {
 
                 if (!querySnapshot.empty) {
                     // Se houver resultados, pegamos o primeiro documento (assumindo que uid é único)
-                    setLoggedInUserData(querySnapshot.docs[0].data());
+                    const userData = querySnapshot.docs[0].data();
+                    setLoggedInUserData(userData);
+
+                    // ***** LÓGICA DE REDIRECIONAMENTO ADICIONADA AQUI *****
+                    // Verifica se o email do usuário é o do administrador
+                    if (userData.email === 'admin@cmsga.ce.gov.br') {
+                        navigate('/criar-chamado');
+                        return; // Para a execução do useEffect
+                    }
+                    // *******************************************************
                 } else {
                     setLoggedInUserDataError('Dados do usuário logado não encontrados no Firestore com o UID fornecido.');
                 }
@@ -565,7 +573,7 @@ const AddProducts = () => {
                                     className='buttonLogin btnUpload'
                                 />
                             </label>
-                            {fileCount > 0 && <p className="file-count-message">{fileCount} arquivos selecionado(s)</p>}
+                            {fileCount > 0 && <p className="file-count-message">{fileCount} arquivo(s) selecionado(s)</p>}
                             {fileErrors.map((error, index) => (
                                 <p key={index} className="error-message">{error}</p>
                             ))}

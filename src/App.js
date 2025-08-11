@@ -80,7 +80,10 @@ function App() {
             <Route path="/criar-chamado" element={<PrivateRoute><CriarChamado /></PrivateRoute>} />
             <Route path="/painel" element={<PrivateRoute><Painel /></PrivateRoute>} />
             <Route path="/meus-atendimentos" element={<PrivateRoute><MeusAgendamentos /></PrivateRoute>} />
+            
+            {/* CORREÇÃO: O caminho foi alterado de volta para "/registrar-reclamacao" */}
             <Route path="/registrar-reclamacao" element={<PrivateRoute><RealizarReclamacao /></PrivateRoute>} />
+            
             <Route path="/reclamacao-detalhes" element={<PrivateRoute><ReclamacaoDetalhes /></PrivateRoute>} />
             <Route path="/perfil" element={<PrivateRoute><Perfil /></PrivateRoute>} />
 

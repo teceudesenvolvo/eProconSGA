@@ -73,6 +73,8 @@ function App() {
     const yearlyCounts = {};
 
     users.forEach(user => {
+      // Adicionado log para verificar a estrutura do documento de usuário
+      console.log("Verificando documento de usuário:", user);
       if (user.createdAt && user.createdAt.toDate) {
         const date = user.createdAt.toDate();
         const year = date.getFullYear();
@@ -147,9 +149,8 @@ function App() {
       return;
     }
     
-    // Caminho da coleção corrigido para "reclamacoes"
     const reclamacoesColPath = `reclamacoes`;
-    console.log("Tentando buscar dados de reclamações no caminho:", reclamacoesColPath);
+    console.log("Tentando buscar dados de reclamações no caminho:", reclamacoesColPath, "com userId:", userId);
 
     const reclamacoesColRef = collection(db, reclamacoesColPath);
     const unsubscribe = onSnapshot(reclamacoesColRef, (snapshot) => {
@@ -157,7 +158,7 @@ function App() {
       setReclamacoes(data);
       console.log("Reclamações recebidas:", data);
       if (snapshot.empty) {
-        console.log("Nenhuma reclamação encontrada. Gerando dados de exemplo...");
+        console.log("Nenhuma reclamação encontrada.");
       }
     }, (error) => {
       console.error("Erro ao buscar reclamações:", error);
@@ -166,24 +167,24 @@ function App() {
     return () => unsubscribe();
   }, [db, userId]);
 
-  // Busca de dados em tempo real para 'usuarios'
+  // Busca de dados em tempo real para 'users'
   useEffect(() => {
     if (!db || !userId) {
       console.log("Busca de usuários não iniciada: db ou userId não estão prontos.");
       return;
     }
 
-    // Caminho da coleção corrigido para "usuarios"
-    const usersColPath = `usuarios`;
-    console.log("Tentando buscar dados de usuários no caminho:", usersColPath);
+    const usersColPath = `users`;
+    console.log("Tentando buscar dados de usuários no caminho:", usersColPath, "com userId:", userId);
 
     const usersColRef = collection(db, usersColPath);
     const unsubscribe = onSnapshot(usersColRef, (snapshot) => {
+      console.log("Snapshot de usuários recebido. Número de documentos:", snapshot.docs.length);
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setUsers(data);
-      console.log("Usuários recebidos:", data);
+      console.log("Usuários processados:", data);
       if (snapshot.empty) {
-        console.log("Nenhum usuário encontrado. Gerando dados de exemplo...");
+        console.log("Nenhum usuário encontrado na coleção 'users'.");
       }
     }, (error) => {
       console.error("Erro ao buscar usuários:", error);
@@ -315,23 +316,29 @@ function App() {
                     Visualização do crescimento de novos usuários por período.
                   </p>
                   <div className="chart-container">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart
-                        data={usersChartData}
-                        margin={{
-                          top: 10,
-                          right: 30,
-                          left: 0,
-                          bottom: 0,
-                        }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" />
-                        <YAxis />
-                        <Tooltip />
-                        <Area type="monotone" dataKey="count" stroke="#8884d8" fill="#8884d8" />
-                      </AreaChart>
-                    </ResponsiveContainer>
+                    {usersChartData && usersChartData.length > 0 ? (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart
+                          data={usersChartData}
+                          margin={{
+                            top: 10,
+                            right: 30,
+                            left: 0,
+                            bottom: 0,
+                          }}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="date" />
+                          <YAxis />
+                          <Tooltip />
+                          <Area type="monotone" dataKey="count" stroke="#8884d8" fill="#8884d8" />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="text-center text-gray-500 py-10">
+                        Nenhum dado de usuário encontrado para este período.
+                      </div>
+                    )}
                   </div>
                 </div>
               </>
